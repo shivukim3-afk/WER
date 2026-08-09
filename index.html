@@ -2929,7 +2929,7 @@
             .portals-grid .portal-card {
                 flex: 0 0 calc((min(100vw, 1400px) - 11rem - 3 * 1.5rem) / 4) !important;
                 width: calc((min(100vw, 1400px) - 11rem - 3 * 1.5rem) / 4) !important;
-                height: 200px !important;
+                height: 280px !important;
                 border-radius: var(--border-radius-lg) !important;
                 overflow: hidden !important;
                 position: relative !important;
@@ -3587,18 +3587,7 @@
             <div class="logo-tagline">למוסד • לבית • למשרד</div>
         </a>
 
-        <!-- Live search bar in header -->
-        <div class="header-search">
-            <input type="text" id="catalog-search" placeholder="חפש מוצר ניקוי, נייר, חד פעמי...">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
-
         <div class="header-utils">
-            <!-- Contact link directly to Shmuel (Circular phone button) -->
-            <a href="tel:050-5178445" class="contact-phone-circle" title="צרו קשר: 050-5178445">
-                <i class="fa-solid fa-phone"></i>
-            </a>
-
             <!-- Cart Trigger Button -->
             <button class="cart-btn" onclick="toggleCart(true)">
                 <i class="fa-solid fa-basket-shopping"></i>
@@ -3616,7 +3605,7 @@
             
             <!-- Branded Search Bar inside Hero -->
             <div class="hero-search-wrapper">
-                <input type="text" id="hero-catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי, ציוד משרדי ועוד...">
+                <input type="text" id="catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי, ציוד משרדי ועוד...">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
             
@@ -3765,13 +3754,7 @@
             </button>
         </div>
 
-        <!-- Centered Quick Order Button -->
-        <div class="quick-order-banner-container" id="quick-order-banner-container">
-            <button class="quick-order-banner-btn" onclick="toggleQuickOrderMode()" title="טופס הזמנה מהיר לספקים ורכש">
-                <i class="fa-solid fa-file-invoice"></i>
-                <span>טופס הזמנה מהיר לספקים ורכש</span>
-            </button>
-        </div>
+
 
             <!-- ACTIVE PORTAL BACK HEADER -->
             <div id="active-portal-header" class="active-portal-header" style="display: none;">
