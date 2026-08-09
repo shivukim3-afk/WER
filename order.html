@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שיווקים — טופס הזמנה מהיר לגננות ומוסדות</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Rubik:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --font-main: 'Rubik', 'Outfit', sans-serif;
+            --color-navy: #0a1931;
+            --color-blue: #0085ff;
+            --color-cyan: #00f0ff;
+            --color-bg-light: #f8fafc;
+            --color-border: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-radius-lg: 16px;
+            --border-radius-md: 12px;
+            --border-radius-sm: 8px;
+            --shadow-soft: 0 10px 30px rgba(10, 25, 49, 0.05);
+            --shadow-hover: 0 20px 40px rgba(10, 25, 49, 0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 120px;
+        }
+
+        /* Header Styling */
+        .order-header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--color-border);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(10, 25, 49, 0.02);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--color-navy);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-arrow {
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid var(--color-blue);
+            transform: rotate(180deg);
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid var(--color-blue);
+            color: var(--color-blue);
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .back-btn:hover {
+            background: var(--color-blue);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .order-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .order-title-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .order-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--color-navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .order-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Client Details Form */
+        .details-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--color-border);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .details-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--color-navy);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.6rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-weight: 700;
+            color: var(--color-navy);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], input[type="tel"] {
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            width: 100%;
+        }
+
+        input[type="text"]:focus, input[type="tel"]:focus {
+            outline: none;
+            border-color: var(--color-blue);
+            box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.1);
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            scrollbar-width: thin;
+        }
+
+        @media (max-width: 768px) {
+            .category-tabs {
+                justify-content: flex-start;
+            }
+        }
+
+        .category-tab {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 700;
+            color: var(--color-navy);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .category-tab:hover {
+            border-color: var(--color-blue);
+            color: var(--color-blue);
+        }
+
+        .category-tab.active {
+            background: var(--color-navy);
+            color: #ffffff;
+            border-color: var(--color-navy);
+        }
+
+        /* Table Card */
+        .table-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th, td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--color-navy);
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-name-col {
+            font-weight: 700;
+            color: var(--color-navy);
+        }
+
+        .product-pack-col {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .price-text {
+            font-weight: 700;
+            color: var(--color-navy);
+        }
+
+        /* Quantity controls */
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            justify-content: flex-start;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            background: #ffffff;
+            color: var(--color-navy);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+
+        .qty-btn:hover {
+            background: var(--color-blue);
+            color: #ffffff;
+            border-color: var(--color-blue);
+        }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            padding: 0.4rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Summary Sticky Footer */
+        .summary-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 2px solid var(--color-border);
+            padding: 1.5rem 5%;
+            box-shadow: 0 -10px 40px rgba(10, 25, 49, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+        }
+
+        .summary-stats {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--color-navy);
+        }
+
+        .stat-value span {
+            color: var(--color-blue);
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.9rem 1.8rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: none;
+            font-family: var(--font-main);
+            transition: var(--transition-smooth);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
+        }
+
+        .whatsapp-btn:hover {
+            background: #20ba5a;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+        }
+
+        .print-btn {
+            background: #64748b;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(100, 116, 139, 0.2);
+        }
+
+        .print-btn:hover {
+            background: #475569;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(100, 116, 139, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .summary-footer {
+                flex-direction: column;
+                gap: 1.2rem;
+                padding: 1.2rem;
+            }
+            .summary-stats {
+                width: 100%;
+                justify-content: space-around;
+                gap: 1rem;
+            }
+            .summary-actions {
+                width: 100%;
+            }
+            .action-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.95rem;
+                padding: 0.8rem;
+            }
+
+            /* Responsive table layout on mobile */
+            table, 
+            thead, 
+            tbody, 
+            th, 
+            td, 
+            tr {
+                display: block !important;
+            }
+            thead {
+                display: none !important; /* Hide table headers */
+            }
+            tr {
+                border-bottom: 1px solid var(--color-border) !important;
+                padding: 1rem 0.2rem !important;
+                position: relative !important;
+                display: grid !important;
+                grid-template-columns: 1fr auto !important;
+                gap: 0.3rem !important;
+                align-items: center !important;
+            }
+            td {
+                padding: 0 !important;
+                border: none !important;
+                text-align: right !important;
+            }
+            td.product-name-col {
+                grid-column: 1 !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                color: var(--color-navy) !important;
+            }
+            td.product-pack-col {
+                grid-column: 1 !important;
+                font-size: 0.85rem !important;
+                color: var(--text-muted) !important;
+            }
+            td.price-text {
+                grid-column: 1 !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+                color: var(--color-blue) !important;
+                margin-top: 0.15rem !important;
+            }
+            td:last-child {
+                grid-column: 2 !important;
+                grid-row: 1 / span 3 !important;
+                display: flex !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+            }
+            .qty-controls {
+                gap: 0.4rem !important;
+            }
+        }
+
+        /* Print Media queries */
+        @media print {
+            body {
+                padding-bottom: 0;
+                background: #ffffff;
+            }
+            .order-header, .category-tabs, .summary-footer, .back-btn, .qty-btn {
+                display: none !important;
+            }
+            .details-card, .table-card {
+                box-shadow: none !important;
+                border: 1px solid #000000 !important;
+                margin-bottom: 1.5rem !important;
+            }
+            input[type="text"], input[type="tel"] {
+                border: none !important;
+                border-bottom: 1px solid #000000 !important;
+                padding: 0.2rem !important;
+            }
+            .qty-input {
+                border: none !important;
+                font-size: 1.2rem !important;
+            }
+            .order-container {
+                margin: 0 !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="order-header">
+        <a href="index.html" class="logo-container">
+            <span class="logo-arrow"></span>
+            <span class="logo-text">שיווקים</span>
+        </a>
+        <a href="index.html" class="back-btn">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span>חזרה לקטלוג המוצרים</span>
+        </a>
+    </header>
+
+    <div class="order-container">
+        <!-- TITLE -->
+        <div class="order-title-section">
+            <h1 class="order-title">טופס הזמנה מהיר מרוכז</h1>
+            <p class="order-subtitle">מלא את הכמויות ושלח אלינו ישירות לוואטסאפ או הדפס ל-PDF</p>
+        </div>
+
+        <!-- CLIENT DETAILS -->
+        <div class="details-card">
+            <div class="details-title">
+                <i class="fa-solid fa-file-invoice"></i>
+                <span>פרטי המוסד / המזמין</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="client-name">שם המוסד / הגן / העסק *</label>
+                    <input type="text" id="client-name" placeholder="לדוגמה: גן אורנים / מועצה אזורית" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-name">שם איש הקשר במקום *</label>
+                    <input type="text" id="contact-name" placeholder="לדוגמה: שמואל המנהל" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-phone">טלפון נייד ליצירת קשר *</label>
+                    <input type="tel" id="client-phone" placeholder="לדוגמה: 050-5178445" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-address">כתובת למשלוח</label>
+                    <input type="text" id="client-address" placeholder="רחוב, עיר, קומה">
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORY TABS -->
+        <div class="category-tabs" id="category-tabs">
+            <!-- Rendered dynamically -->
+        </div>
+
+        <!-- PRODUCTS TABLE -->
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">שם המוצר</th>
+                            <th style="width: 20%;">אריזה</th>
+                            <th style="width: 15%;">מחיר</th>
+                            <th style="width: 15%; text-align: center;">כמות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Rendered dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY STICKY FOOTER -->
+    <div class="summary-footer">
+        <div class="summary-stats">
+            <div class="stat-item">
+                <span class="stat-label">מוצרים שנבחרו</span>
+                <span class="stat-value" id="total-items">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">סכום כולל (לתשלום)</span>
+                <span class="stat-value"><span id="total-price">0</span> ₪</span>
+            </div>
+        </div>
+        <div class="summary-actions">
+            <button class="action-btn print-btn" onclick="window.print()">
+                <i class="fa-solid fa-print"></i>
+                <span>הדפס / שמור כ-PDF</span>
+            </button>
+            <button class="action-btn whatsapp-btn" onclick="sendOrderToWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>שלח הזמנה בוואטסאפ</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Core data injected from index.html
+        const CATEGORIES = {
+            "tork": { name: "מוצרי Tork ומתקנים", icon: "🧴", fa: "fa-soap" },
+            "paper": { name: "מוצרי נייר וניגוב", icon: "🧻", fa: "fa-scroll" },
+            "cleaning": { name: "חומרי ניקוי, חיטוי והיגיינה", icon: "🧼", fa: "fa-pump-soap" },
+            "tools": { name: "ציוד ועזרי ניקיון", icon: "🧹", fa: "fa-broom" },
+            "bags": { name: "שקיות, אשפתונים ומוצרים משלימים", icon: "🗑️", fa: "fa-trash-can" },
+            "disposables": { name: "מוצרים חד-פעמיים", icon: "🍽️", fa: "fa-utensils" },
+            "hospitality": { name: "צימרים ומתחמי אירוח", icon: "🏨", fa: "fa-hotel" },
+            "office": { name: "ציוד משרדי בסיסי", icon: "🖇️", fa: "fa-paperclip" }
+        };
+        
+        const PRODUCTS = [
+            // Category: Tork
+            { 
+                id: "t1", 
+                name: "מתקן נייר מגבת גליל Tork", 
+                pack: "יחידה אחת (עמיד ואמין)", 
+                price: 320, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "סדרת מתקנים למגבות נייר בגלילים ובדפים, בעיצוב מושלם המותאם לחדרי שירותים ציבוריים גדולים וקטנים. מנגנונים ייחודיים מבטיחים מילוי מהיר וקל ושימוש רציף ונוח, עם תכולה גדולה ומנגנון Touch-Free להיגיינה מושלמת.",
+                specs: "גובה: 37.2 ס\"מ | רוחב: 33.7 ס\"מ | עומק: 20.3 ס\"מ",
+                image: "assets/tork_roll_dispenser.jpg",
+             keywords: ["מתקן", "טורק", "tork", "נייר", "מגבת", "גליל", "קיר", "דיספנסר"] },
+            { 
+                id: "t2", 
+                name: "מתקן צץ-רץ Tork Interfold Mini", 
+                pack: "יחידה אחת", 
+                price: 140, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מתקן קומפקטי עם פתיחת צד, מתאים לחדרי שירותים קטנים. כולל פתח תחתון עם מנגנון חיסכון ייחודי המאפשר משיכת מגבת אחת בכל שימוש.",
+                specs: "גובה: 29.5 ס\"מ | רוחב: 30.2 ס\"מ | עומק: 10.1 ס\"מ",
+                image: "assets/tork_interfold_dispenser.jpg",
+             keywords: ["מתקן", "טורק", "tork", "צץ רץ", "צץרץ", "מיני", "קיר", "דיספנסר"] },
+            { 
+                id: "t3", image: "assets/t3.jpg", name: "מתקן צץ-רץ שולחני / נייד Tork", 
+                pack: "יחידה אחת", 
+                price: 160, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מתקן לנייר ניגוב ידיים שולחני, עיצוב מודרני פונקציונלי וקומפקטי, אידיאלי למקומות קטנים. מונע בזבוז ושומר על סדר.",
+                specs: "גובה: 21.8 ס\"מ | רוחב: 32.3 ס\"מ | עומק: 11.6 ס\"מ"
+            , keywords: ["מתקן", "טורק", "tork", "שולחני", "נייד", "נייר", "ניגוב", "דיספנסר"] },
+            { 
+                id: "t4", image: "assets/tork_soap_dispenser.jpg", 
+                name: "מתקן תחליב ידיים Tork", 
+                pack: "יחידה אחת", 
+                price: 95, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מתקן תחליב ידיים מעוצב בטכנולוגיית Touch-Free, המיועד לשמירה מרבית על ההיגיינה ולשירות ארוך טווח.",
+                specs: "גובה: 29.0 ס\"מ | רוחב: 11.0 ס\"מ | עומק: 11.0 ס\"מ"
+            , keywords: ["מתקן", "טורק", "tork", "סבון", "תחליב", "נוזל", "קיר", "דיספנסר"] },
+            { 
+                id: "t5", 
+                name: "מתקן נייר טואלט SmartOne Tork", 
+                pack: "שליפת דף-אחר-דף", 
+                price: 190, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מתקן לנייר טואלט עם מנגנון שליפה ייחודי המבטיח דף אחד בכל פעם ללא מגע בדף הבא. חוסך לפחות 25% בצריכת הנייר.",
+                specs: "גובה: 27.0 ס\"מ | רוחב: 27.0 ס\"מ | עומק: 17.3 ס\"מ",
+                image: "assets/tork_smartone_dispenser.jpg",
+             keywords: ["מתקן", "טורק", "tork", "טואלט", "סמארט וואן", "smartone", "קיר", "דיספנסר"] },
+            { 
+                id: "t6", 
+                name: "מתקן נייר טואלט צץ-רץ / הדר Tork", 
+                pack: "מתאים לשימוש בשבת", 
+                price: 135, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מתקן צר בעל תכולה גדולה במיוחד, המותאם לשימוש בשבת וחגים ללא חשש קריעת נייר, שולף דף אחרי דף.",
+                specs: "גובה: 27.1 ס\"מ | רוחב: 15.9 ס\"מ | עומק: 12.8 ס\"מ",
+                image: "assets/tork_hadar_dispenser.jpg",
+             keywords: ["מתקן", "טורק", "tork", "טואלט", "שבת", "הדר", "צץ רץ", "קיר", "דיספנסר"] },
+            { 
+                id: "t7", image: "assets/t7.jpg", name: "מגבות נייר TAD ספיגה משולשת Tork", 
+                pack: "מארז 6 גלילים", 
+                price: 350, 
+                category: "tork", 
+                portals: ["institution", "home", "office", "bb"], 
+                icon: "paper-roll",
+                desc: "מגבות נייר איכותיות בטכנולוגיית TAD (100% תאית טהורה) המעניקה ספיגה כפולה ומשולשת לחיסכון של מגבת אחת לניגוב."
+            , keywords: ["נייר", "טורק", "tork", "גליל", "tad", "ספיגה", "מגבת"] },
+
+            // Category: Paper
+            { id: "p1", name: "נייר צץ-רץ קרפ", pack: "מארז 4,000 יח'", price: 70, category: "paper", portals: ["institution", "office"], icon: "paper-stack", image: "assets/crepe_paper_towel.jpg" , keywords: ["נייר", "צץ רץ", "צץרץ", "קרפ", "ניגוב", "דפים", "מגבת"] },
+            { id: "p2", image: "assets/p2.jpg", name: "נייר צץ-רץ דו-שכבתי", pack: "מארז 2,400 יח'", price: 130, category: "paper", portals: ["institution", "office", "home"], icon: "paper-stack" , keywords: ["נייר", "צץ רץ", "צץרץ", "דו שכבתי", "ניגוב", "דפים", "מגבת"] },
+            { 
+                id: "p3", image: "assets/p3.jpg", 
+                name: "נייר צץ-רץ פרימיום 2H דו-שכבתי", 
+                pack: "מארז 3,150 יח' משובח", 
+                price: 248, 
+                category: "paper", 
+                portals: ["institution", "office", "bb"], 
+                icon: "paper-stack",
+                desc: "מגבות נייר צץ-רץ interfold - נייר איכותי נעים למגע, מגבות מקופלות דו-שכבתיות, גדולות וסופגות במיוחד."
+            , keywords: ["נייר", "צץ רץ", "צץרץ", "פרימיום", "h2", "ניגוב", "דפים", "מגבת"] },
+            { id: "p4", image: "assets/p4.jpg", name: "מגבות נייר בגליל – חד-שכבתי", pack: "מארז 6 גלילים", price: 280, category: "paper", portals: ["institution", "office"], icon: "paper-roll" , keywords: ["נייר", "גליל", "חד שכבתי", "ניגוב", "מגבת", "ידיים"] },
+            { id: "p5", image: "assets/p5.jpg", name: "מגבות נייר בגליל – דו-שכבתי", pack: "מארז 6 גלילים", price: 285, category: "paper", portals: ["institution", "office"], icon: "paper-roll" , keywords: ["נייר", "גליל", "דו שכבתי", "ניגוב", "מגבת", "ידיים"] },
+            { id: "p6", image: "assets/p6.jpg", name: "נייר טואלט צץ-רץ", pack: "מארז 40 חבילות", price: 100, category: "paper", portals: ["institution", "home"], icon: "paper-stack" , keywords: ["נייר", "טואלט", "צץ רץ", "צץרץ", "ניגוב"] },
+            { id: "p7", image: "assets/p7.jpg", name: "נייר טואלט קומפקט דחוס", pack: "מארז 36 גלילים", price: 160, category: "paper", portals: ["institution", "office", "home"], icon: "paper-roll" , keywords: ["נייר", "טואלט", "קומפקט", "דחוס", "גלילים"] },
+            { 
+                id: "p8", image: "assets/p8.jpg", 
+                name: "נייר טואלט 'דואט' דו-שכבתי קומפקט", 
+                pack: "80 מטר בגליל, 36 גלילים", 
+                price: 110, 
+                category: "paper", 
+                portals: ["institution", "bb"], 
+                icon: "paper-roll",
+                desc: "נייר טואלט איכותי חסכוני במיוחד! דואט נייר טואלט דו שכבתי קומפקט 80 מטר בגליל, רך ועבה לשימוש ממושך."
+            , keywords: ["נייר", "טואלט", "דואט", "דו שכבתי", "קומפקט", "גלילים"] },
+            { id: "p9", image: "assets/p9.jpg", name: "סדיני נייר למיטות טיפול / בדיקה", pack: "גליל יחיד", price: 25, category: "paper", portals: ["institution"], icon: "paper-roll" , keywords: ["סדין", "מיטה", "סדינים", "גליל", "נייר למיטה", "טיפולים", "פרימיום"] },
+            { 
+                id: "p10", image: "assets/p10.jpg", 
+                name: "סדיני נייר פרימיום למיטות", 
+                pack: "127 מטר / 50 ס\"מ", 
+                price: 40, 
+                category: "paper", 
+                portals: ["institution"], 
+                icon: "paper-roll",
+                desc: "סדין נייר פרימיום למיטה, איכותי, עמיד ונעים למגע המותאם לקליניקות ומטפלים."
+            , keywords: ["סדין", "מיטה", "סדינים", "גליל", "נייר למיטה", "טיפולים"] },
+            { id: "p11", image: "assets/p11.jpg", name: "דלי מגבוני ניקוי לחיטוי", pack: "דלי 400 מגבונים", price: 45, category: "paper", portals: ["institution", "office", "home"], icon: "bucket" , keywords: ["דלי", "מגבונים", "ניקוי", "חיטוי", "כלור"] },
+
+            // Category: Cleaning
+            { id: "c1", name: "חומר לשטיפת רצפות ריחני", pack: "מכל 4 ליטר", price: 14.5, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "jug", image: "assets/floor_cleaner_jug.jpg" , keywords: ["חומר", "נוזל", "שטיפה", "רצפות", "ניקוי", "ריחני"] },
+            { id: "c2", image: "assets/bleach_cleaner_jug.jpg", name: "אקנומיקה מרוכזת לחיטוי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home"], icon: "jug" , keywords: ["אקנומיקה", "חומר", "נוזל", "חיטוי", "מלבין", "מרוכז"] },
+            { id: "c3", image: "assets/c3.jpg", name: "נוזל כלים איכותי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home", "office"], icon: "jug" , keywords: ["נוזל כלים", "חומר", "כלים", "סבון", "ניקוי"] },
+            { id: "c4", name: "תרסיס לניקוי חלונות ומראות", pack: "750 מ\"ל עם מתז", price: 8, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "spray", image: "assets/window_cleaner_spray.jpg" , keywords: ["תרסיס", "חלונות", "מראות", "נוזל", "ניקוי", "זכוכית", "מתז"] },
+            { id: "c5", image: "assets/c5.jpg", name: "מנקה אסלות עוצמתי", pack: "בקבוק 750 מ\"ל", price: 10, category: "cleaning", portals: ["institution", "home", "bb"], icon: "spray" , keywords: ["מנקה אסלות", "חומר", "אסלה", "שירותים", "ניקוי", "חומצה"] },
+            { 
+                id: "c6", 
+                name: "חומר ניקוי רב-תכליתי 7C", 
+                pack: "מכל 4 ליטר", 
+                price: 60, 
+                category: "cleaning", 
+                portals: ["institution", "office"], 
+                icon: "jug",
+                desc: "חומר איכותי רב תכליתי 7C. מנקה כל דבר בקלות ובמהירות, בעל ביצועים מעולים.",
+                image: "assets/c7_cleaner_jug.jpg",
+             keywords: ["חומר", "נוזל", "ניקוי", "רב תכליתי", "c7", "7c", "מנקה"] },
+            { 
+                id: "c7", image: "assets/c7.jpg", 
+                name: "מסיר אבנית וחלודה עוצמתי 100PLUS", 
+                pack: "מכל 4 ליטר / 4.5 ק\"ג", 
+                price: 45, 
+                category: "cleaning", 
+                portals: ["institution", "bb"], 
+                icon: "jug",
+                desc: "חומר חזק במיוחד להסרת אבנית וחלודה! נוזל להסרת אבנית וחלודה 100PLUS - מנקה משטחים וכלים ביעילות."
+            , keywords: ["מסיר אבנית", "חלודה", "100plus", "חומר", "ניקוי", "חומצה"] },
+            { id: "c8", image: "assets/c8.jpg", name: "תחליב ידיים מבושם", pack: "מכל 4 ליטר", price: 30, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["תחליב", "סבון", "ידיים", "מבושם", "נוזל"] },
+            { id: "c9", image: "assets/c9.jpg", name: "תחליף קצף ידיים", pack: "מכל 4 ליטר", price: 390, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["קצף ידיים", "סבון", "ידיים", "נוזל", "תחליף"] },
+            { id: "c10", image: "assets/c10.jpg", name: "ג'ל חיטוי לידיים", pack: "לכ-6,000 לחיצות", price: 350, category: "cleaning", portals: ["institution", "office"], icon: "dispenser" , keywords: ["אלכוג'ל", "ג'ל", "חיטוי", "ידיים", "חריצים", "לחיצות"] },
+
+            // Category: Tools
+            { id: "e1", image: "assets/e1.jpg", name: "מטאטא רגיל", pack: "יחידה אחת (ללא מקל)", price: 6, category: "tools", portals: ["institution", "home"], icon: "broom" , keywords: ["מטאטא", "מברשת", "טאטוא", "ניקיון"] },
+            { id: "e1_stick", image: "assets/e1_stick.jpg", name: "מקל עץ למטאטא/מגב", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "pen" , keywords: ["מקל", "ידית", "עץ", "מטאטא", "מגב"] },
+            { id: "e2", image: "assets/e2.jpg", name: "מטאטא אולם רחב", pack: "60 ס\"מ כולל מקל", price: 30, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מטאטא", "מברשת", "אולם", "טאטוא", "רחב"] },
+            { id: "e3", image: "assets/e3.jpg", name: "מגב רצפה", pack: "40 ס\"מ", price: 12, category: "tools", portals: ["home", "bb"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה"] },
+            { id: "e4", image: "assets/e4.jpg", name: "מגב רצפה תעשייתי", pack: "60 ס\"מ", price: 14, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה", "רחב"] },
+            { id: "e5", image: "assets/e5.jpg", name: "יעה פלסטיק איכותי", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "broom" , keywords: ["יעה", "איסוף", "אשפה", "לכלוך"] },
+            { id: "e6", image: "assets/e6.jpg", name: "דלי ניקוי פלסטיק", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "bucket" , keywords: ["שטיפה", "ניקוי", "פלסטיק", "סוחט"] },
+            { id: "e7", image: "assets/e7.jpg", name: "סחבות רצפה מיקרופייבר", pack: "חבילה של 3 יח'", price: 11, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["סמרטוט", "סחבה", "רצפה", "שטיפה", "בד"] },
+            { id: "e8", image: "assets/e8.jpg", name: "ספוג הפלא לניקוי קירות", pack: "חבילה של 10 יח'", price: 2, category: "tools", portals: ["institution", "home", "office"], icon: "towel" , keywords: ["מטלית", "מיקרופייבר", "רצפה", "שיש", "ניקוי", "בד"] },
+            { id: "e9", image: "assets/e9.jpg", name: "מטליות מיקרופייבר רב-שימושיות", pack: "חבילה של 5 יח'", price: 16, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["ספוג הפלא", "ספוג", "ניקוי", "הסרת כתמים"] },
+            { id: "e10", image: "assets/e10.jpg", name: "כריות יפניות איכותיות לניקוי", pack: "חבילה של 6 יח'", price: 2, category: "tools", portals: ["institution", "home"], icon: "towel" , keywords: ["כרית יפנית", "כרית", "קרצוף", "ספוג", "כלים"] },
+
+            // Category: Bags
+            { 
+                id: "b1", 
+                name: "שקיות אשפה מחוזקות LD 'חרצית'", 
+                pack: "מידה 77/90, 50 יח'", 
+                price: 20, 
+                category: "bags", 
+                portals: ["institution", "office"], 
+                icon: "bag",
+                desc: "שקיות האשפה הכי חזקות בשוק! חרצית שקיות אשפה LD כתומות 77/90 בגליל, עבות במיוחד.",
+                image: "assets/orange_trash_bags.jpg",
+             keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "חרצית", "כתום", "חזק"] },
+            { id: "b2", image: "assets/black_trash_bags.jpg", name: "שקיות אשפה מחוזקות 'כלנית'", pack: "מידה 75/90, 50 יח'", price: 16, category: "bags", portals: ["institution", "office"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "כלנית", "שחור"] },
+            { id: "b3", image: "assets/b3.jpg", name: "שקיות אשפה קטנות לבנות", pack: "מידה 50/70, 100 יח'", price: 13, category: "bags", portals: ["institution", "home", "office", "bb"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "לבן", "קטן"] },
+            { id: "b4", image: "assets/b4.jpg", name: "מפות שולחן קריסטליות עבות", pack: "גליל 100 מטר", price: 150, category: "bags", portals: ["institution", "home", "bb"], icon: "paper-roll" , keywords: ["מפה", "מפות", "שולחן", "חד פעמי", "קריסטלי", "עבה"] },
+            { 
+                id: "b5", 
+                name: "מפיצי ריח אוטומטיים (סוללות)", 
+                pack: "מתקן יחיד", 
+                price: 85, 
+                category: "bags", 
+                portals: ["institution", "office", "bb"], 
+                icon: "dispenser",
+                desc: "מפיץ ריח אוטומטי S BATTERY, נטען על בטריות ללא צורך בחיבור לחשמל! משרה ריח נעים ורענן.",
+                image: "assets/scent_diffuser_dispenser.jpg",
+             keywords: ["מפיץ ריח", "דיפיוזר", "אוטומטי", "סוללות", "בישום"] },
+            { id: "b6", image: "assets/b6.jpg", name: "פחית ג'ל ריח עדין", pack: "יחידה אחת", price: 30, category: "bags", portals: ["home", "office", "bb"], icon: "spray" , keywords: ["פחית", "ג'ל", "ריח", "ריחן", "מטהר"] },
+            { id: "b7", image: "assets/b7.jpg", name: "קליפס סיליקון ריחני לאסלה", pack: "יחידה אחת", price: 30, category: "bags", portals: ["office", "bb"], icon: "spray" , keywords: ["קליפס", "סיליקון", "ריחני", "אסלה", "ריחן"] },
+            { id: "b8", image: "assets/b8.jpg", name: "רשתות ריחניות למשתנות", pack: "מארז 10 יח'", price: 25, category: "bags", portals: ["institution", "office"], icon: "spray" , keywords: ["רשת", "משתנה", "ריחני", "ריחן", "שירותים"] },
+
+            // Category: Disposables
+            { id: "d1", image: "assets/d1.jpg", name: "צלחות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 5.8, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "קטן", "פלסטיק"] },
+            { id: "d2", image: "assets/d2.jpg", name: "צלחות חד-פעמיות גדולות", pack: "חבילה של 100 יח'", price: 6.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "גדול", "פלסטיק"] },
+            { id: "d3", image: "assets/d3.jpg", name: "מרקיות חד-פעמיות עמוקות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["מרקייה", "צלחת", "מרק", "חד פעמי", "פלסטיק"] },
+            { id: "d4", image: "assets/d4.jpg", name: "לפתניות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["לפתנייה", "קערה", "חד פעמי", "פלסטיק"] },
+            { id: "d5", image: "assets/d5.jpg", name: "מזלגות חד-פעמיים חזקים", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["מזלג", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d6", image: "assets/d6.jpg", name: "סכינים חד-פעמיות חזקות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["סכין", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d7", image: "assets/d7.jpg", name: "כפות חד-פעמיות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["כף", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d8", image: "assets/d8.jpg", name: "כפיות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["כפית", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+
+            // Category: Hospitality (צימרים)
+            { id: "h1", image: "assets/h1.jpg", name: "מגבות גוף מפנקות לצימרים", pack: "מארז 5 מגבות כותנה עבות", price: 190, category: "hospitality", portals: ["bb"], icon: "towel" , keywords: ["מגבת", "גוף", "צימרים", "רחצה", "כותנה", "לבן"] },
+            { id: "h2", image: "assets/h2.jpg", name: "שמפו אישי קטן לבתי מלון", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["שמפו", "בקבוקון", "סבון", "צימרים", "אישי"] },
+            { id: "h3", image: "assets/h3.jpg", name: "ג'ל רחצה אישי מבושם", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["ג'ל רחצה", "בקבוקון", "סבון", "צימרים", "אישי"] },
+            { 
+                id: "h4", image: "assets/h4.jpg", name: "כפכפים חד-פעמיים סגורים לצימר", 
+                pack: "מארז 100 יחידות", 
+                price: 340, 
+                category: "hospitality", 
+                portals: ["bb"], 
+                icon: "slippers",
+                desc: "כפכפים מרופדים ואיכותיים המקנים חוויית ספא רגועה ומפנקת לאורחים בצימרים ובמלונות."
+            },
+
+            // Category: Office (משרדי בסיסי)
+            { id: "o1", image: "assets/o1.jpg", name: "נייר צילום למדפסת A4", pack: "קרטון 5 חבילות (2500 דף)", price: 110, category: "office", portals: ["office", "institution"], icon: "paper-stack" , keywords: ["נייר", "צילום", "מדפסת", "a4", "משרד"] },
+            { id: "o2", image: "assets/o2.jpg", name: "טונר שחור למדפסת HP", pack: "יחידה אחת", price: 180, category: "office", portals: ["office"], icon: "toner" , keywords: ["טונר", "דיו", "מדפסת", "hp", "שחור"] },
+            { id: "o3", image: "assets/o3.jpg", name: "עטי פיילוט Pilot 0.7 כחול/שחור", pack: "מארז 12 עטים", price: 65, category: "office", portals: ["office", "institution"], icon: "pen" , keywords: ["עט", "עטים", "פיילוט", "pilot", "משרד"] },
+            { id: "o4", image: "assets/o4.jpg", name: "קלסר משרדי עבה גב 8 ס\"מ", pack: "מארז 10 קלסרים קשיחים", price: 80, category: "office", portals: ["office", "institution"], icon: "binders" , keywords: ["קלסר", "משרד", "תיוק", "עבה", "קרטון"] }
+        ];
+
+        // Selected quantities store
+        const orderQuantities = {};
+        let activeTab = 'all';
+
+        // Initialize Page
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTabs();
+            renderTable();
+            updateSummary();
+        });
+
+        // Render Tabs
+        function renderTabs() {
+            const tabsContainer = document.getElementById('category-tabs');
+            let html = `
+                <div class="category-tab active" onclick="switchCategory('all', this)">
+                    <span>🌟 הכול</span>
+                </div>
+            `;
+            
+            Object.keys(CATEGORIES).forEach(catId => {
+                const cat = CATEGORIES[catId];
+                html += `
+                    <div class="category-tab" onclick="switchCategory('${catId}', this)">
+                        <span>${cat.icon} ${cat.name}</span>
+                    </div>
+                `;
+            });
+            tabsContainer.innerHTML = html;
+        }
+
+        // Switch Category
+        function switchCategory(catId, element) {
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            if (element) element.classList.add('active');
+            
+            activeTab = catId;
+            renderTable();
+        }
+
+        // Render Products Table
+        function renderTable() {
+            const tbody = document.getElementById('products-table-body');
+            let html = '';
+            
+            const filteredProducts = activeTab === 'all' 
+                ? PRODUCTS 
+                : PRODUCTS.filter(p => p.category === activeTab);
+                
+            if (filteredProducts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">אין מוצרים בקטגוריה זו.</td></tr>`;
+                return;
+            }
+
+            filteredProducts.forEach(prod => {
+                const qty = orderQuantities[prod.id] || 0;
+                html += `
+                    <tr>
+                        <td class="product-name-col">${prod.name}</td>
+                        <td class="product-pack-col">${prod.pack}</td>
+                        <td class="price-text">${prod.price} ₪</td>
+                        <td>
+                            <div class="qty-controls">
+                                <button class="qty-btn" onclick="updateQty('${prod.id}', -1)">-</button>
+                                <input type="number" class="qty-input" id="input-${prod.id}" min="0" max="999" value="${qty}" onchange="setQty('${prod.id}', this.value)">
+                                <button class="qty-btn" onclick="updateQty('${prod.id}', 1)">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Update quantity
+        function updateQty(prodId, delta) {
+            const current = orderQuantities[prodId] || 0;
+            const updated = Math.max(0, current + delta);
+            orderQuantities[prodId] = updated;
+            
+            const input = document.getElementById(`input-${prodId}`);
+            if (input) input.value = updated;
+            
+            updateSummary();
+        }
+
+        // Set quantity from input field
+        function setQty(prodId, val) {
+            const qty = Math.max(0, parseInt(val) || 0);
+            orderQuantities[prodId] = qty;
+            
+            const input = document.getElementById(`input-${prodId}`);
+            if (input) input.value = qty;
+            
+            updateSummary();
+        }
+
+        // Update price and stats summary
+        function updateSummary() {
+            let totalItems = 0;
+            let totalPrice = 0;
+            
+            Object.keys(orderQuantities).forEach(id => {
+                const qty = orderQuantities[id];
+                if (qty > 0) {
+                    const prod = PRODUCTS.find(p => p.id === id);
+                    if (prod) {
+                        totalItems += qty;
+                        totalPrice += (prod.price * qty);
+                    }
+                }
+            });
+            
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('total-price').textContent = totalPrice;
+        }
+
+        // Send Order to WhatsApp
+        function sendOrderToWhatsApp() {
+            const clientName = document.getElementById('client-name').value.trim();
+            const contactName = document.getElementById('contact-name').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const clientAddress = document.getElementById('client-address').value.trim();
+
+            if (!clientName || !contactName || !clientPhone) {
+                alert('אנא מלא את כל שדות החובה בפרטי המוסד (שם מוסד, איש קשר וטלפון)');
+                return;
+            }
+
+            let orderText = `*הזמנה מרוכזת חדשה - שיווקים*\n\n`;
+            orderText += `*פרטי המוסד:*\n`;
+            orderText += `🏢 מוסד: ${clientName}\n`;
+            orderText += `👤 איש קשר: ${contactName}\n`;
+            orderText += `📞 טלפון: ${clientPhone}\n`;
+            if (clientAddress) orderText += `📍 כתובת: ${clientAddress}\n`;
+            orderText += `\n*רשימת מוצרים להזמנה:*\n`;
+
+            let hasItems = false;
+            let totalSum = 0;
+
+            Object.keys(orderQuantities).forEach(id => {
+                const qty = orderQuantities[id];
+                if (qty > 0) {
+                    const prod = PRODUCTS.find(p => p.id === id);
+                    if (prod) {
+                        hasItems = true;
+                        const itemSum = prod.price * qty;
+                        totalSum += itemSum;
+                        orderText += `• *${prod.name}* (${prod.pack}) - כמות: *${qty}* | מחיר: ${prod.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
+                    }
+                }
+            });
+
+            if (!hasItems) {
+                alert('אנא בחר לפחות מוצר אחד להזמנה (שנה כמויות מעל 0)');
+                return;
+            }
+
+            orderText += `\n💰 *סכום כולל לתשלום: ${totalSum} ₪*`;
+
+            const waText = encodeURIComponent(orderText.replace(/\\n/g, '\n'));
+            const waLink = `https://wa.me/972505178445?text=${waText}`;
+            
+            // Open in new tab
+            window.open(waLink, '_blank');
+        }
+    </script>
+</body>
+</html>
