@@ -60,7 +60,7 @@
         }
 
         body {
-            background: #f7f5f0 url('assets/studio_bg.jpg') no-repeat center center fixed;
+            background: #ffffff url('assets/fresh_studio_bg.jpg') no-repeat center right fixed;
             background-size: cover;
             color: var(--text-main);
             font-family: var(--font-main);
@@ -221,7 +221,7 @@
             left: 0;
             width: 100%;
             height: 70px;
-            background: rgba(247, 245, 240, 0.88);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(10, 25, 49, 0.08);
@@ -451,7 +451,19 @@
             z-index: 1;
         }
 
-        .hero::before, .hero::after {
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.82) 45%, rgba(255, 255, 255, 0.15) 100%);
+            z-index: -1;
+            display: block !important;
+        }
+
+        .hero::after {
             display: none;
         }
 
@@ -2994,6 +3006,22 @@
                 text-decoration: none !important;
                 z-index: 1 !important;
             }
+            .card-badge-tag {
+                position: absolute !important;
+                top: 12px !important;
+                right: 12px !important;
+                background: rgba(10, 25, 49, 0.78) !important;
+                backdrop-filter: blur(10px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.25) !important;
+                color: #ffffff !important;
+                font-size: 0.72rem !important;
+                font-weight: 700 !important;
+                padding: 0.25rem 0.75rem !important;
+                border-radius: 50px !important;
+                z-index: 4 !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+                pointer-events: none !important;
+            }
 
             .portals-grid .portal-card::before {
                 content: '' !important;
@@ -3764,6 +3792,7 @@
                 </button>
                 <div class="portals-grid portals-slider" id="portals-grid">
                 <div class="portal-card" data-portal="all" onclick="filterPortal('all', this)">
+                    <div class="card-badge-tag">🔥 הכי נמכר</div>
                     <div class="portal-icon"><i class="fa-solid fa-border-all"></i></div>
                     <div>
                         <div class="portal-title">כל המוצרים</div>
@@ -3772,6 +3801,7 @@
                     <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
                 </div>
                 <div class="portal-card" data-portal="institution" onclick="filterPortal('institution', this)">
+                    <div class="card-badge-tag">⚡ אספקה למוסדות</div>
                     <div class="portal-icon"><i class="fa-solid fa-building-columns"></i></div>
                     <div>
                         <div class="portal-title">למוסד</div>
@@ -3780,6 +3810,7 @@
                     <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
                 </div>
                 <div class="portal-card" data-portal="home" onclick="filterPortal('home', this)">
+                    <div class="card-badge-tag">✨ מוצרי פרימיום</div>
                     <div class="portal-icon"><i class="fa-solid fa-house-chimney"></i></div>
                     <div>
                         <div class="portal-title">לבית</div>
@@ -3788,6 +3819,7 @@
                     <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
                 </div>
                 <div class="portal-card" data-portal="bb" onclick="filterPortal('bb', this)">
+                    <div class="card-badge-tag">🏆 אירוח וצימרים</div>
                     <div class="portal-icon"><i class="fa-solid fa-hotel"></i></div>
                     <div>
                         <div class="portal-title">לצימרים</div>
@@ -3796,6 +3828,7 @@
                     <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
                 </div>
                 <div class="portal-card" data-portal="office" onclick="filterPortal('office', this)">
+                    <div class="card-badge-tag">💼 ציוד משרדי</div>
                     <div class="portal-icon"><i class="fa-solid fa-briefcase"></i></div>
                     <div>
                         <div class="portal-title">למשרד</div>
