@@ -220,9 +220,9 @@
             left: 0;
             width: 100%;
             height: 80px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
             display: flex;
             align-items: center;
@@ -230,6 +230,47 @@
             padding: 0 4rem;
             z-index: 1000;
             transition: var(--transition-smooth);
+            gap: 2rem;
+        }
+
+        /* Center Nav Links */
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+        .header-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-family: var(--font-main);
+        }
+        .header-nav-link:hover {
+            background: #f1f5f9;
+            color: var(--color-blue);
+        }
+        .header-nav-link.cta {
+            background: var(--color-blue);
+            color: #ffffff;
+            padding: 0.45rem 1.2rem;
+        }
+        .header-nav-link.cta:hover {
+            background: #0066cc;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 133, 255, 0.3);
         }
 
         header.scrolled {
@@ -2747,19 +2788,34 @@
             /* Clean & Spacious Hero Section (Desktop) */
             .hero {
                 height: auto !important;
-                min-height: 290px !important;
+                min-height: 340px !important;
                 margin-top: 80px !important;
                 display: flex !important;
                 align-items: center !important;
-                padding: 2.2rem 5.5rem !important;
+                padding: 2.5rem 5.5rem !important;
             }
             .hero-content {
                 padding: 0 !important;
-                width: 65% !important;
+                width: 70% !important;
                 display: flex !important;
                 flex-direction: column !important;
-                gap: 1.2rem !important;
+                gap: 1rem !important;
                 text-align: right !important;
+            }
+            /* Hero Badge Pill */
+            .hero-badge-pill {
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 0.4rem !important;
+                background: rgba(0, 229, 255, 0.12) !important;
+                border: 1px solid rgba(0, 229, 255, 0.3) !important;
+                border-radius: 50px !important;
+                color: rgba(200, 245, 255, 0.95) !important;
+                font-size: 0.8rem !important;
+                font-weight: 600 !important;
+                padding: 0.3rem 1rem !important;
+                width: fit-content !important;
+                letter-spacing: 0.02em !important;
             }
             .hero-title {
                 font-size: 2.5rem !important;
@@ -2767,6 +2823,14 @@
                 margin: 0 !important;
                 font-weight: 900 !important;
                 text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+            }
+            .hero-subtitle {
+                font-size: 1rem !important;
+                color: rgba(255, 255, 255, 0.78) !important;
+                line-height: 1.6 !important;
+                margin: 0 !important;
+                max-width: 560px !important;
+                font-weight: 400 !important;
             }
             
             /* Beautiful search input inside Hero */
@@ -3168,6 +3232,17 @@
                 height: 42px !important;
                 font-size: 0.85rem !important;
                 padding: 0 1rem !important;
+            }
+
+            /* Hide desktop-only elements on mobile */
+            .header-nav {
+                display: none !important;
+            }
+            .hero-badge-pill {
+                display: none !important;
+            }
+            .hero-subtitle {
+                display: none !important;
             }
 
             /* Hide the desktop tabs bar entirely on mobile */
@@ -3587,6 +3662,16 @@
             <div class="logo-tagline">למוסד • לבית • למשרד</div>
         </a>
 
+        <!-- Center Nav Links -->
+        <nav class="header-nav">
+            <button class="header-nav-link" onclick="openLegalDoc('about')">מי אנחנו</button>
+            <a href="tel:050-5178445" class="header-nav-link">צרו קשר</a>
+            <button class="header-nav-link cta" onclick="toggleQuickOrderMode()">
+                <i class="fa-solid fa-file-invoice"></i>
+                הזמנה מהירה
+            </button>
+        </nav>
+
         <div class="header-utils">
             <!-- Cart Trigger Button -->
             <button class="cart-btn" onclick="toggleCart(true)">
@@ -3601,11 +3686,13 @@
         <canvas id="hero-canvas"></canvas>
         <div class="hero-content">
             
-            <h1 class="hero-title">אספקה מקצועית למוסד, לבית ולמשרד</h1>
+            <div class="hero-badge-pill">🏭 ספק מוסמך • מוצרים מובילים • משלוח מהיר</div>
+            <h1 class="hero-title">אספקה מקצועית<br><span>למוסד, לבית ולמשרד</span></h1>
+            <p class="hero-subtitle">חומרי ניקוי, נייר וניגוב, כלים חד-פעמיים וציוד משרדי — הכל במקום אחד, בכמויות גדולות, במחירים סיטונאיים.</p>
             
             <!-- Branded Search Bar inside Hero -->
             <div class="hero-search-wrapper">
-                <input type="text" id="catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי, ציוד משרדי ועוד...">
+                <input type="text" id="catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי...">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
             
@@ -3621,7 +3708,7 @@
                 </button>
                 <button class="hero-btn secondary-btn" onclick="window.location.href='tel:050-5178445'" title="צרו קשר">
                     <i class="fa-solid fa-phone"></i>
-                    <span>צרו קשר</span>
+                    <span>050-5178445</span>
                 </button>
             </div>
         </div>
