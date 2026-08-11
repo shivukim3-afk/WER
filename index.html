@@ -3789,8 +3789,8 @@
             .sticky-bar-item.whatsapp {
                 color: #25D366 !important;
             }
-            .sticky-bar-item.cart {
-                color: var(--color-blue) !important;
+            .sticky-bar-item.fast-order {
+                color: #0284c7 !important;
             }
             body {
                 padding-bottom: 75px !important;
@@ -9476,12 +9476,9 @@
             <i class="fa-brands fa-whatsapp"></i>
             <span>הזמנה בוואטסאפ</span>
         </a>
-        <div class="sticky-bar-item cart" onclick="toggleCart(true)">
-            <div class="cart-icon-wrapper" style="position: relative;">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="cart-count-badge" id="mobile-sticky-cart-count">0</span>
-            </div>
-            <span>סל הקניות</span>
+        <div class="sticky-bar-item fast-order" onclick="switchMode('quick'); window.scrollTo({top: 0, behavior: 'smooth'});">
+            <i class="fa-solid fa-bolt"></i>
+            <span>הזמנה מהירה</span>
         </div>
     </div>
 
