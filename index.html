@@ -1549,28 +1549,29 @@
                 box-sizing: border-box !important;
             }
             .portals-grid {
-                display: grid !important;
-                grid-template-columns: repeat(2, 1fr) !important;
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+                -webkit-overflow-scrolling: touch !important;
                 gap: 0.8rem !important;
+                padding: 0.2rem 0.2rem 0.8rem 0.2rem !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
-                padding: 0 !important;
-                overflow: visible !important;
             }
-            .portal-card[data-portal="all"],
-            .portal-card[data-desktop-category="all"] {
-                grid-column: span 2 !important;
-            }
-            .portal-card {
-                width: 100% !important;
+            .portals-grid .portal-card {
+                flex: 0 0 230px !important;
+                max-width: 230px !important;
+                width: 230px !important;
+                height: 150px !important;
+                min-height: 150px !important;
+                scroll-snap-align: start !important;
                 box-sizing: border-box !important;
                 padding: 1rem !important;
                 flex-direction: column !important;
                 align-items: center !important;
                 text-align: center !important;
                 gap: 0.5rem !important;
-                height: 135px !important;
-                min-height: 135px !important;
             }
             .portal-icon {
                 width: 44px !important;
@@ -3317,21 +3318,13 @@
                 display: none !important;
             }
 
-            /* Style the desktop tabs bar for mobile views */
+            /* Hide mode-tabs on mobile per user request */
             .mode-tabs {
-                display: flex !important;
-                flex-direction: row !important;
-                gap: 0.5rem !important;
-                margin-top: 1rem !important;
-                margin-bottom: 1.5rem !important;
-                width: 100% !important;
+                display: none !important;
             }
-            .tab-btn {
-                flex: 1 !important;
-                justify-content: center !important;
-                font-size: 0.88rem !important;
-                padding: 0.6rem !important;
-                white-space: nowrap !important;
+            /* Hide slider arrows on mobile */
+            .slider-arrow {
+                display: none !important;
             }
 
             /* Mobile Home Extra Banners style (Force flex vertically centered overlay inside image) */
@@ -7199,13 +7192,10 @@
             
             /* Mode tabs */
             .mode-tabs {
-                flex-direction: column !important;
-                gap: 0.5rem !important;
+                display: none !important;
             }
-            .tab-btn {
-                justify-content: center !important;
-                font-size: 0.9rem !important;
-                padding: 0.7rem !important;
+            .slider-arrow {
+                display: none !important;
             }
             
             /* Portals grid (main categories) */
