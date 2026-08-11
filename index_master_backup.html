@@ -5007,97 +5007,39 @@
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
             const scrollAmount = 185;
-            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-            const currentScroll = Math.abs(pGrid.scrollLeft);
-            
-            if (dir === 'right') {
-                if (currentScroll <= 15) {
-                    pGrid.scrollTo({ left: -maxScroll, behavior: 'smooth' });
-                } else {
-                    pGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                }
-            } else {
-                if (currentScroll >= maxScroll - 25) {
-                    pGrid.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    pGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                }
-            }
+            pGrid.scrollBy({
+                left: dir === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function scrollToCatDot(idx) {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const cardWidth = 178;
-            pGrid.scrollTo({
-                left: -(idx * cardWidth),
-                behavior: 'smooth'
-            });
-        }
-
-        // Mobile Infinite Bidirectional Swiper Setup
-        function setupMobileInfiniteSwiper() {
-            const pGrid = document.getElementById('portals-grid');
-            if (!pGrid || window.innerWidth > 600) return;
-            if (pGrid.getAttribute('data-infinite-initialized') === 'true') return;
-            
-            const originalCards = Array.from(pGrid.querySelectorAll('.portal-card'));
-            if (originalCards.length < 2) return;
-            
-            // Clone last 2 cards to prepend, and first 2 cards to append
-            const cloneStart = originalCards.slice(-2).map(c => {
-                const clone = c.cloneNode(true);
-                clone.classList.add('clone-card');
-                return clone;
-            });
-            const cloneEnd = originalCards.slice(0, 2).map(c => {
-                const clone = c.cloneNode(true);
-                clone.classList.add('clone-card');
-                return clone;
-            });
-            
-            cloneStart.reverse().forEach(clone => pGrid.insertBefore(clone, pGrid.firstChild));
-            cloneEnd.forEach(clone => pGrid.appendChild(clone));
-            
-            pGrid.setAttribute('data-infinite-initialized', 'true');
-            
-            // Center the initial view on "כל המוצרים" with items on both left and right
-            requestAnimationFrame(() => {
-                const cardWidth = 178;
-                pGrid.scrollLeft = -(cardWidth * 2);
-            });
-
-            // Boundary jump listener for endless infinite loop
-            pGrid.addEventListener('scroll', () => {
-                const cardWidth = 178;
-                const totalOriginalWidth = cardWidth * originalCards.length;
-                const currentScroll = Math.abs(pGrid.scrollLeft);
-                
-                if (currentScroll >= totalOriginalWidth + cardWidth) {
-                    pGrid.style.scrollBehavior = 'auto';
-                    pGrid.scrollLeft = -(cardWidth * 2);
-                    pGrid.style.scrollBehavior = 'smooth';
-                } else if (currentScroll <= 10) {
-                    pGrid.style.scrollBehavior = 'auto';
-                    pGrid.scrollLeft = -totalOriginalWidth;
-                    pGrid.style.scrollBehavior = 'smooth';
-                }
-            }, { passive: true });
-        }
-
-        // Auto-fade mobile swipe hint badge and initialize infinite swiper
-        document.addEventListener('DOMContentLoaded', () => {
-            setupMobileInfiniteSwiper();
-            const pGrid = document.getElementById('portals-grid');
-            const hint = document.getElementById('mobile-swipe-hint');
-            if (pGrid && hint) {
-                const hideHint = () => {
-                    hint.style.opacity = '0';
-                    hint.style.pointerEvents = 'none';
-                };
-                pGrid.addEventListener('scroll', hideHint, { passive: true, once: true });
-                pGrid.addEventListener('touchstart', hideHint, { passive: true, once: true });
+            const cards = pGrid.querySelectorAll('.portal-card');
+            if (cards[idx]) {
+                cards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
+        }
+
+        // Active Dot Sync on Mobile Category Scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const pGrid = document.getElementById('portals-grid');
+            if (!pGrid) return;
+
+            pGrid.addEventListener('scroll', () => {
+                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+                if (maxScroll <= 0) return;
+                
+                const scrollFraction = Math.abs(pGrid.scrollLeft) / maxScroll;
+                const activeIdx = Math.min(4, Math.max(0, Math.round(scrollFraction * 4)));
+                
+                const dots = document.querySelectorAll('#mobile-categories-dots .cat-dot');
+                dots.forEach((dot, i) => {
+                    if (i === activeIdx) dot.classList.add('active');
+                    else dot.classList.remove('active');
+                });
+            }, { passive: true });
         });
 
         function switchMode(mode, btn) {
