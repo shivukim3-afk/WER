@@ -60,12 +60,25 @@
         }
 
         body {
-            background: #ffffff url('assets/fresh_studio_bg.jpg') no-repeat center right fixed;
-            background-size: cover;
+            background: #ffffff;
             color: var(--text-main);
             font-family: var(--font-main);
             overflow-x: hidden;
             line-height: 1.5;
+        }
+
+        .fixed-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -999;
+            pointer-events: none;
+            background: #ffffff url('assets/fresh_studio_bg.jpg') no-repeat center right;
+            background-size: cover;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         /* Custom scrollbar */
@@ -1823,11 +1836,13 @@
                 font-size: 1rem !important;
             }
 
-            /* Custom Mobile Summer Studio Background Image with Parallax Fixed Scroll Effect */
+            /* Dedicated GPU hardware-accelerated fixed background layer (100% frozen, zero scroll jitter/movement) */
             body {
-                background: #ffffff url('assets/mobile_studio_bg.jpg') no-repeat center top fixed !important;
+                background: transparent !important;
+            }
+            .fixed-bg-layer {
+                background: #ffffff url('assets/mobile_studio_bg.jpg') no-repeat center top !important;
                 background-size: cover !important;
-                background-attachment: fixed !important;
             }
 
             /* Remove bottom welcome banner with logo on mobile per user request */
@@ -3800,6 +3815,9 @@
 </style>
 </head>
 <body class="mobile-home-active">
+
+    <!-- HARDWARE ACCELERATED FIXED BACKGROUND LAYER (Zero movement on scroll) -->
+    <div class="fixed-bg-layer" id="fixed-bg-layer"></div>
 
     <!-- CUSTOM MOUSE CURSOR -->
     <div class="custom-cursor" id="custom-cursor"></div>
