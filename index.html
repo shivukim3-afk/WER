@@ -96,8 +96,29 @@
             background: #cbd5e1;
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        /* -------------------------------------------------------------
+           STRICT DESKTOP / MOBILE ISOLATION SYSTEM (Zero Leaks Guaranteed)
+        ------------------------------------------------------------- */
+        @media (min-width: 601px) {
+            .mobile-only,
+            .mobile-branded-hero,
+            .mobile-search-bar-container,
+            .mobile-back-header {
+                display: none !important;
+            }
+            .desktop-only {
+                display: flex !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .desktop-only,
+            .empty-state-banner {
+                display: none !important;
+            }
+            .mobile-only {
+                display: block !important;
+            }
         }
 
         /* -------------------------------------------------------------
@@ -2029,20 +2050,22 @@
             font-size: 1rem;
         }
 
-        .empty-state-banner {
-            width: 100%;
-            height: 400px;
-            background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
-            background-size: cover;
-            border-radius: var(--border-radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-soft);
-            margin: 8rem 0 4rem 0;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
+        @media (min-width: 601px) {
+            .empty-state-banner {
+                width: 100%;
+                height: 400px;
+                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
+                background-size: cover;
+                border-radius: var(--border-radius-lg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: var(--shadow-soft);
+                margin: 2rem 0 4rem 0;
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                position: relative;
+            }
         }
         .empty-state-glass {
             background: rgba(255, 255, 255, 0.85);
@@ -3381,12 +3404,10 @@
                 display: none !important;
             }
 
-            /* Mobile Home Extra Banners style (Force flex vertically centered overlay inside image) */
-            .mobile-home-extra .empty-state-banner {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                margin-bottom: 0.8rem !important;
+            /* Mobile Home Extra Banners style */
+            .mobile-home-extra .empty-state-banner,
+            #view-catalog .empty-state-banner {
+                display: none !important;
             }
             .mobile-home-extra .banner-features-bar {
                 display: flex !important;
@@ -3407,12 +3428,9 @@
                 white-space: nowrap !important;
             }
             
-            /* Ensure correct visual layout of banners on mobile */
+            /* Ensure empty-state-banner is hidden on mobile */
             #view-catalog .empty-state-banner {
-                display: flex !important;
-                height: 180px !important;
-                margin-top: 0.5rem !important;
-                margin-bottom: 1rem !important;
+                display: none !important;
             }
             #view-catalog .banner-features-bar {
                 display: flex !important;
@@ -5142,7 +5160,8 @@
 
             // Show a friendly visual guide if no portal (category) is active and no sub-category or search is entered
             if (!activePortal && (!activeSubCategory || activeSubCategory === 'all' || activeSubCategory === '') && !searchQuery) {
-                container.innerHTML = `
+                const isMobile = window.innerWidth <= 600;
+                const desktopBannerHtml = isMobile ? '' : `
                     <div class="empty-state-banner">
                         <div class="banner-logo-container">
                             <div class="banner-logo-main">
@@ -5152,6 +5171,9 @@
                             <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
                         </div>
                     </div>
+                `;
+                container.innerHTML = `
+                    ${desktopBannerHtml}
                     <div class="banner-features-bar">
                         <div class="feature-item">
                             <i class="fa-solid fa-truck-fast"></i>
@@ -7523,8 +7545,7 @@
 
             /* Mobile overrides for Empty State logo text sizes and VAT notice alert box */
             .empty-state-banner {
-                height: 250px !important;
-                margin: 1.5rem 0 2.5rem 0 !important;
+                display: none !important;
             }
             .banner-logo-text {
                 font-size: 3.2rem !important;
@@ -7673,20 +7694,22 @@
             font-size: 1rem;
         }
 
-        .empty-state-banner {
-            width: 100%;
-            height: 400px;
-            background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
-            background-size: cover;
-            border-radius: var(--border-radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-soft);
-            margin: 2rem 0 4rem 0;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
+        @media (min-width: 601px) {
+            .empty-state-banner {
+                width: 100%;
+                height: 400px;
+                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
+                background-size: cover;
+                border-radius: var(--border-radius-lg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: var(--shadow-soft);
+                margin: 2rem 0 4rem 0;
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                position: relative;
+            }
         }
         .empty-state-glass {
             background: rgba(255, 255, 255, 0.85);
@@ -7785,6 +7808,13 @@
             position: relative;
             max-width: 100%;
             animation: fade-in-logo 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Final strict mobile isolation rule to prevent any style leak overrides */
+        @media (max-width: 600px) {
+            .empty-state-banner {
+                display: none !important;
+            }
         }
         .feature-item {
             display: flex;
