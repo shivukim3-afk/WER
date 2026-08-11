@@ -1823,16 +1823,22 @@
                 font-size: 1rem !important;
             }
 
-            /* Lock background image on mobile scroll to prevent jumpy movement */
+            /* Custom Mobile Summer Studio Background Image with Parallax Fixed Scroll Effect */
             body {
-                background-attachment: scroll !important;
-                background-position: top center !important;
+                background: #ffffff url('assets/mobile_studio_bg.jpg') no-repeat center top fixed !important;
                 background-size: cover !important;
+                background-attachment: fixed !important;
             }
 
             /* Remove bottom welcome banner with logo on mobile per user request */
             .empty-state-banner {
                 display: none !important;
+            }
+
+            /* Push the 3-feature white trust bar down on mobile so it is only visible on scroll */
+            .banner-features-bar {
+                margin-top: 4.5rem !important;
+                margin-bottom: 2.5rem !important;
             }
 
             /* Mobile Branded Hero Message */
