@@ -3549,6 +3549,41 @@
             /* ==========================================================================
                STEP 1: MAIN PORTALS GRID (Modified to render 4 categories first in 2x2 grid, then All Products card spanning 2 columns)
                ========================================================================== */
+            /* Mobile Swipe Hint Indicator (Visually signals horizontal scrolling to customer) */
+            .mobile-swipe-hint {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.45rem !important;
+                background: rgba(255, 255, 255, 0.88) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                border: 1px solid rgba(0, 133, 255, 0.22) !important;
+                border-radius: 20px !important;
+                padding: 0.3rem 0.85rem !important;
+                margin: 0.2rem auto 0.6rem auto !important;
+                width: max-content !important;
+                color: #0284c7 !important;
+                font-size: 0.78rem !important;
+                font-weight: 700 !important;
+                box-shadow: 0 4px 14px rgba(0, 133, 255, 0.1) !important;
+                animation: pulse-swipe-hint 2s infinite ease-in-out !important;
+                transition: opacity 0.5s ease, transform 0.5s ease !important;
+            }
+            .swipe-hand-icon {
+                animation: hand-swipe-motion 1.8s infinite ease-in-out !important;
+                font-size: 0.85rem !important;
+            }
+            @keyframes pulse-swipe-hint {
+                0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(0, 133, 255, 0.1); }
+                50% { transform: scale(1.04); box-shadow: 0 6px 20px rgba(0, 133, 255, 0.22); }
+            }
+            @keyframes hand-swipe-motion {
+                0%, 100% { transform: translateX(0); }
+                50% { transform: translateX(-6px); }
+            }
+
+            /* Portals Grid Swiper - Scrollable smoothly in BOTH directions */
             .portals-grid {
                 display: flex !important;
                 flex-direction: row !important;
@@ -3557,16 +3592,24 @@
                 overflow-x: auto !important;
                 width: auto !important;
                 scrollbar-width: none !important;
-                padding: 10px 0 !important;
+                padding: 10px 1rem !important;
                 margin: 0 -1rem !important;
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-                -webkit-overflow-scrolling: touch;
+                -webkit-overflow-scrolling: touch !important;
+                scroll-snap-type: x mandatory !important;
+                scroll-behavior: smooth !important;
+                animation: swipe-nudge-anim 1.4s ease-out 0.6s 1 !important;
+            }
+            @keyframes swipe-nudge-anim {
+                0% { transform: translateX(0); }
+                30% { transform: translateX(-35px); }
+                60% { transform: translateX(18px); }
+                100% { transform: translateX(0); }
             }
             .portals-grid::-webkit-scrollbar {
                 display: none !important;
             }
             .portal-card {
+                scroll-snap-align: center !important;
                 flex: 0 0 170px !important; /* Keep aspect ratio close to 4:3 desktop */
                 height: 128px !important;
                 padding: 1rem !important;
@@ -3982,6 +4025,11 @@
             </div>
             <!-- PORTAL CATEGORY GATEWAYS (Wrapped with Slider Controls for Desktop) -->
             <div class="portals-grid-wrapper">
+                <div class="mobile-swipe-hint" id="mobile-swipe-hint">
+                    <i class="fa-solid fa-arrows-left-right"></i>
+                    <span>החלק לצדדים בקטגוריות</span>
+                    <i class="fa-solid fa-hand-pointer swipe-hand-icon"></i>
+                </div>
                 <button class="slider-arrow prev" onclick="scrollPortals('prev')" aria-label="הקודם">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -4872,6 +4920,20 @@
         let activePortal = '';
         let activeSubCategory = '';
         let searchQuery = '';
+
+        // Auto-fade mobile swipe hint badge when user interacts with portals-grid
+        document.addEventListener('DOMContentLoaded', () => {
+            const pGrid = document.getElementById('portals-grid');
+            const hint = document.getElementById('mobile-swipe-hint');
+            if (pGrid && hint) {
+                const hideHint = () => {
+                    hint.style.opacity = '0';
+                    hint.style.pointerEvents = 'none';
+                };
+                pGrid.addEventListener('scroll', hideHint, { passive: true, once: true });
+                pGrid.addEventListener('touchstart', hideHint, { passive: true, once: true });
+            }
+        });
 
         function switchMode(mode, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
