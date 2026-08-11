@@ -1850,19 +1850,22 @@
                 display: none !important;
             }
 
-            /* Push the 3-feature white trust bar down on mobile so it is only visible on scroll */
+            /* Push the 3-feature white trust bar far down on mobile so it is ONLY visible when scrolling down */
             .banner-features-bar {
-                margin-top: 4.5rem !important;
-                margin-bottom: 2.5rem !important;
+                margin-top: 14rem !important;
+                margin-bottom: 3rem !important;
             }
 
-            /* Mobile Branded Hero Message */
+            /* Mobile Branded Hero Message - Locked in place with fixed background */
             .mobile-branded-hero {
                 display: block !important;
                 text-align: center !important;
-                margin: 1.2rem 0 0.8rem 0 !important;
+                margin: 0.8rem 0 1.2rem 0 !important;
                 padding: 0 0.5rem !important;
                 direction: rtl !important;
+                position: sticky !important;
+                top: 75px !important;
+                z-index: 2 !important;
             }
             .mobile-hero-title {
                 font-size: 1.35rem !important;
