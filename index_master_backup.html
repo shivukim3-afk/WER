@@ -1508,10 +1508,19 @@
                 display: none !important;
             }
             
-            /* Header adjustments */
+            /* Header locked in place on mobile (100% fixed at top) */
             header {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 9999 !important;
                 padding: 0 1rem !important;
                 height: 70px !important;
+                background: rgba(255, 255, 255, 0.96) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                box-shadow: 0 2px 12px rgba(10, 25, 49, 0.08) !important;
             }
             header.scrolled {
                 height: 60px !important;
@@ -3639,7 +3648,7 @@
                 box-shadow: 0 2px 8px rgba(0, 133, 255, 0.4) !important;
             }
 
-            /* Portals Grid Swiper - Ultra-smooth 60fps continuous momentum scrolling */
+            /* Portals Grid Swiper - 100% free-flowing silky smooth touch swiping in both directions */
             .portals-grid {
                 display: flex !important;
                 flex-direction: row !important;
@@ -3651,10 +3660,9 @@
                 padding: 10px 1rem !important;
                 margin: 0 -1rem !important;
                 -webkit-overflow-scrolling: touch !important;
-                scroll-snap-type: x proximity !important;
+                scroll-snap-type: none !important;
                 scroll-behavior: smooth !important;
                 overscroll-behavior-x: contain !important;
-                animation: swipe-nudge-anim 1.4s ease-out 0.6s 1 !important;
             }
             @keyframes swipe-nudge-anim {
                 0% { transform: translateX(0); }
@@ -7425,10 +7433,19 @@
                 display: none !important;
             }
             
-            /* Header adjustments */
+            /* Header locked in place on mobile (100% fixed at top) */
             header {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 9999 !important;
                 padding: 0 1rem !important;
                 height: 70px !important;
+                background: rgba(255, 255, 255, 0.96) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                box-shadow: 0 2px 12px rgba(10, 25, 49, 0.08) !important;
             }
             header.scrolled {
                 height: 60px !important;
