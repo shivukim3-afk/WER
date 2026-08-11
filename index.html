@@ -3639,7 +3639,7 @@
                 box-shadow: 0 2px 8px rgba(0, 133, 255, 0.4) !important;
             }
 
-            /* Portals Grid Swiper - Scrollable smoothly in BOTH directions */
+            /* Portals Grid Swiper - Ultra-smooth 60fps continuous momentum scrolling */
             .portals-grid {
                 display: flex !important;
                 flex-direction: row !important;
@@ -3651,8 +3651,9 @@
                 padding: 10px 1rem !important;
                 margin: 0 -1rem !important;
                 -webkit-overflow-scrolling: touch !important;
-                scroll-snap-type: x mandatory !important;
+                scroll-snap-type: x proximity !important;
                 scroll-behavior: smooth !important;
+                overscroll-behavior-x: contain !important;
                 animation: swipe-nudge-anim 1.4s ease-out 0.6s 1 !important;
             }
             @keyframes swipe-nudge-anim {
@@ -4997,11 +4998,23 @@
         function scrollMobileCategories(dir) {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const scrollAmount = 180;
-            pGrid.scrollBy({
-                left: dir === 'right' ? scrollAmount : -scrollAmount,
-                behavior: 'smooth'
-            });
+            const scrollAmount = 185;
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            const currentScroll = Math.abs(pGrid.scrollLeft);
+            
+            if (dir === 'right') {
+                if (currentScroll <= 15) {
+                    pGrid.scrollTo({ left: -maxScroll, behavior: 'smooth' });
+                } else {
+                    pGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            } else {
+                if (currentScroll >= maxScroll - 25) {
+                    pGrid.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    pGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                }
+            }
         }
 
         function scrollToCatDot(idx) {
