@@ -5143,6 +5143,15 @@
             // Show a friendly visual guide if no portal (category) is active and no sub-category or search is entered
             if (!activePortal && (!activeSubCategory || activeSubCategory === 'all' || activeSubCategory === '') && !searchQuery) {
                 container.innerHTML = `
+                    <div class="empty-state-banner">
+                        <div class="banner-logo-container">
+                            <div class="banner-logo-main">
+                                <span class="banner-logo-text">שיווקים</span>
+                                <span class="banner-logo-arrow"></span>
+                            </div>
+                            <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
+                        </div>
+                    </div>
                     <div class="banner-features-bar">
                         <div class="feature-item">
                             <i class="fa-solid fa-truck-fast"></i>
