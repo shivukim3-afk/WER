@@ -1531,31 +1531,46 @@
                 font-size: 0.8rem !important;
             }
             
-            /* Mode tabs */
+            /* Hide top mode-tabs on mobile per user request */
             .mode-tabs {
-                flex-direction: column !important;
-                gap: 0.5rem !important;
+                display: none !important;
             }
-            .tab-btn {
-                justify-content: center !important;
-                font-size: 0.9rem !important;
-                padding: 0.7rem !important;
+
+            /* Hide slider arrows on mobile to prevent clutter and clipping */
+            .slider-arrow {
+                display: none !important;
             }
-            
-            /* Portals grid (main categories) */
+
+            /* Portals grid (main categories) on mobile */
+            .portals-grid-wrapper {
+                padding: 0 !important;
+                margin: 0.5rem 0 1.5rem 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
             .portals-grid {
+                display: grid !important;
                 grid-template-columns: repeat(2, 1fr) !important;
                 gap: 0.8rem !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 0 !important;
+                overflow: visible !important;
             }
-            .portal-card[data-portal="all"] {
+            .portal-card[data-portal="all"],
+            .portal-card[data-desktop-category="all"] {
                 grid-column: span 2 !important;
             }
             .portal-card {
+                width: 100% !important;
+                box-sizing: border-box !important;
                 padding: 1rem !important;
                 flex-direction: column !important;
                 align-items: center !important;
                 text-align: center !important;
                 gap: 0.5rem !important;
+                height: 135px !important;
+                min-height: 135px !important;
             }
             .portal-icon {
                 width: 44px !important;
