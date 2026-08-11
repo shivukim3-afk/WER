@@ -1823,17 +1823,42 @@
                 font-size: 1rem !important;
             }
 
-            /* Mobile overrides for Empty State logo text sizes and VAT notice alert box */
+            /* Lock background image on mobile scroll to prevent jumpy movement */
+            body {
+                background-attachment: scroll !important;
+                background-position: top center !important;
+                background-size: cover !important;
+            }
+
+            /* Remove bottom welcome banner with logo on mobile per user request */
             .empty-state-banner {
-                height: 250px !important;
-                margin: 1.5rem 0 2.5rem 0 !important;
+                display: none !important;
             }
-            .banner-logo-text {
-                font-size: 3.2rem !important;
+
+            /* Mobile Branded Hero Message */
+            .mobile-branded-hero {
+                display: block !important;
+                text-align: center !important;
+                margin: 1.2rem 0 0.8rem 0 !important;
+                padding: 0 0.5rem !important;
+                direction: rtl !important;
             }
-            .banner-logo-sub {
-                font-size: 1rem !important;
-                letter-spacing: 1px !important;
+            .mobile-hero-title {
+                font-size: 1.35rem !important;
+                font-weight: 900 !important;
+                color: var(--color-navy) !important;
+                margin-bottom: 0.35rem !important;
+                line-height: 1.25 !important;
+            }
+            .mobile-hero-title span {
+                color: var(--color-blue) !important;
+            }
+            .mobile-hero-subtitle {
+                font-size: 0.82rem !important;
+                color: var(--text-muted) !important;
+                font-weight: 600 !important;
+                line-height: 1.4 !important;
+                margin: 0 !important;
             }
             .vat-notice-box {
                 font-size: 0.8rem !important;
@@ -3897,10 +3922,20 @@
                 </button>
             </div>
 
-            <!-- SEARCH BAR FOR MOBILE VIEW (Moved here with compact placeholder and custom class to prevent display:none override) -->
+            <!-- SEARCH BAR FOR MOBILE VIEW WITH BRANDED HERO MESSAGE -->
             <div class="mobile-search-bar-container">
+                <!-- MOBILE BRANDED HERO MESSAGE -->
+                <div class="mobile-branded-hero">
+                    <h2 class="mobile-hero-title">
+                        אספקה מקצועית <span>למוסד, לבית ולמשרד</span>
+                    </h2>
+                    <p class="mobile-hero-subtitle">
+                        חומרי ניקוי, מוצרי נייר, חד-פעמי וציוד משרדי — במחירים סיטונאיים
+                    </p>
+                </div>
+
                 <div class="mobile-search-wrapper" id="mobile-search-wrapper" style="width: 100%; max-width: 100%; margin: 0.5rem 0 1.2rem 0; position: relative;">
-                    <input type="text" id="mobile-catalog-search" placeholder="חיפוש מוצרים" style="width: 100%; height: 46px; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 0 1rem 0 3rem; font-family: var(--font-main); font-size: 16px; background: #ffffff; outline: none; transition: var(--transition-smooth); box-shadow: var(--shadow-soft);">
+                    <input type="text" id="mobile-catalog-search" placeholder="חיפוש מוצרים..." style="width: 100%; height: 46px; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 0 1rem 0 3rem; font-family: var(--font-main); font-size: 16px; background: #ffffff; outline: none; transition: var(--transition-smooth); box-shadow: var(--shadow-soft);">
                     <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
                 </div>
             </div>
