@@ -4921,8 +4921,59 @@
         let activeSubCategory = '';
         let searchQuery = '';
 
-        // Auto-fade mobile swipe hint badge when user interacts with portals-grid
+        // Mobile Infinite Bidirectional Swiper Setup
+        function setupMobileInfiniteSwiper() {
+            const pGrid = document.getElementById('portals-grid');
+            if (!pGrid || window.innerWidth > 600) return;
+            if (pGrid.getAttribute('data-infinite-initialized') === 'true') return;
+            
+            const originalCards = Array.from(pGrid.querySelectorAll('.portal-card'));
+            if (originalCards.length < 2) return;
+            
+            // Clone last 2 cards to prepend, and first 2 cards to append
+            const cloneStart = originalCards.slice(-2).map(c => {
+                const clone = c.cloneNode(true);
+                clone.classList.add('clone-card');
+                return clone;
+            });
+            const cloneEnd = originalCards.slice(0, 2).map(c => {
+                const clone = c.cloneNode(true);
+                clone.classList.add('clone-card');
+                return clone;
+            });
+            
+            cloneStart.reverse().forEach(clone => pGrid.insertBefore(clone, pGrid.firstChild));
+            cloneEnd.forEach(clone => pGrid.appendChild(clone));
+            
+            pGrid.setAttribute('data-infinite-initialized', 'true');
+            
+            // Center the initial view on "כל המוצרים" with items on both left and right
+            requestAnimationFrame(() => {
+                const cardWidth = 178;
+                pGrid.scrollLeft = -(cardWidth * 2);
+            });
+
+            // Boundary jump listener for endless infinite loop
+            pGrid.addEventListener('scroll', () => {
+                const cardWidth = 178;
+                const totalOriginalWidth = cardWidth * originalCards.length;
+                const currentScroll = Math.abs(pGrid.scrollLeft);
+                
+                if (currentScroll >= totalOriginalWidth + cardWidth) {
+                    pGrid.style.scrollBehavior = 'auto';
+                    pGrid.scrollLeft = -(cardWidth * 2);
+                    pGrid.style.scrollBehavior = 'smooth';
+                } else if (currentScroll <= 10) {
+                    pGrid.style.scrollBehavior = 'auto';
+                    pGrid.scrollLeft = -totalOriginalWidth;
+                    pGrid.style.scrollBehavior = 'smooth';
+                }
+            }, { passive: true });
+        }
+
+        // Auto-fade mobile swipe hint badge and initialize infinite swiper
         document.addEventListener('DOMContentLoaded', () => {
+            setupMobileInfiniteSwiper();
             const pGrid = document.getElementById('portals-grid');
             const hint = document.getElementById('mobile-swipe-hint');
             if (pGrid && hint) {
