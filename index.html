@@ -9688,11 +9688,7 @@
         }
 
         function handlePortalCardClick(portalId, el) {
-            if (window.innerWidth <= 600) {
-                filterPortal(portalId, el);
-            } else {
-                selectDesktopCategory(portalId, el);
-            }
+            filterPortal(portalId, el);
         }
 
         function toggleQuickOrderMode() {
