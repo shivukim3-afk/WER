@@ -9361,7 +9361,7 @@
             if (hash === '#home') {
                 if (isMobile) {
                     // Mobile Home View: Show Catalog View with Welcome State (no selection squares)
-                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active');
+                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
                     document.body.classList.add('mobile-catalog-active');
                     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
                     const activeView = document.getElementById('view-catalog');
@@ -9369,6 +9369,13 @@
                     
                     activePortal = '';
                     activeSubCategory = '';
+                    
+                    // Restore slider wrapper and dots
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = '';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = '';
+
                     document.getElementById('portals-grid').style.display = 'flex';
                     document.getElementById('sub-portals-grid').style.display = 'none';
                     document.getElementById('active-portal-header').style.display = 'none';
@@ -9405,7 +9412,7 @@
             else if (hash === '#catalog') {
                 switchMode('catalog');
                 if (isMobile) {
-                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active');
+                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
                     document.body.classList.add('mobile-catalog-active');
                     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
                     const activeView = document.getElementById('view-catalog');
@@ -9413,6 +9420,13 @@
                     
                     activePortal = '';
                     activeSubCategory = '';
+                    
+                    // Restore slider wrapper and dots
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = '';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = '';
+
                     document.getElementById('portals-grid').style.display = 'flex';
                     document.getElementById('sub-portals-grid').style.display = 'none';
                     document.getElementById('active-portal-header').style.display = 'none';
