@@ -4096,10 +4096,10 @@
                     <i class="fa-solid fa-hand-pointer swipe-hand-icon"></i>
                 </div>
                 <!-- Mobile Touch Navigation Arrows (< & >) -->
-                <button class="mobile-cat-arrow right" onclick="scrollMobileCategories('right')" aria-label="הקטגוריה הבאה">
+                <button class="mobile-cat-arrow right" onclick="scrollPortals('prev')" aria-label="הקטגוריה הבאה">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
-                <button class="mobile-cat-arrow left" onclick="scrollMobileCategories('left')" aria-label="הקטגוריה הקודמת">
+                <button class="mobile-cat-arrow left" onclick="scrollPortals('next')" aria-label="הקטגוריה הקודמת">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
 
@@ -5002,15 +5002,9 @@
         let activeSubCategory = '';
         let searchQuery = '';
 
-        // Clean, 100% Stable Mobile Category Touch Swiper (Zero Auto-Move)
+        // Mobile Category Touch Scroll Helper Functions (Unified with Desktop Engine)
         function scrollMobileCategories(dir) {
-            const pGrid = document.getElementById('portals-grid');
-            if (!pGrid) return;
-            const scrollAmount = 180;
-            pGrid.scrollBy({
-                left: dir === 'right' ? scrollAmount : -scrollAmount,
-                behavior: 'smooth'
-            });
+            scrollPortals(dir === 'right' ? 'prev' : 'next');
         }
 
         function scrollToCatDot(idx) {
@@ -5022,8 +5016,9 @@
             }
         }
 
-        // Active Dot Sync on Scroll (Passive, Zero Mutation)
+        // Active Dot Sync on Scroll & Infinite Swiper Engine Initialization
         document.addEventListener('DOMContentLoaded', () => {
+            setupInfiniteScroll();
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
 
@@ -8870,6 +8865,60 @@
             }
         };
 
+        function renderPortals() {
+            const portalsGrid = document.getElementById('portals-grid');
+            if (!portalsGrid) return;
+            
+            const catDescs = {
+                tork: "מפיצים ומתקנים מתקדמים",
+                paper: "מוצרי נייר וניגוב",
+                cleaning: "חומרי ניקוי, חיטוי והיגיינה",
+                scents: "מפיצי ריח חשמליים ובישום אוויר",
+                tools: "ציוד ועזרי ניקיון",
+                bags: "שקיות אשפה בכל הגדלים ואשפתונים",
+                disposables: "מוצרים חד-פעמיים",
+                hospitality: "צימרים ומתחמי אירוח",
+                office: "ציוד משרדי בסיסי"
+            };
+            
+            const portalsList = [
+                { id: 'all', name: 'כל המוצרים', desc: 'הקטלוג המלא של שיווקים' }
+            ];
+            Object.keys(CATEGORIES).forEach(catId => {
+                portalsList.push({ id: catId, name: CATEGORIES[catId].name, desc: catDescs[catId] || '' });
+            });
+            
+            const cloneCount = 5;
+            const fullList = [];
+            
+            for (let i = portalsList.length - cloneCount; i < portalsList.length; i++) {
+                fullList.push({ ...portalsList[i] });
+            }
+            portalsList.forEach(p => fullList.push({ ...p }));
+            for (let i = 0; i < cloneCount; i++) {
+                fullList.push({ ...portalsList[i] });
+            }
+            
+            let html = '';
+            fullList.forEach(p => {
+                const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
+                const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
+                html += `
+                    <div class="portal-card" data-portal="${p.id}" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
+                        <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
+                        <div>
+                            <div class="portal-title">${p.name}</div>
+                            <div class="portal-desc">${p.desc}</div>
+                            <div class="portal-action-btn">לקטגוריה</div>
+                        </div>
+                    </div>
+                `;
+            });
+            portalsGrid.innerHTML = html;
+            
+            setTimeout(setupInfiniteScroll, 100);
+        }
+
         // ACCESSIBILITY STATE ENGINE
         let accSettings = {
             contrast: false,
@@ -9240,7 +9289,7 @@
                     const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
                     const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                     html += `
-                        <div class="portal-card" data-desktop-category="${p.id}" onclick="selectDesktopCategory('${p.id}', this)" style="background-image: url('${imgUrl}')">
+                        <div class="portal-card" data-portal="${p.id}" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
                             <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
                             <div>
                                 <div class="portal-title">${p.name}</div>
@@ -9263,16 +9312,30 @@
             
             const cloneCount = 5;
             
+            // Perform dynamic cloning if not already cloned
+            if (!slider.getAttribute('data-infinite-cloned')) {
+                const originalCards = Array.from(slider.querySelectorAll('.portal-card'));
+                if (originalCards.length < 2) return;
+                
+                const prepends = originalCards.slice(-cloneCount).map(c => c.cloneNode(true));
+                const appends = originalCards.slice(0, cloneCount).map(c => c.cloneNode(true));
+                
+                prepends.reverse().forEach(c => slider.insertBefore(c, slider.firstChild));
+                appends.forEach(c => slider.appendChild(c));
+                
+                slider.setAttribute('data-infinite-cloned', 'true');
+                slider.setAttribute('data-original-count', originalCards.length);
+            }
+            
+            const realCount = parseInt(slider.getAttribute('data-original-count')) || 10;
+            
             function getGeometry() {
                 const cards = slider.querySelectorAll('.portal-card');
-                const totalCards = cards.length;
-                const realCount = totalCards - (cloneCount * 2);
-                
                 let cardWidth = 304;
                 if (cards.length > 1) {
                     cardWidth = Math.abs(cards[1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left);
                 }
-                if (cardWidth === 0) cardWidth = 304;
+                if (cardWidth === 0) cardWidth = window.innerWidth <= 600 ? 180 : 304;
                 
                 const totalOriginalWidth = realCount * cardWidth;
                 return { cardWidth, realCount, totalOriginalWidth };
@@ -9281,18 +9344,23 @@
             function centerSlider() {
                 const geom = getGeometry();
                 const viewportWidth = slider.clientWidth || window.innerWidth;
-                const fontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
-                const containerMaxWidth = 1400;
-                const containerPadding = 5.5 * fontSize;
+                const isMobile = window.innerWidth <= 600;
                 
-                const startOffset = (viewportWidth - Math.min(viewportWidth, containerMaxWidth)) / 2 + containerPadding;
+                let startOffset = 0;
+                if (isMobile) {
+                    startOffset = (viewportWidth - geom.cardWidth) / 2;
+                } else {
+                    const fontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
+                    const containerMaxWidth = 1400;
+                    const containerPadding = 5.5 * fontSize;
+                    startOffset = (viewportWidth - Math.min(viewportWidth, containerMaxWidth)) / 2 + containerPadding;
+                }
                 
                 const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl' || window.getComputedStyle(slider).direction === 'rtl';
                 slider.scrollLeft = isRTL ? -(cloneCount * geom.cardWidth - startOffset) : (cloneCount * geom.cardWidth - startOffset);
                 slider.dataset.startOffset = startOffset;
             }
             
-            // Perform initial centering
             centerSlider();
             window.addEventListener('resize', centerSlider);
             
@@ -9317,7 +9385,7 @@
                         slider.scrollLeft += geom.totalOriginalWidth;
                     }
                 }
-            });
+            }, { passive: true });
         }
 
         function scrollPortals(dir) {
@@ -9339,9 +9407,11 @@
             }
         }
 
-        function selectDesktopCategory(catId, btn) {
-            if (typeof isHandlingHashChange !== 'undefined' && !isHandlingHashChange) {
-                updateHash('#catalog/' + catId);
+        function handlePortalCardClick(portalId, el) {
+            if (window.innerWidth <= 600) {
+                filterPortal(portalId, el);
+            } else {
+                selectDesktopCategory(portalId, el);
             }
         }
 
