@@ -1813,51 +1813,124 @@
                 justify-content: flex-end !important;
                 align-items: center !important;
             }
-            .quantity-control {
-                width: 105px !important;
-                height: 34px !important;
-            }
-            .qty-btn {
-                width: 30px !important;
-                height: 30px !important;
-            }
-            
-            .qty-num {
-                font-size: 16px !important;
-            }
             #mobile-search-wrapper {
                 display: block !important;
             }
-            /* Slim price text on mobile (User request) */
-            .product-price {
-                font-size: 1rem !important;
-                font-weight: 700 !important;
+            .product-info {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.5rem !important;
+                align-items: end !important;
+                text-align: right !important;
             }
-            /* Hide package details on mobile (User request) */
+            .product-name {
+                grid-column: 1 / -1 !important;
+                height: auto !important;
+                min-height: 2.6em !important;
+            }
             .product-pack {
+                grid-column: 1 / -1 !important;
                 display: none !important;
             }
-            /* Styling for "מידע ומפרט" pill badge on mobile */
+            .color-swatch-container {
+                grid-column: 1 / -1 !important;
+                margin-bottom: 0.1rem !important;
+            }
+            .product-price-row {
+                display: contents !important;
+            }
+            /* First child of price row is the price div container */
+            .product-price-row > div:first-child {
+                grid-column: 1 / -1 !important;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: baseline !important;
+                justify-content: space-between !important;
+                border-top: 1px dashed #cbd5e1 !important;
+                padding-top: 0.6rem !important;
+                margin-top: 0.2rem !important;
+                width: 100% !important;
+            }
+            .product-price-row > div:first-child .product-price {
+                margin-bottom: 0 !important;
+            }
             .read-more-link {
-                background: rgba(0, 133, 255, 0.07) !important;
-                border: none !important;
-                padding: 0.3rem 0.75rem !important;
+                grid-column: 1 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 36px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border-radius: var(--border-radius-sm) !important;
+                background: rgba(0, 133, 255, 0.06) !important;
+                border: 1px solid rgba(0, 133, 255, 0.18) !important;
                 color: var(--color-blue) !important;
-                font-size: 0.72rem !important;
+                font-size: 0.8rem !important;
                 font-weight: 700 !important;
-                cursor: pointer !important;
-                text-decoration: none !important;
-                border-radius: 20px !important;
-                display: inline-flex !important;
+                display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                margin: 0 auto 0.6rem auto !important;
-                width: max-content !important;
+                box-shadow: none !important;
                 transition: var(--transition-smooth) !important;
+            }
+            .read-more-link i {
+                display: none !important;
             }
             .read-more-link:active {
                 background: rgba(0, 133, 255, 0.14) !important;
-                transform: scale(0.95) !important;
+                transform: scale(0.97) !important;
+            }
+            .product-price-row > .add-to-cart-btn {
+                grid-column: 2 !important;
+                width: 100% !important;
+                height: 36px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 0.85rem !important;
+                font-weight: 800 !important;
+                border-radius: var(--border-radius-sm) !important;
+            }
+            .product-price-row > .quantity-control {
+                grid-column: 2 !important;
+                width: 100% !important;
+                height: 36px !important;
+                margin: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: var(--border-radius-sm) !important;
+                background: #ffffff !important;
+                overflow: hidden !important;
+            }
+            .product-price-row > .quantity-control .qty-btn {
+                width: 32px !important;
+                height: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background: #f1f5f9 !important;
+                border: none !important;
+                font-size: 1rem !important;
+                font-weight: bold !important;
+                color: var(--color-navy) !important;
+                cursor: pointer !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .product-price-row > .quantity-control .qty-num {
+                width: calc(100% - 64px) !important;
+                height: 100% !important;
+                text-align: center !important;
+                border: none !important;
+                font-size: 0.9rem !important;
+                font-weight: 700 !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
             /* Modal overlay scroll and circular X close button fixes for mobile */
