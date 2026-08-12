@@ -5002,15 +5002,29 @@
         let activeSubCategory = '';
         let searchQuery = '';
 
-        // Mobile Category Touch Scroll Helper Functions
+        // Mobile Category Touch Scroll Helper Functions (360-degree Bidirectional Loop)
         function scrollMobileCategories(dir) {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
             const scrollAmount = 185;
-            pGrid.scrollBy({
-                left: dir === 'right' ? scrollAmount : -scrollAmount,
-                behavior: 'smooth'
-            });
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            const currentScroll = Math.abs(pGrid.scrollLeft);
+            
+            if (dir === 'right') {
+                // In RTL, right moves towards 0 (card #1). If at card #1, loop around to last card!
+                if (currentScroll <= 15) {
+                    pGrid.scrollTo({ left: -maxScroll, behavior: 'smooth' });
+                } else {
+                    pGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            } else {
+                // In RTL, left moves towards -maxScroll (last card). If at last card, loop around to card #1!
+                if (currentScroll >= maxScroll - 25) {
+                    pGrid.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    pGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                }
+            }
         }
 
         function scrollToCatDot(idx) {
