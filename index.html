@@ -1508,7 +1508,7 @@
                 display: none !important;
             }
             
-            /* Header locked in place on mobile (100% fixed at top) */
+            /* Header locked in place on mobile (100% fixed at top) - GPU accelerated to prevent iOS scroll jitter */
             header {
                 position: fixed !important;
                 top: 0 !important;
@@ -1521,6 +1521,11 @@
                 backdrop-filter: blur(12px) !important;
                 -webkit-backdrop-filter: blur(12px) !important;
                 box-shadow: 0 2px 12px rgba(10, 25, 49, 0.08) !important;
+                will-change: transform !important;
+                -webkit-transform: translate3d(0, 0, 0) !important;
+                transform: translate3d(0, 0, 0) !important;
+                backface-visibility: hidden !important;
+                -webkit-backface-visibility: hidden !important;
             }
             header.scrolled {
                 height: 60px !important;
@@ -1881,6 +1886,18 @@
                 background: #ffffff url('assets/mobile_studio_bg.jpg') no-repeat center top !important;
                 background-size: cover !important;
                 background-attachment: fixed !important;
+                will-change: transform !important;
+                -webkit-transform: translate3d(0, 0, 0) !important;
+                transform: translate3d(0, 0, 0) !important;
+                backface-visibility: hidden !important;
+                -webkit-backface-visibility: hidden !important;
+            }
+
+            /* Hide duplicate category h3 title when inside a portal (active-portal-header already shows it) */
+            body.mobile-in-category .category-title,
+            body.mobile-catalog-active .category-title,
+            #active-portal-header:not([style*="display: none"]) ~ #catalog-container .category-title {
+                display: none !important;
             }
 
             /* Remove bottom welcome banner with logo on mobile per user request */
@@ -5162,6 +5179,7 @@
             if (activePortal) {
                 // On mobile: hide the entire slider wrapper (grid + dots + arrows)
                 if (isMobile) {
+                    document.body.classList.add('mobile-in-category');
                     const wrapper = document.querySelector('.portals-grid-wrapper');
                     if (wrapper) wrapper.style.display = 'none';
                     const dotsBar = document.getElementById('mobile-categories-dots');
@@ -5253,6 +5271,7 @@
             // Show main portals and welcome banner
             const isMobile = window.innerWidth <= 600;
             if (isMobile) {
+                document.body.classList.remove('mobile-in-category');
                 // Restore the slider wrapper and dots
                 const wrapper = document.querySelector('.portals-grid-wrapper');
                 if (wrapper) wrapper.style.display = '';
