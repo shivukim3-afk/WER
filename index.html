@@ -5965,7 +5965,7 @@
         }
 
         // Open/Close Checkout Details Modal
-        function openCheckoutDetailsModal(amount) {
+        function openCheckoutDetailsModal(amount, shouldUpdateHash = true) {
             let totals;
             if (checkoutSource === 'cart') {
                 totals = calculateCartTotals();
@@ -6023,22 +6023,46 @@
             if (totalEl) totalEl.textContent = `₪${totals.total.toLocaleString('he-IL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             
             document.getElementById('checkout-details-modal').style.display = 'flex';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash || '#catalog';
+                if (!currentHash.includes('/checkout')) {
+                    updateHash(currentHash + '/checkout');
+                }
+            }
         }
 
-        function closeCheckoutDetailsModal() {
+        function closeCheckoutDetailsModal(shouldUpdateHash = true) {
             document.getElementById('checkout-details-modal').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash;
+                if (currentHash.includes('/checkout')) {
+                    updateHash(currentHash.split('/checkout')[0]);
+                }
+            }
         }
 
         // Open/Close Credit Card Modal
-        function openPaymentModal(amount) {
+        function openPaymentModal(amount, shouldUpdateHash = true) {
             document.getElementById('payment-amount-val').textContent = `₪${amount}`;
             document.getElementById('payment-modal').style.display = 'flex';
             document.getElementById('payment-form').style.display = 'block';
             document.getElementById('payment-success-box').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash || '#catalog';
+                if (!currentHash.includes('/payment')) {
+                    updateHash(currentHash + '/payment');
+                }
+            }
         }
 
-        function closePaymentModal() {
+        function closePaymentModal(shouldUpdateHash = true) {
             document.getElementById('payment-modal').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash;
+                if (currentHash.includes('/payment')) {
+                    updateHash(currentHash.split('/payment')[0]);
+                }
+            }
         }
 
         // Card formatters
@@ -8830,7 +8854,7 @@
         }
 
         // Show product details modal (Quick View)
-        function showProductDetails(productId) {
+        function showProductDetails(productId, shouldUpdateHash = true) {
             const prod = PRODUCTS.find(p => p.id === productId);
             if (!prod) return;
             
@@ -8881,10 +8905,22 @@
             `;
             
             modal.style.display = 'flex';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash || '#catalog';
+                if (!currentHash.includes('/product/')) {
+                    updateHash(currentHash + '/product/' + productId);
+                }
+            }
         }
         
-        function closeProductModal() {
+        function closeProductModal(shouldUpdateHash = true) {
             document.getElementById('product-details-modal').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash;
+                if (currentHash.includes('/product/')) {
+                    updateHash(currentHash.split('/product/')[0]);
+                }
+            }
         }
         
         function addModalQtyToCart(productId) {
@@ -9297,8 +9333,27 @@
         });
 
         function handleHashChange() {
-            const hash = window.location.hash || '#home';
+            let hash = window.location.hash || '#home';
             const isMobile = window.innerWidth <= 600;
+            
+            // Extract suffix state for modals
+            let openProduct = null;
+            let openCheckout = false;
+            let openPayment = false;
+            
+            if (hash.includes('/product/')) {
+                const parts = hash.split('/product/');
+                hash = parts[0];
+                openProduct = parts[1].split('/')[0];
+            }
+            if (hash.includes('/checkout')) {
+                hash = hash.split('/checkout')[0];
+                openCheckout = true;
+            }
+            if (hash.includes('/payment')) {
+                hash = hash.split('/payment')[0];
+                openPayment = true;
+            }
             
             // Re-render portals grid in case we resized or switched layouts
             initPortalsGrid();
@@ -9407,6 +9462,26 @@
                 document.getElementById('active-portal-title-text').textContent = titleText;
                 
                 renderCatalog();
+            }
+
+            // Sync rendering states for modals
+            if (openProduct) {
+                showProductDetails(openProduct, false);
+            } else {
+                closeProductModal(false);
+            }
+
+            if (openCheckout) {
+                openCheckoutDetailsModal(checkoutAmount, false);
+            } else {
+                closeCheckoutDetailsModal(false);
+            }
+
+            if (openPayment) {
+                const totalWithVat = checkoutAmount * 1.18; // default VAT calculation
+                openPaymentModal(totalWithVat.toFixed(2), false);
+            } else {
+                closePaymentModal(false);
             }
         }
 
