@@ -5160,9 +5160,12 @@
                              window.innerWidth <= 600;
             
             if (activePortal) {
-                // On mobile, if we are inside a category, we hide the main category gateways grid to show products/subcategories directly
+                // On mobile: hide the entire slider wrapper (grid + dots + arrows)
                 if (isMobile) {
-                    document.getElementById('portals-grid').style.display = 'none';
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = 'none';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = 'none';
                     const backText = document.getElementById('back-btn-text');
                     if (backText) backText.textContent = 'חזרה לקטגוריות';
                 } else {
@@ -5231,7 +5234,15 @@
             if (btn) btn.classList.add('active');
             
             renderCatalog();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (isMobile && activePortal) {
+                // Scroll to catalog container so products are immediately visible
+                setTimeout(() => {
+                    const cat = document.getElementById('catalog-container');
+                    if (cat) cat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 80);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         // Back to main portal selector screen
@@ -5241,7 +5252,16 @@
             
             // Show main portals and welcome banner
             const isMobile = window.innerWidth <= 600;
-            document.getElementById('portals-grid').style.display = isMobile ? 'flex' : 'grid';
+            if (isMobile) {
+                // Restore the slider wrapper and dots
+                const wrapper = document.querySelector('.portals-grid-wrapper');
+                if (wrapper) wrapper.style.display = '';
+                const dotsBar = document.getElementById('mobile-categories-dots');
+                if (dotsBar) dotsBar.style.display = '';
+                document.getElementById('portals-grid').style.display = 'flex';
+            } else {
+                document.getElementById('portals-grid').style.display = 'grid';
+            }
             document.getElementById('active-portal-header').style.display = 'none';
             document.getElementById('sub-portals-grid').style.display = 'none';
             
