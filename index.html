@@ -5002,29 +5002,15 @@
         let activeSubCategory = '';
         let searchQuery = '';
 
-        // Mobile Category Touch Scroll Helper Functions (360-degree Bidirectional Loop)
+        // Mobile Category Touch Scroll Helper Functions (Seamless Infinite Track)
         function scrollMobileCategories(dir) {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const scrollAmount = 185;
-            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-            const currentScroll = Math.abs(pGrid.scrollLeft);
-            
-            if (dir === 'right') {
-                // In RTL, right moves towards 0 (card #1). If at card #1, loop around to last card!
-                if (currentScroll <= 15) {
-                    pGrid.scrollTo({ left: -maxScroll, behavior: 'smooth' });
-                } else {
-                    pGrid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                }
-            } else {
-                // In RTL, left moves towards -maxScroll (last card). If at last card, loop around to card #1!
-                if (currentScroll >= maxScroll - 25) {
-                    pGrid.scrollTo({ left: 0, behavior: 'smooth' });
-                } else {
-                    pGrid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                }
-            }
+            const scrollAmount = 180;
+            pGrid.scrollBy({
+                left: dir === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function scrollToCatDot(idx) {
@@ -5036,24 +5022,80 @@
             }
         }
 
-        // Active Dot Sync on Mobile Category Scroll
-        document.addEventListener('DOMContentLoaded', () => {
+        function setupSeamlessInfiniteSwiper() {
             const pGrid = document.getElementById('portals-grid');
-            if (!pGrid) return;
-
+            if (!pGrid || window.innerWidth > 600) return;
+            if (pGrid.getAttribute('data-infinite-initialized') === 'true') return;
+            
+            const originalCards = Array.from(pGrid.querySelectorAll('.portal-card'));
+            if (originalCards.length < 4) return;
+            
+            // Clone set 1 (before) and set 3 (after) for seamless 3x track
+            const cloneStart = originalCards.map(c => {
+                const clone = c.cloneNode(true);
+                clone.classList.add('clone-card');
+                return clone;
+            });
+            const cloneEnd = originalCards.map(c => {
+                const clone = c.cloneNode(true);
+                clone.classList.add('clone-card');
+                return clone;
+            });
+            
+            cloneStart.reverse().forEach(clone => pGrid.insertBefore(clone, pGrid.firstChild));
+            cloneEnd.forEach(clone => pGrid.appendChild(clone));
+            
+            pGrid.setAttribute('data-infinite-initialized', 'true');
+            
+            const cardWidth = 180;
+            const singleSetWidth = cardWidth * originalCards.length;
+            
+            // Set initial position to start of original Set 2 (card #1 "כל המוצרים")
+            requestAnimationFrame(() => {
+                pGrid.scrollLeft = -singleSetWidth;
+            });
+            
+            // Silent Jump Reset on Scroll boundary
+            let isAdjusting = false;
             pGrid.addEventListener('scroll', () => {
-                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-                if (maxScroll <= 0) return;
+                if (isAdjusting) return;
+                const currentScroll = Math.abs(pGrid.scrollLeft);
                 
-                const scrollFraction = Math.abs(pGrid.scrollLeft) / maxScroll;
-                const activeIdx = Math.min(4, Math.max(0, Math.round(scrollFraction * 4)));
+                // If scrolled into Set 1 (far right, near 0)
+                if (currentScroll < singleSetWidth / 2) {
+                    isAdjusting = true;
+                    pGrid.style.scrollBehavior = 'auto';
+                    pGrid.scrollLeft = -(currentScroll + singleSetWidth);
+                    requestAnimationFrame(() => {
+                        pGrid.style.scrollBehavior = 'smooth';
+                        isAdjusting = false;
+                    });
+                }
+                // If scrolled into Set 3 (far left, past 2x set width)
+                else if (currentScroll > singleSetWidth * 2.2) {
+                    isAdjusting = true;
+                    pGrid.style.scrollBehavior = 'auto';
+                    pGrid.scrollLeft = -(currentScroll - singleSetWidth);
+                    requestAnimationFrame(() => {
+                        pGrid.style.scrollBehavior = 'smooth';
+                        isAdjusting = false;
+                    });
+                }
                 
+                // Update active dot
+                const localOffset = Math.abs(pGrid.scrollLeft) % singleSetWidth;
+                const activeIdx = Math.min(4, Math.max(0, Math.round(localOffset / cardWidth)));
                 const dots = document.querySelectorAll('#mobile-categories-dots .cat-dot');
                 dots.forEach((dot, i) => {
                     if (i === activeIdx) dot.classList.add('active');
                     else dot.classList.remove('active');
                 });
             }, { passive: true });
+        }
+
+        // Active Dot Sync & Infinite Swiper Setup on Mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            setupSeamlessInfiniteSwiper();
         });
 
         function switchMode(mode, btn) {
