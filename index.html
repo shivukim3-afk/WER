@@ -9561,26 +9561,12 @@
                 setTimeout(initMobileInfiniteSwiper, 50);
             } else if (!isMobile && (!hasCategoryAttribute || portalsGrid.children.length === 0 || portalsGrid.querySelector('[data-portal]'))) {
                 // Render Desktop Categories as Large Cards with Images (Infinite Loop support)
-                const cloneCount = 5;
-                const fullList = [];
-                
-                // Prepend last 5 clones
-                for (let i = portalsList.length - cloneCount; i < portalsList.length; i++) {
-                    fullList.push({ ...portalsList[i] });
-                }
-                // Original items
-                portalsList.forEach(p => fullList.push({ ...p }));
-                // Append first 5 clones
-                for (let i = 0; i < cloneCount; i++) {
-                    fullList.push({ ...portalsList[i] });
-                }
-                
                 let html = '';
-                fullList.forEach(p => {
+                portalsList.forEach(p => {
                     const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
                     const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                     html += `
-                        <div class="portal-card" data-portal="${p.id}" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
+                        <div class="portal-card" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
                             <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
                             <div>
                                 <div class="portal-title">${p.name}</div>
@@ -9591,6 +9577,11 @@
                     `;
                 });
                 portalsGrid.innerHTML = html;
+                
+                // Clear any infinite scroll state attributes
+                portalsGrid.removeAttribute('data-infinite-cloned');
+                portalsGrid.removeAttribute('data-original-count');
+                portalsGrid._infiniteReady = false;
                 
                 // Setup the infinite scroll handler after DOM paint
                 setTimeout(setupInfiniteScroll, 100);
@@ -9604,13 +9595,13 @@
 
             const cloneCount = 5;
 
-            // --- Step 1: Clone if not done yet ---
+            // --- Step 1: Clone original cards ---
             if (!slider.getAttribute('data-infinite-cloned')) {
                 const originalCards = Array.from(slider.querySelectorAll('.portal-card'));
                 if (originalCards.length < 2) return;
 
-                const prepends = originalCards.slice(-cloneCount).map(c => c.cloneNode(true));
-                const appends  = originalCards.slice(0, cloneCount).map(c => c.cloneNode(true));
+                const prepends = originalCards.slice(-cloneCount).map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone', '1'); return cl; });
+                const appends  = originalCards.slice(0, cloneCount).map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone', '1'); return cl; });
 
                 prepends.reverse().forEach(c => slider.insertBefore(c, slider.firstChild));
                 appends.forEach(c => slider.appendChild(c));
@@ -9628,7 +9619,7 @@
                 if (cards.length > 1) {
                     cardWidth = Math.abs(cards[1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left);
                 }
-                if (cardWidth < 10) cardWidth = window.innerWidth <= 600 ? 190 : 304;
+                if (cardWidth < 10) cardWidth = 304;
 
                 const setWidth = realCount * cardWidth; // width of one full set of cards
                 const isRTL = document.documentElement.dir === 'rtl'
@@ -9636,9 +9627,6 @@
                     || window.getComputedStyle(slider).direction === 'rtl';
 
                 // --- Step 3: Center on the middle set ---
-                // In RTL, scrollLeft = 0 is far right, negative is far left.
-                // Middle set starts at index cloneCount.
-                // We want to show card[cloneCount] (first card of middle set).
                 const centerPos = isRTL ? -(cloneCount * cardWidth) : (cloneCount * cardWidth);
                 slider.scrollLeft = centerPos;
                 slider._infiniteSetWidth = setWidth;
@@ -9646,26 +9634,34 @@
                 slider._infiniteReady = true;
 
                 // --- Step 4: Boundary detection on scroll ---
-                // Jump when scrollLeft exits the middle-set zone (into a clone zone).
-                // Middle set zone in RTL: from -(cloneCount+realCount)*cardWidth to -(cloneCount)*cardWidth
-                // i.e., from -(2*setWidth) to -(setWidth)   [approx, ignoring gaps]
+                let _jumping = false;
                 slider.addEventListener('scroll', () => {
+                    if (_jumping) return;
                     const sl = slider.scrollLeft;
                     const sw = slider._infiniteSetWidth;
+
                     if (slider._infiniteIsRTL) {
-                        // Scrolled too far RIGHT (toward clone-before zone, scrollLeft approaches 0)
-                        if (sl > -(sw * 0.9)) {
+                        // Scrolled too far RIGHT (toward clone-before zone, sl > -cloneCount*cardWidth)
+                        if (sl > -(sw * 0.4)) {
+                            _jumping = true;
                             slider.scrollLeft = sl - sw;
+                            requestAnimationFrame(() => { _jumping = false; });
                         }
                         // Scrolled too far LEFT (into clone-after zone)
-                        else if (sl < -(sw * 1.9)) {
+                        else if (sl < -(sw * 1.6)) {
+                            _jumping = true;
                             slider.scrollLeft = sl + sw;
+                            requestAnimationFrame(() => { _jumping = false; });
                         }
                     } else {
-                        if (sl < sw * 0.9) {
+                        if (sl < sw * 0.4) {
+                            _jumping = true;
                             slider.scrollLeft = sl + sw;
-                        } else if (sl > sw * 1.9) {
+                            requestAnimationFrame(() => { _jumping = false; });
+                        } else if (sl > sw * 1.6) {
+                            _jumping = true;
                             slider.scrollLeft = sl - sw;
+                            requestAnimationFrame(() => { _jumping = false; });
                         }
                     }
                 }, { passive: true });
