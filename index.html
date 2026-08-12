@@ -3654,15 +3654,15 @@
                 flex-direction: row !important;
                 grid-template-columns: none !important;
                 gap: 0.8rem !important;
-                overflow-x: auto !important;
+                overflow-x: scroll !important;
                 width: auto !important;
                 scrollbar-width: none !important;
                 padding: 10px 1rem !important;
                 margin: 0 -1rem !important;
                 -webkit-overflow-scrolling: touch !important;
                 scroll-snap-type: none !important;
-                scroll-behavior: smooth !important;
-                overscroll-behavior-x: contain !important;
+                scroll-behavior: auto !important;
+                overscroll-behavior-x: none !important;
             }
             @keyframes swipe-nudge-anim {
                 0% { transform: translateX(0); }
@@ -4152,6 +4152,7 @@
                     </div>
                     <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
                 </div>
+            </div>
                 <!-- Mobile Categories Pagination Dots Bar -->
                 <div class="mobile-categories-dots" id="mobile-categories-dots">
                     <span class="cat-dot active" onclick="scrollToCatDot(0)"></span>
@@ -4160,7 +4161,6 @@
                     <span class="cat-dot" onclick="scrollToCatDot(3)"></span>
                     <span class="cat-dot" onclick="scrollToCatDot(4)"></span>
                 </div>
-            </div>
             <button class="slider-arrow next" onclick="scrollPortals('next')" aria-label="הבא">
                 <i class="fa-solid fa-chevron-left"></i>
             </button>
@@ -5002,38 +5002,126 @@
         let activeSubCategory = '';
         let searchQuery = '';
 
-        // Mobile Category Touch Scroll Helper Functions (Unified with Desktop Engine)
+        // ============================================================
+        // MOBILE-ONLY INFINITE CATEGORY SWIPER ENGINE
+        // Desktop uses setupInfiniteScroll (called from renderPortals)
+        // Mobile uses this standalone engine below
+        // ============================================================
         function scrollMobileCategories(dir) {
-            scrollPortals(dir === 'right' ? 'prev' : 'next');
+            if (window.innerWidth > 600) { scrollPortals(dir === 'right' ? 'prev' : 'next'); return; }
+            const pGrid = document.getElementById('portals-grid');
+            if (!pGrid || !pGrid._mobileInfinite) return;
+            const inf = pGrid._mobileInfinite;
+            const cardWidth = inf.cardWidth;
+            // In RTL: scrollLeft is negative. right arrow = positive direction = scrollLeft increases toward 0
+            // prev = move toward start (right in RTL) = scrollLeft += cardWidth
+            // next = move toward end (left in RTL)   = scrollLeft -= cardWidth
+            const delta = dir === 'right' ? cardWidth : -cardWidth;
+            const target = pGrid.scrollLeft + delta;
+            pGrid.style.scrollBehavior = 'smooth';
+            pGrid.scrollLeft = target;
+            setTimeout(() => { pGrid.style.scrollBehavior = 'auto'; }, 400);
         }
 
         function scrollToCatDot(idx) {
+            if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
-            if (!pGrid) return;
-            const cards = pGrid.querySelectorAll('.portal-card');
-            if (cards[idx]) {
-                cards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
+            if (!pGrid || !pGrid._mobileInfinite) return;
+            const inf = pGrid._mobileInfinite;
+            const isRTL = pGrid._mobileInfinite.isRTL;
+            // Jump to card idx in the middle set
+            const targetCard = inf.originalCount + idx;
+            const targetScroll = isRTL
+                ? -((targetCard) * inf.cardWidth)
+                : ((targetCard) * inf.cardWidth);
+            pGrid.style.scrollBehavior = 'smooth';
+            pGrid.scrollLeft = targetScroll;
+            setTimeout(() => { pGrid.style.scrollBehavior = 'auto'; }, 400);
         }
 
-        // Active Dot Sync on Scroll & Infinite Swiper Engine Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            setupInfiniteScroll();
+        function initMobileInfiniteSwiper() {
+            if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
+            if (pGrid._mobileInfinite) return;
 
-            pGrid.addEventListener('scroll', () => {
-                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-                if (maxScroll <= 0) return;
-                const scrollFraction = Math.abs(pGrid.scrollLeft) / maxScroll;
-                const activeIdx = Math.min(4, Math.max(0, Math.round(scrollFraction * 4)));
-                
-                const dots = document.querySelectorAll('#mobile-categories-dots .cat-dot');
-                dots.forEach((dot, i) => {
-                    if (i === activeIdx) dot.classList.add('active');
-                    else dot.classList.remove('active');
-                });
-            }, { passive: true });
+            // Only take cards that are NOT already clones (data-clone or data-infinite-cloned guard)
+            const allCards = Array.from(pGrid.querySelectorAll('.portal-card'));
+            // If renderPortals added cards with data-portal attribute, those are original
+            // If not, take all cards that don't have data-clone="1"
+            let origCards = allCards.filter(c => !c.getAttribute('data-clone'));
+            if (origCards.length < 2) origCards = allCards; // fallback
+            const N = origCards.length;
+            if (N < 2) return;
+
+            // Clear and rebuild the track with original cards + clones
+            pGrid.innerHTML = '';
+            const before = origCards.map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone','1'); return cl; });
+            const after  = origCards.map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone','1'); return cl; });
+
+            before.slice().reverse().forEach(c => pGrid.appendChild(c));
+            origCards.forEach(c => pGrid.appendChild(c));
+            after.forEach(c => pGrid.appendChild(c));
+
+            // Wait for paint to measure
+            requestAnimationFrame(() => {
+                const cards = pGrid.querySelectorAll('.portal-card');
+                let cardWidth = 190;
+                if (cards.length > 1) {
+                    const r0 = cards[0].getBoundingClientRect();
+                    const r1 = cards[1].getBoundingClientRect();
+                    const w = Math.round(Math.abs(r1.left - r0.left));
+                    if (w > 10) cardWidth = w;
+                }
+
+                const isRTL = document.documentElement.dir === 'rtl';
+                const trackWidth = N * cardWidth; // one set width
+
+                // Start at middle set: RTL scrollLeft = -(N * cardWidth)
+                pGrid.scrollLeft = isRTL ? -trackWidth : trackWidth;
+
+                pGrid._mobileInfinite = { N, cardWidth, isRTL, trackWidth };
+
+                let _jumping = false;
+                pGrid.addEventListener('scroll', () => {
+                    if (_jumping) return;
+                    const sl = pGrid.scrollLeft;
+                    const tw = pGrid._mobileInfinite.trackWidth;
+
+                    if (isRTL) {
+                        // Too far right: approaching 0 (clone-before zone)
+                        if (sl > -(tw * 0.5)) {
+                            _jumping = true;
+                            pGrid.scrollLeft = sl - tw;
+                            requestAnimationFrame(() => { _jumping = false; });
+                        }
+                        // Too far left: past -(2*tw) (clone-after zone)
+                        else if (sl < -(tw * 2.5)) {
+                            _jumping = true;
+                            pGrid.scrollLeft = sl + tw;
+                            requestAnimationFrame(() => { _jumping = false; });
+                        }
+                    } else {
+                        if (sl < tw * 0.5) {
+                            _jumping = true;
+                            pGrid.scrollLeft = sl + tw;
+                            requestAnimationFrame(() => { _jumping = false; });
+                        } else if (sl > tw * 2.5) {
+                            _jumping = true;
+                            pGrid.scrollLeft = sl - tw;
+                            requestAnimationFrame(() => { _jumping = false; });
+                        }
+                    }
+                }, { passive: true });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 600) {
+                initMobileInfiniteSwiper();
+            } else {
+                setupInfiniteScroll();
+            }
         });
 
         function switchMode(mode, btn) {
@@ -9251,23 +9339,25 @@
             });
             
             if (isMobile && (hasCategoryAttribute || portalsGrid.children.length === 0 || !portalsGrid.querySelector('[data-desktop-category="tork"]'))) {
-                // Render Mobile Portals (Native horizontal scroll, no clones)
+                // Render Mobile Portals — then init infinite swiper
                 let html = '';
                 portalsList.forEach(p => {
                     const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
                     const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                     html += `
-                        <div class="portal-card" data-desktop-category="${p.id}" onclick="selectDesktopCategory('${p.id}', this)" style="background-image: url('${imgUrl}')">
+                        <div class="portal-card" data-portal="${p.id}" onclick="filterPortal('${p.id}', this)" style="background-image: url('${imgUrl}')">
                             <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
                             <div>
                                 <div class="portal-title">${p.name}</div>
                                 <div class="portal-desc">${p.desc}</div>
-                                <div class="portal-action-btn">לקטגוריה</div>
                             </div>
                         </div>
                     `;
                 });
                 portalsGrid.innerHTML = html;
+                // Reset so initMobileInfiniteSwiper rebuilds fresh
+                portalsGrid._mobileInfinite = null;
+                setTimeout(initMobileInfiniteSwiper, 50);
             } else if (!isMobile && (!hasCategoryAttribute || portalsGrid.children.length === 0 || portalsGrid.querySelector('[data-portal]'))) {
                 // Render Desktop Categories as Large Cards with Images (Infinite Loop support)
                 const cloneCount = 5;
@@ -9309,83 +9399,76 @@
         function setupInfiniteScroll() {
             const slider = document.getElementById('portals-grid');
             if (!slider) return;
-            
+            if (slider._infiniteReady) return; // already set up
+
             const cloneCount = 5;
-            
-            // Perform dynamic cloning if not already cloned
+
+            // --- Step 1: Clone if not done yet ---
             if (!slider.getAttribute('data-infinite-cloned')) {
                 const originalCards = Array.from(slider.querySelectorAll('.portal-card'));
                 if (originalCards.length < 2) return;
-                
+
                 const prepends = originalCards.slice(-cloneCount).map(c => c.cloneNode(true));
-                const appends = originalCards.slice(0, cloneCount).map(c => c.cloneNode(true));
-                
+                const appends  = originalCards.slice(0, cloneCount).map(c => c.cloneNode(true));
+
                 prepends.reverse().forEach(c => slider.insertBefore(c, slider.firstChild));
                 appends.forEach(c => slider.appendChild(c));
-                
+
                 slider.setAttribute('data-infinite-cloned', 'true');
                 slider.setAttribute('data-original-count', originalCards.length);
             }
-            
-            const realCount = parseInt(slider.getAttribute('data-original-count')) || 10;
-            
-            function getGeometry() {
+
+            const realCount = parseInt(slider.getAttribute('data-original-count')) || 5;
+
+            // --- Step 2: Measure card width after paint ---
+            requestAnimationFrame(() => {
                 const cards = slider.querySelectorAll('.portal-card');
                 let cardWidth = 304;
                 if (cards.length > 1) {
                     cardWidth = Math.abs(cards[1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left);
                 }
-                if (cardWidth === 0) cardWidth = window.innerWidth <= 600 ? 180 : 304;
-                
-                const totalOriginalWidth = realCount * cardWidth;
-                return { cardWidth, realCount, totalOriginalWidth };
-            }
-            
-            function centerSlider() {
-                const geom = getGeometry();
-                const viewportWidth = slider.clientWidth || window.innerWidth;
-                const isMobile = window.innerWidth <= 600;
-                
-                let startOffset = 0;
-                if (isMobile) {
-                    startOffset = (viewportWidth - geom.cardWidth) / 2;
-                } else {
-                    const fontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize) || 16;
-                    const containerMaxWidth = 1400;
-                    const containerPadding = 5.5 * fontSize;
-                    startOffset = (viewportWidth - Math.min(viewportWidth, containerMaxWidth)) / 2 + containerPadding;
-                }
-                
-                const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl' || window.getComputedStyle(slider).direction === 'rtl';
-                slider.scrollLeft = isRTL ? -(cloneCount * geom.cardWidth - startOffset) : (cloneCount * geom.cardWidth - startOffset);
-                slider.dataset.startOffset = startOffset;
-            }
-            
-            centerSlider();
-            window.addEventListener('resize', centerSlider);
-            
-            slider.addEventListener('scroll', () => {
-                const geom = getGeometry();
-                const scrollLeft = slider.scrollLeft;
-                const startOffset = parseFloat(slider.dataset.startOffset) || 0;
-                const minScroll = cloneCount * geom.cardWidth - startOffset;
-                const maxScroll = (cloneCount + geom.realCount) * geom.cardWidth - startOffset;
-                
-                const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl' || window.getComputedStyle(slider).direction === 'rtl';
-                if (isRTL) {
-                    if (scrollLeft < -maxScroll) {
-                        slider.scrollLeft += geom.totalOriginalWidth;
-                    } else if (scrollLeft > -minScroll) {
-                        slider.scrollLeft -= geom.totalOriginalWidth;
+                if (cardWidth < 10) cardWidth = window.innerWidth <= 600 ? 190 : 304;
+
+                const setWidth = realCount * cardWidth; // width of one full set of cards
+                const isRTL = document.documentElement.dir === 'rtl'
+                    || document.body.dir === 'rtl'
+                    || window.getComputedStyle(slider).direction === 'rtl';
+
+                // --- Step 3: Center on the middle set ---
+                // In RTL, scrollLeft = 0 is far right, negative is far left.
+                // Middle set starts at index cloneCount.
+                // We want to show card[cloneCount] (first card of middle set).
+                const centerPos = isRTL ? -(cloneCount * cardWidth) : (cloneCount * cardWidth);
+                slider.scrollLeft = centerPos;
+                slider._infiniteSetWidth = setWidth;
+                slider._infiniteIsRTL = isRTL;
+                slider._infiniteReady = true;
+
+                // --- Step 4: Boundary detection on scroll ---
+                // Jump when scrollLeft exits the middle-set zone (into a clone zone).
+                // Middle set zone in RTL: from -(cloneCount+realCount)*cardWidth to -(cloneCount)*cardWidth
+                // i.e., from -(2*setWidth) to -(setWidth)   [approx, ignoring gaps]
+                slider.addEventListener('scroll', () => {
+                    const sl = slider.scrollLeft;
+                    const sw = slider._infiniteSetWidth;
+                    if (slider._infiniteIsRTL) {
+                        // Scrolled too far RIGHT (toward clone-before zone, scrollLeft approaches 0)
+                        if (sl > -(sw * 0.9)) {
+                            slider.scrollLeft = sl - sw;
+                        }
+                        // Scrolled too far LEFT (into clone-after zone)
+                        else if (sl < -(sw * 1.9)) {
+                            slider.scrollLeft = sl + sw;
+                        }
+                    } else {
+                        if (sl < sw * 0.9) {
+                            slider.scrollLeft = sl + sw;
+                        } else if (sl > sw * 1.9) {
+                            slider.scrollLeft = sl - sw;
+                        }
                     }
-                } else {
-                    if (scrollLeft > maxScroll) {
-                        slider.scrollLeft -= geom.totalOriginalWidth;
-                    } else if (scrollLeft < minScroll) {
-                        slider.scrollLeft += geom.totalOriginalWidth;
-                    }
-                }
-            }, { passive: true });
+                }, { passive: true });
+            });
         }
 
         function scrollPortals(dir) {
