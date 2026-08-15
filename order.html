@@ -12,6 +12,9 @@
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DB Engine -->
+    <script src="db.js"></script>
 
     <style>
         :root {
@@ -1015,6 +1018,32 @@
             }
 
             orderText += `\n💰 *סכום כולל לתשלום: ${totalSum} ₪*`;
+
+            // Record order in DB Engine
+            if (typeof db !== 'undefined') {
+                const orderedItems = [];
+                Object.keys(orderQuantities).forEach(id => {
+                    const qty = orderQuantities[id];
+                    if (qty > 0) {
+                        const prod = PRODUCTS.find(p => p.id === id);
+                        if (prod) orderedItems.push({ id: prod.id, name: prod.name, pack: prod.pack, price: prod.price, quantity: qty });
+                    }
+                });
+                const vat = totalSum * 0.18;
+                db.addOrder({
+                    clientName: `${clientName} (${contactName})`,
+                    clientPhone: clientPhone,
+                    clientAddress: clientAddress,
+                    items: orderedItems,
+                    rawSubtotal: totalSum,
+                    discount: 0,
+                    couponCode: null,
+                    subtotalAfterDiscount: totalSum,
+                    vat: vat,
+                    total: totalSum + vat,
+                    paymentMethod: 'whatsapp_quick'
+                });
+            }
 
             const waText = encodeURIComponent(orderText.replace(/\\n/g, '\n'));
             const waLink = `https://wa.me/972505178445?text=${waText}`;

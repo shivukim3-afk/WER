@@ -12,6 +12,9 @@
     
     <!-- FontAwesome for minimal clean icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DB Engine -->
+    <script src="db.js"></script>
 
     <style>
 
@@ -4835,9 +4838,14 @@
             if (!codeStr) return { success: false, message: 'אנא הזן קוד קופון' };
             const cleanCode = codeStr.trim().toUpperCase();
             
-            const coupon = COUPONS[cleanCode];
+            // Query dynamic database engine first, fallback to static object
+            const coupon = (typeof db !== 'undefined' && db.getCoupon(cleanCode)) || COUPONS[cleanCode];
             if (!coupon) {
                 return { success: false, message: 'קוד הקופון שהוזן אינו תקין' };
+            }
+
+            if (coupon.active === false) {
+                return { success: false, message: 'קוד קופון זה אינו פעיל כעת' };
             }
 
             const rawSubtotal = calculateRawCartSubtotal();
@@ -5082,6 +5090,23 @@
             message += `\n*מע\"מ (18%):* ₪${totals.vat.toFixed(2)}`;
             message += `\n*סה\"כ לתשלום כולל מע\"מ:* ₪${totals.total.toFixed(2)}\n\n`;
             message += 'אנא חזור אליי לאישור ההזמנה וסגירת פרטי משלוח ותשלום. תודה!';
+
+            // Record order in database
+            if (typeof db !== 'undefined') {
+                db.addOrder({
+                    clientName: "הזמנת סל (וואטסאפ)",
+                    clientPhone: "",
+                    clientAddress: "",
+                    items: cart.map(i => ({ id: i.id, name: i.name, pack: i.pack, price: i.price, quantity: i.quantity })),
+                    rawSubtotal: totals.rawSubtotal,
+                    discount: totals.discount,
+                    couponCode: appliedCoupon ? appliedCoupon.code : null,
+                    subtotalAfterDiscount: totals.subtotalAfterDiscount,
+                    vat: totals.vat,
+                    total: totals.total,
+                    paymentMethod: 'whatsapp'
+                });
+            }
 
             const url = `https://wa.me/972505178445?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
@@ -6139,6 +6164,26 @@
                 });
                 updateCartCounter();
                 renderCartList();
+            }
+
+            // Record order in Database Engine
+            if (typeof db !== 'undefined') {
+                const subtotal = checkoutAmount;
+                const vat = subtotal * 0.18;
+                const totalWithVat = subtotal + vat;
+                db.addOrder({
+                    clientName: `${clientName} (${contactName})`,
+                    clientPhone: clientPhone,
+                    clientAddress: clientAddress,
+                    items: items.map(i => ({ id: i.id, name: i.name, pack: i.pack, price: i.price, quantity: i.quantity })),
+                    rawSubtotal: subtotal,
+                    discount: (appliedCoupon && totals && totals.discount) ? totals.discount : 0,
+                    couponCode: appliedCoupon ? appliedCoupon.code : null,
+                    subtotalAfterDiscount: subtotal,
+                    vat: vat,
+                    total: totalWithVat,
+                    paymentMethod: method
+                });
             }
 
             if (method === 'whatsapp') {

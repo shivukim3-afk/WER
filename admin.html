@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שיווקים — מערכת ניהול ואדמין (Dashboard)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Rubik:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- DB Engine -->
+    <script src="db.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Rubik', 'Outfit', sans-serif;
+            --color-navy: #0a1931;
+            --color-navy-dark: #050d1a;
+            --color-blue: #0085ff;
+            --color-blue-hover: #0066cc;
+            --color-cyan: #00f0ff;
+            --color-green: #10b981;
+            --color-green-hover: #059669;
+            --color-amber: #f59e0b;
+            --color-red: #ef4444;
+            --color-bg-light: #f8fafc;
+            --color-card: #ffffff;
+            --color-border: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #f8fafc;
+            
+            --border-radius-lg: 16px;
+            --border-radius-md: 12px;
+            --border-radius-sm: 8px;
+            --shadow-soft: 0 10px 30px rgba(10, 25, 49, 0.05);
+            --shadow-hover: 0 20px 40px rgba(10, 25, 49, 0.1);
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Top Admin Navbar */
+        .admin-nav {
+            background: var(--color-navy);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-brand i {
+            color: var(--color-cyan);
+            font-size: 1.5rem;
+        }
+
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-badge {
+            background: rgba(0, 240, 255, 0.12);
+            color: var(--color-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.4rem 1rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ffffff;
+        }
+
+        /* Container Layout */
+        .admin-container {
+            max-width: 1350px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: 1.4rem;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-info h5 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-info .stat-val {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--color-navy);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-icon.blue { background: rgba(0, 133, 255, 0.1); color: var(--color-blue); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--color-green); }
+        .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+        .stat-icon.amber { background: rgba(245, 158, 11, 0.1); color: var(--color-amber); }
+
+        /* Tabs Header */
+        .tabs-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--color-border);
+            margin-bottom: 1.8rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: none;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .tab-btn i { font-size: 1.1rem; }
+
+        .tab-btn.active {
+            color: var(--color-blue);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--color-blue);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Action Buttons */
+        .btn-primary {
+            background: var(--color-blue);
+            color: #ffffff;
+            border: none;
+            padding: 0.7rem 1.4rem;
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.92rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 133, 255, 0.25);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-blue-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--color-navy);
+            border: 1px solid var(--color-border);
+            padding: 0.65rem 1.2rem;
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* Content Sections */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Filter Controls Bar */
+        .controls-bar {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.65rem 2.4rem 0.65rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 0.9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .select-input {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            outline: none;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        /* Table Design */
+        .table-responsive {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-soft);
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        .admin-table th {
+            background: #f8fafc;
+            padding: 1rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--color-border);
+            white-space: nowrap;
+        }
+
+        .admin-table td {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge.new { background: #dbeafe; color: #1e40af; }
+        .badge.processing { background: #fef3c7; color: #92400e; }
+        .badge.completed { background: #d1fae5; color: #065f46; }
+        .badge.cancelled { background: #fee2e2; color: #991b1b; }
+        .badge.active { background: #d1fae5; color: #065f46; }
+        .badge.inactive { background: #f3f4f6; color: #6b7280; }
+
+        /* Action Buttons Grid */
+        .actions-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--color-border);
+            background: #ffffff;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.9rem;
+        }
+
+        .icon-btn:hover { background: #f1f5f9; color: var(--color-blue); }
+        .icon-btn.whatsapp:hover { background: #ecfdf5; color: #10b981; border-color: #a7f3d0; }
+        .icon-btn.delete:hover { background: #fef2f2; color: #ef4444; border-color: #fca5a5; }
+
+        /* Modal Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(5, 13, 26, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.4rem 1.8rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--color-navy);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.3rem;
+        }
+
+        .modal-body {
+            padding: 1.8rem;
+        }
+
+        .modal-footer {
+            padding: 1.2rem 1.8rem;
+            background: #f8fafc;
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.8rem;
+        }
+
+        /* Form Controls */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--color-navy);
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-sm);
+            font-family: var(--font-main);
+            font-size: 0.92rem;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--color-blue);
+            box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.15);
+        }
+
+        /* Login Screen Overlay */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--color-navy-dark), var(--color-navy));
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            padding: 2.5rem 2rem;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 2.2rem;
+            color: var(--color-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--color-navy);
+            margin-bottom: 0.3rem;
+        }
+
+        .login-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ADMIN AUTHENTICATION SCREEN -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
+            <h2 class="login-title">שיווקים אדמין</h2>
+            <p class="login-desc">כניסה מאובטחת למערכת הניהול</p>
+            
+            <form onsubmit="handleLoginSubmit(event)">
+                <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
+                    <label>סיסמת מנהל</label>
+                    <input type="password" id="admin-pass-input" class="form-control" placeholder="הזן סיסמה..." required style="text-align: center; letter-spacing: 2px; font-size: 1.1rem;">
+                </div>
+                
+                <div id="login-error-msg" style="color: var(--color-red); font-size: 0.85rem; margin-bottom: 1rem; display: none; font-weight: 700;">
+                    סיסמה שגויה, אנא נסה שוב.
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem;">
+                    <span>התחבר למערכת</span>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN NAVIGATION NAVBAR -->
+    <nav class="admin-nav">
+        <div class="admin-brand">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>שיווקים — אדמין וניהול</span>
+        </div>
+        
+        <div class="admin-user-info">
+            <div class="admin-badge">
+                <i class="fa-solid fa-database"></i>
+                <span>DB: Connected</span>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i> יציאה
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN ADMIN CONTAINER -->
+    <div class="admin-container">
+
+        <!-- DASHBOARD STATS OVERVIEW -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h5>סה"כ הזמנות</h5>
+                    <div class="stat-val" id="stat-orders-count">0</div>
+                </div>
+                <div class="stat-icon blue"><i class="fa-solid fa-boxes-packing"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h5>סה"כ הכנסות (ברוטו)</h5>
+                    <div class="stat-val" id="stat-total-revenue">₪0</div>
+                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-shekel-sign"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h5>קופונים פעילים</h5>
+                    <div class="stat-val" id="stat-coupons-count">0</div>
+                </div>
+                <div class="stat-icon purple"><i class="fa-solid fa-ticket"></i></div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h5>סה"כ מימושי קופונים</h5>
+                    <div class="stat-val" id="stat-redemptions-count">0</div>
+                </div>
+                <div class="stat-icon amber"><i class="fa-solid fa-tags"></i></div>
+            </div>
+        </div>
+
+        <!-- TABS HEADER -->
+        <div class="tabs-header">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchAdminTab('orders', this)">
+                    <i class="fa-solid fa-clock-rotate-left"></i> היסטוריית הזמנות
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('coupons', this)">
+                    <i class="fa-solid fa-ticket"></i> ניהול קופונים
+                </button>
+            </div>
+
+            <div id="tab-actions-area">
+                <!-- Action button injected dynamically based on active tab -->
+            </div>
+        </div>
+
+        <!-- TAB 1: ORDERS HISTORY -->
+        <div id="tab-orders" class="tab-content active">
+            <div class="controls-bar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="orders-search" placeholder="חפש לפי שם לקוח, טלפון, או מספר הזמנה..." oninput="renderOrdersTable()">
+                </div>
+
+                <div class="filter-group">
+                    <label>סינון לפי סטטוס:</label>
+                    <select id="orders-status-filter" class="select-input" onchange="renderOrdersTable()">
+                        <option value="all">כל הסטטוסים</option>
+                        <option value="new">חדש 🆕</option>
+                        <option value="processing">בטיפול ⏳</option>
+                        <option value="completed">הושלם ✅</option>
+                        <option value="cancelled">בוטל ❌</option>
+                    </select>
+                </div>
+
+                <button class="btn-secondary" onclick="exportOrdersToCSV()">
+                    <i class="fa-solid fa-file-csv"></i> יצוא ל-CSV
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>מספר הזמנה</th>
+                            <th>תאריך ושעה</th>
+                            <th>שם הלקוח</th>
+                            <th>טלפון</th>
+                            <th>סה"כ לתשלום</th>
+                            <th>קופון ששמש</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <!-- Dynamic rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 2: COUPON MANAGER -->
+        <div id="tab-coupons" class="tab-content">
+            <div class="controls-bar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="coupons-search" placeholder="חפש קוד קופון או תיאור..." oninput="renderCouponsTable()">
+                </div>
+
+                <button class="btn-primary" onclick="openCreateCouponModal()">
+                    <i class="fa-solid fa-plus"></i> צור קופון חדש
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>קוד קופון</th>
+                            <th>סוג הנחה</th>
+                            <th>ערך ההנחה</th>
+                            <th>מינימום הזמנה</th>
+                            <th>הגבלת שימוש</th>
+                            <th>מימושים בפועל</th>
+                            <th>סטטוס</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coupons-table-body">
+                        <!-- Dynamic rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: CREATE NEW COUPON -->
+    <div id="create-coupon-modal" class="modal-overlay" onclick="if(event.target===this) closeCreateCouponModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-ticket" style="color: var(--color-blue);"></i>
+                    <span>יצירת קופון / שובר חדש</span>
+                </div>
+                <button class="modal-close" onclick="closeCreateCouponModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="handleCreateCouponSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>קוד קופון (באנגלית)</label>
+                            <input type="text" id="cp-code" class="form-control" placeholder="למשל: VIP10, SUMMER20" required style="text-transform: uppercase; font-weight: 800;">
+                        </div>
+
+                        <div class="form-group">
+                            <label>קטגוריית קופון</label>
+                            <select id="cp-category" class="form-control">
+                                <option value="permanent">קוד קבוע ללקוחות</option>
+                                <option value="temporary">קוד זמני / מבצע</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>סוג ההנחה</label>
+                            <select id="cp-type" class="form-control" onchange="toggleCouponTypeFields()">
+                                <option value="percent">אחוז הנחה מסך הסל (%)</option>
+                                <option value="fixed">סכום הנחה קבוע בש"ח (₪)</option>
+                                <option value="item_override">מחיר מיוחד למוצר ספציפי</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="field-val-wrap">
+                            <label id="lbl-val">גובה ההנחה באחוזים (%)</label>
+                            <input type="number" id="cp-val" class="form-control" placeholder="למשל: 10" step="any">
+                        </div>
+
+                        <div class="form-group full-width" id="field-item-wrap" style="display: none;">
+                            <label>בחר מוצר ומחיר מיוחד (₪)</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select id="cp-item-id" class="form-control" style="flex: 2;">
+                                    <option value="t1">מתקן גליל נייר חצוב (t1)</option>
+                                    <option value="t5">מתקן סמארט נייר טואלט (t5)</option>
+                                    <option value="b5">מפיץ ריח סוללות (b5)</option>
+                                    <option value="c7">חומר ניקוי רצפות מרוכז (c7)</option>
+                                </select>
+                                <input type="number" id="cp-item-price" class="form-control" placeholder="מחיר חדש ₪" style="flex: 1;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>סכום מינימום להזמנה (₪)</label>
+                            <input type="number" id="cp-min" class="form-control" value="0" placeholder="0 = ללא מינימום">
+                        </div>
+
+                        <div class="form-group">
+                            <label>הגבלת שימוש ללקוח</label>
+                            <select id="cp-single-use" class="form-control">
+                                <option value="false">ללא הגבלה (רב-פעמי)</option>
+                                <option value="true">חד-פעמי לכל מספר טלפון 🔒</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>תיאור הקופון (מוצג ללקוח)</label>
+                            <input type="text" id="cp-desc" class="form-control" placeholder="למשל: 10% הנחה לחברי מועדון בהזמנה מעל ₪200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeCreateCouponModal()">ביטול</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> שמור קופון</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: VIEW ORDER DETAILS -->
+    <div id="order-details-modal" class="modal-overlay" onclick="if(event.target===this) closeOrderDetailsModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fa-solid fa-receipt" style="color: var(--color-blue);"></i>
+                    <span id="mod-order-title">פרטי הזמנה</span>
+                </div>
+                <button class="modal-close" onclick="closeOrderDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body" id="mod-order-content">
+                <!-- Injected dynamically -->
+            </div>
+
+            <div class="modal-footer" id="mod-order-footer">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        const ADMIN_PASS_DEFAULT = "shokim2026";
+
+        // Check authentication state on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('shokim_admin_auth');
+            const loginScreen = document.getElementById('login-screen');
+            if (isAuth === 'true') {
+                loginScreen.style.display = 'none';
+                initAdminDashboard();
+            } else {
+                loginScreen.style.display = 'flex';
+            }
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const passInput = document.getElementById('admin-pass-input').value;
+            const errorMsg = document.getElementById('login-error-msg');
+            const savedPass = localStorage.getItem(SHOKIM_DB_CONFIG.adminPassKey) || ADMIN_PASS_DEFAULT;
+
+            if (passInput === savedPass) {
+                sessionStorage.setItem('shokim_admin_auth', 'true');
+                document.getElementById('login-screen').style.display = 'none';
+                errorMsg.style.display = 'none';
+                initAdminDashboard();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('shokim_admin_auth');
+            checkAuth();
+        }
+
+        function initAdminDashboard() {
+            renderStats();
+            renderOrdersTable();
+            renderCouponsTable();
+
+            // Listen for DB changes
+            window.addEventListener('shokim_db_change', () => {
+                renderStats();
+                renderOrdersTable();
+                renderCouponsTable();
+            });
+        }
+
+        // --- STATS OVERVIEW ---
+        function renderStats() {
+            const orders = db.getOrders();
+            const coupons = db.getCoupons();
+
+            document.getElementById('stat-orders-count').textContent = orders.length;
+
+            const totalRev = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+            document.getElementById('stat-total-revenue').textContent = `₪${totalRev.toLocaleString('he-IL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            const activeCouponsCount = Object.values(coupons).filter(c => c.active).length;
+            document.getElementById('stat-coupons-count').textContent = activeCouponsCount;
+
+            const totalRedemptions = Object.values(coupons).reduce((sum, c) => sum + (c.usedBy ? c.usedBy.length : 0), 0);
+            document.getElementById('stat-redemptions-count').textContent = totalRedemptions;
+        }
+
+        // --- TABS SWITCHING ---
+        function switchAdminTab(tabName, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // --- ORDERS HISTORY TAB ---
+        function renderOrdersTable() {
+            const tbody = document.getElementById('orders-table-body');
+            if (!tbody) return;
+
+            let orders = db.getOrders();
+            const search = document.getElementById('orders-search').value.trim().toLowerCase();
+            const statusFilter = document.getElementById('orders-status-filter').value;
+
+            if (search) {
+                orders = orders.filter(o => 
+                    (o.id && o.id.toLowerCase().includes(search)) ||
+                    (o.clientName && o.clientName.toLowerCase().includes(search)) ||
+                    (o.clientPhone && o.clientPhone.includes(search))
+                );
+            }
+
+            if (statusFilter !== 'all') {
+                orders = orders.filter(o => o.status === statusFilter);
+            }
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            <i class="fa-solid fa-inbox" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                            אין הזמנות להצגה
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            orders.forEach(o => {
+                const statusBadge = getOrderStatusBadge(o.status);
+                const couponBadge = o.couponCode ? `<span class="badge" style="background:#e0f2fe; color:#0369a1;">${o.couponCode}</span>` : '<span style="color:#94a3b8;">—</span>';
+                
+                html += `
+                    <tr>
+                        <td><strong>${o.id}</strong></td>
+                        <td>${o.dateFormatted || new Date(o.created_at).toLocaleDateString('he-IL')}</td>
+                        <td><strong>${o.clientName}</strong></td>
+                        <td><a href="tel:${o.clientPhone}" style="color: var(--color-blue); font-weight: 700; text-decoration: none;">${o.clientPhone}</a></td>
+                        <td><strong style="color: var(--color-navy);">₪${o.total.toFixed(2)}</strong></td>
+                        <td>${couponBadge}</td>
+                        <td>
+                            <select onchange="updateOrderStatus('${o.id}', this.value)" class="select-input" style="padding: 0.25rem 0.6rem; font-size: 0.82rem;">
+                                <option value="new" ${o.status==='new'?'selected':''}>🆕 חדש</option>
+                                <option value="processing" ${o.status==='processing'?'selected':''}>⏳ בטיפול</option>
+                                <option value="completed" ${o.status==='completed'?'selected':''}>✅ הושלם</option>
+                                <option value="cancelled" ${o.status==='cancelled'?'selected':''}>❌ בוטל</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="icon-btn" onclick="openOrderDetailsModal('${o.id}')" title="צפה בפרטים"><i class="fa-solid fa-eye"></i></button>
+                                <button class="icon-btn whatsapp" onclick="openOrderWhatsApp('${o.id}')" title="צור קשר בוואטסאפ"><i class="fa-brands fa-whatsapp"></i></button>
+                                <button class="icon-btn delete" onclick="confirmDeleteOrder('${o.id}')" title="מחק הזמנה"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function getOrderStatusBadge(status) {
+            switch(status) {
+                case 'new': return '<span class="badge new">🆕 חדש</span>';
+                case 'processing': return '<span class="badge processing">⏳ בטיפול</span>';
+                case 'completed': return '<span class="badge completed">✅ הושלם</span>';
+                case 'cancelled': return '<span class="badge cancelled">❌ בוטל</span>';
+                default: return '<span class="badge new">חדש</span>';
+            }
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            db.updateOrderStatus(orderId, newStatus);
+        }
+
+        function confirmDeleteOrder(orderId) {
+            if (confirm(`האם אתה בטוח שברצונך למחוק את הזמנה ${orderId}?`)) {
+                db.deleteOrder(orderId);
+            }
+        }
+
+        function openOrderWhatsApp(orderId) {
+            const orders = db.getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o || !o.clientPhone) return;
+
+            const cleanPhone = o.clientPhone.replace(/[^0-9]/g, '');
+            const formattedPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
+
+            const msg = encodeURIComponent(`שלום ${o.clientName}, לגבי הזמנתך מספר ${o.id} בשיווקים בסך ₪${o.total.toFixed(2)}:`);
+            window.open(`https://wa.me/${formattedPhone}?text=${msg}`, '_blank');
+        }
+
+        function openOrderDetailsModal(orderId) {
+            const orders = db.getOrders();
+            const o = orders.find(item => item.id === orderId);
+            if (!o) return;
+
+            document.getElementById('mod-order-title').textContent = `פרטי הזמנה #${o.id}`;
+
+            let itemsHtml = '';
+            if (o.items && o.items.length > 0) {
+                o.items.forEach(it => {
+                    itemsHtml += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.88rem;">
+                            <div>
+                                <strong>${it.name}</strong>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">${it.pack || ''}</div>
+                            </div>
+                            <div style="text-align: left;">
+                                <span>${it.quantity} יחידות</span> × ₪${it.price} = <strong>₪${(it.quantity * it.price).toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('mod-order-content').innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-sm); padding: 1rem; font-size: 0.88rem;">
+                        <div><strong>שם הלקוח:</strong> ${o.clientName}</div>
+                        <div><strong>טלפון:</strong> ${o.clientPhone}</div>
+                        <div><strong>כתובת לאספקה:</strong> ${o.clientAddress || 'לא צוין'}</div>
+                        ${o.notes ? `<div><strong>הערות:</strong> ${o.notes}</div>` : ''}
+                    </div>
+
+                    <div>
+                        <h5 style="font-weight: 800; color: var(--color-navy); margin-bottom: 0.5rem;">פירוט מוצרים:</h5>
+                        ${itemsHtml}
+                    </div>
+
+                    <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--border-radius-sm); padding: 1rem; font-size: 0.9rem;">
+                        <div style="display: flex; justify-content: space-between;"><span>סכום ביניים (ללא מע"מ):</span> <span>₪${o.rawSubtotal.toFixed(2)}</span></div>
+                        ${o.discount > 0 ? `<div style="display: flex; justify-content: space-between; color: #047857;"><span>הנחה (${o.couponCode}):</span> <span>-₪${o.discount.toFixed(2)}</span></div>` : ''}
+                        <div style="display: flex; justify-content: space-between;"><span>מע"מ (18%):</span> <span>₪${o.vat.toFixed(2)}</span></div>
+                        <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 900; color: var(--color-navy); border-top: 1px solid #a7f3d0; padding-top: 0.5rem; margin-top: 0.5rem;">
+                            <span>סה"כ לתשלום:</span> <span>₪${o.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('mod-order-footer').innerHTML = `
+                <button class="btn-secondary" onclick="closeOrderDetailsModal()">סגור</button>
+                <button class="btn-primary" onclick="openOrderWhatsApp('${o.id}')"><i class="fa-brands fa-whatsapp"></i> פתח בוואטסאפ</button>
+            `;
+
+            document.getElementById('order-details-modal').style.display = 'flex';
+        }
+
+        function closeOrderDetailsModal() {
+            document.getElementById('order-details-modal').style.display = 'none';
+        }
+
+        function exportOrdersToCSV() {
+            const orders = db.getOrders();
+            if (orders.length === 0) {
+                alert("אין הזמנות לייצוא");
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM
+            csvContent += "מספר הזמנה,תאריך,שם לקוח,טלפון,כתובת,קופון,סה\"כ לתשלום,סטטוס\n";
+
+            orders.forEach(o => {
+                csvContent += `"${o.id}","${o.dateFormatted || ''}","${o.clientName}","${o.clientPhone}","${o.clientAddress || ''}","${o.couponCode || ''}","₪${o.total.toFixed(2)}","${o.status}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `shokim_orders_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- COUPON MANAGER TAB ---
+        function renderCouponsTable() {
+            const tbody = document.getElementById('coupons-table-body');
+            if (!tbody) return;
+
+            const coupons = db.getCoupons();
+            const search = document.getElementById('coupons-search').value.trim().toLowerCase();
+
+            let couponList = Object.values(coupons);
+            if (search) {
+                couponList = couponList.filter(c => 
+                    c.code.toLowerCase().includes(search) || 
+                    (c.desc && c.desc.toLowerCase().includes(search))
+                );
+            }
+
+            if (couponList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                            <i class="fa-solid fa-ticket" style="font-size: 2.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                            אין קופונים להצגה
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            couponList.forEach(c => {
+                let typeText = "אחוזים (%)";
+                let valText = `${c.value}%`;
+                if (c.type === 'fixed') {
+                    typeText = "סכום קבוע (₪)";
+                    valText = `₪${c.value}`;
+                } else if (c.type === 'item_override') {
+                    typeText = "מחיר מיוחד למוצר";
+                    valText = "מחירי מועדון";
+                }
+
+                const singleUseBadge = c.singleUse 
+                    ? '<span class="badge" style="background:#fef3c7; color:#92400e;">🔒 חד-פעמי ללקוח</span>' 
+                    : '<span class="badge" style="background:#f3f4f6; color:#4b5563;">רב-פעמי</span>';
+
+                const statusBadge = c.active 
+                    ? '<span class="badge active">פעיל</span>' 
+                    : '<span class="badge inactive">מופסק</span>';
+
+                const redemptionsCount = c.usedBy ? c.usedBy.length : 0;
+
+                html += `
+                    <tr>
+                        <td><strong style="color: var(--color-blue); font-size: 1rem;">${c.code}</strong></td>
+                        <td>${typeText}</td>
+                        <td><strong>${valText}</strong></td>
+                        <td>₪${c.minOrder || 0}</td>
+                        <td>${singleUseBadge}</td>
+                        <td><strong>${redemptionsCount}</strong> מימושים</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="icon-btn" onclick="toggleCouponStatus('${c.code}')" title="${c.active?'השבת קופון':'הפעל קופון'}">
+                                    <i class="fa-solid ${c.active?'fa-pause':'fa-play'}"></i>
+                                </button>
+                                <button class="icon-btn delete" onclick="confirmDeleteCoupon('${c.code}')" title="מחק קופון">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleCouponStatus(code) {
+            db.toggleCouponStatus(code);
+        }
+
+        function confirmDeleteCoupon(code) {
+            if (confirm(`האם אתה בטוח שברצונך למחוק את קוד הקופון ${code}?`)) {
+                db.deleteCoupon(code);
+            }
+        }
+
+        function openCreateCouponModal() {
+            document.getElementById('create-coupon-modal').style.display = 'flex';
+        }
+
+        function closeCreateCouponModal() {
+            document.getElementById('create-coupon-modal').style.display = 'none';
+        }
+
+        function toggleCouponTypeFields() {
+            const type = document.getElementById('cp-type').value;
+            const valWrap = document.getElementById('field-val-wrap');
+            const itemWrap = document.getElementById('field-item-wrap');
+            const lblVal = document.getElementById('lbl-val');
+
+            if (type === 'item_override') {
+                valWrap.style.display = 'none';
+                itemWrap.style.display = 'block';
+            } else {
+                valWrap.style.display = 'block';
+                itemWrap.style.display = 'none';
+                lblVal.textContent = type === 'percent' ? 'גובה ההנחה באחוזים (%)' : 'סכום ההנחה בש"ח (₪)';
+            }
+        }
+
+        function handleCreateCouponSubmit(e) {
+            e.preventDefault();
+            const code = document.getElementById('cp-code').value.trim().toUpperCase();
+            const category = document.getElementById('cp-category').value;
+            const type = document.getElementById('cp-type').value;
+            const minOrder = parseFloat(document.getElementById('cp-min').value) || 0;
+            const singleUse = document.getElementById('cp-single-use').value === 'true';
+            const desc = document.getElementById('cp-desc').value.trim();
+
+            let value = 0;
+            let itemPrices = null;
+
+            if (type === 'item_override') {
+                const itemId = document.getElementById('cp-item-id').value;
+                const itemPrice = parseFloat(document.getElementById('cp-item-price').value) || 0;
+                itemPrices = {};
+                itemPrices[itemId] = itemPrice;
+            } else {
+                value = parseFloat(document.getElementById('cp-val').value) || 0;
+            }
+
+            db.saveCoupon({
+                code,
+                category,
+                type,
+                value,
+                itemPrices,
+                minOrder,
+                singleUse,
+                desc,
+                active: true
+            });
+
+            closeCreateCouponModal();
+            alert(`קופון ${code} נוצר בהצלחה!`);
+        }
+    </script>
+</body>
+</html>
