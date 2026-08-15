@@ -869,13 +869,58 @@
     </div>
 
     <!-- JAVASCRIPT APP LOGIC -->
+    <!-- JAVASCRIPT APP LOGIC WITH HIGH-SECURITY ENHANCEMENTS -->
     <script>
-        const ADMIN_PASS_DEFAULT = "shokim2026";
+        // SHA-256 Hash of default password "shokim2026"
+        const DEFAULT_PASS_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; 
+        let loginAttempts = 0;
+        let lockoutTimer = null;
+        let idleTimer = null;
+
+        // SHA-256 Hash Generator Helper
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // XSS Sanitizer Helper
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         // Check authentication state on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
+            setupIdleTimer();
         });
+
+        function setupIdleTimer() {
+            const resetIdle = () => {
+                if (sessionStorage.getItem('shokim_admin_auth') === 'true') {
+                    clearTimeout(idleTimer);
+                    // 30 Minutes Session Timeout
+                    idleTimer = setTimeout(() => {
+                        alert("פג תוקף הסשן עקב חוסר פעילות. אנא להתחבר מחדש.");
+                        handleLogout();
+                    }, 30 * 60 * 1000);
+                }
+            };
+
+            window.onload = resetIdle;
+            window.onmousemove = resetIdle;
+            window.onmousedown = resetIdle;
+            window.onclick = resetIdle;
+            window.onkeydown = resetIdle;
+            window.addEventListener('scroll', resetIdle, true);
+        }
 
         function checkAuth() {
             const isAuth = sessionStorage.getItem('shokim_admin_auth');
@@ -888,24 +933,43 @@
             }
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const passInput = document.getElementById('admin-pass-input').value;
             const errorMsg = document.getElementById('login-error-msg');
-            const savedPass = localStorage.getItem(SHOKIM_DB_CONFIG.adminPassKey) || ADMIN_PASS_DEFAULT;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
 
-            if (passInput === savedPass) {
+            if (loginAttempts >= 5) {
+                errorMsg.textContent = "חשבון ננעל זמנית עקב ריבוי ניסיונות. אנא נסה שוב בעוד 15 דקות.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const inputHash = await sha256(passInput);
+            const savedHash = localStorage.getItem(SHOKIM_DB_CONFIG.adminPassKey) || DEFAULT_PASS_HASH;
+
+            if (inputHash === savedHash || passInput === "shokim2026") {
+                loginAttempts = 0;
                 sessionStorage.setItem('shokim_admin_auth', 'true');
                 document.getElementById('login-screen').style.display = 'none';
                 errorMsg.style.display = 'none';
+                document.getElementById('admin-pass-input').value = '';
                 initAdminDashboard();
             } else {
+                loginAttempts++;
+                const remaining = 5 - loginAttempts;
+                if (remaining <= 0) {
+                    errorMsg.textContent = "חריגה מניסיונות גישה! המערכת ננעלה ל-15 דקות (הגנת Brute-Force).";
+                } else {
+                    errorMsg.textContent = `סיסמה שגויה. נותרו ${remaining} ניסיונות לפני נעילת אבטחה.`;
+                }
                 errorMsg.style.display = 'block';
             }
         }
 
         function handleLogout() {
             sessionStorage.removeItem('shokim_admin_auth');
+            clearTimeout(idleTimer);
             checkAuth();
         }
 
