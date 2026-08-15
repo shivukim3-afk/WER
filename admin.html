@@ -970,21 +970,24 @@
         }
 
         function simulateGoogleSignInPrompt() {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.prompt();
+            const userEmail = prompt("כניסת מנהל — הזן את כתובת הגוגל המורשת שלך (Google OAuth Verification):", "shivukim3@gmail.com");
+            if (!userEmail) return;
+
+            const cleanEmail = userEmail.trim().toLowerCase();
+            const isAuth = AUTHORIZED_GOOGLE_EMAILS.some(e => e.toLowerCase() === cleanEmail) || cleanEmail.includes("shivukim");
+
+            if (isAuth) {
+                handleGoogleSignInResponse({
+                    credential: btoa(JSON.stringify({ header: true })) + "." + btoa(JSON.stringify({
+                        email: cleanEmail,
+                        name: "שמואל (שיווקים)",
+                        picture: ""
+                    })) + ".sig"
+                });
             } else {
-                const email = prompt("הזן את חשבון גוגל המורשה שלך (Google OAuth):", "shivukim3@gmail.com");
-                if (email && (email.toLowerCase().includes("shivukim") || AUTHORIZED_GOOGLE_EMAILS.includes(email.toLowerCase()))) {
-                    handleGoogleSignInResponse({
-                        credential: btoa(JSON.stringify({ header: true })) + "." + btoa(JSON.stringify({
-                            email: email,
-                            name: "שמואל - שיווקים",
-                            picture: ""
-                        })) + ".sig"
-                    });
-                } else if (email) {
-                    alert(`חשבון ${email} אינו מורשה לגשת למערכת הניהול.`);
-                }
+                const errorMsg = document.getElementById('login-error-msg');
+                errorMsg.textContent = `חשבון גוגל ${cleanEmail} אינו מורשה לניהול המערכת.`;
+                errorMsg.style.display = 'block';
             }
         }
 
