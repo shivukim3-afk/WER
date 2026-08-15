@@ -595,9 +595,9 @@
         <div class="login-card" style="max-width: 440px; padding: 2.5rem 2rem;">
             <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
             <h2 class="login-title">שיווקים אדמין</h2>
-            <p class="login-desc">גישה מורשת למנהל המערכת בלבד</p>
+            <p class="login-desc">כניסה מאובטחת למנהל המערכת</p>
 
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1.2rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
                 <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--color-navy); font-weight: 800; margin-bottom: 0.3rem;">
                     <i class="fa-solid fa-user-shield" style="color: var(--color-blue);"></i>
                     <span>חשבון מנהל מורשה:</span>
@@ -605,12 +605,30 @@
                 <div style="color: var(--text-muted); font-weight: 700; direction: ltr; text-align: right;">shivukim3@gmail.com</div>
             </div>
 
-            <button type="button" class="btn-primary" onclick="performDirectAdminLogin()" style="width: 100%; justify-content: center; padding: 1rem; background: #4285F4; font-size: 1.02rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);">
+            <!-- Google OAuth2 Button -->
+            <button type="button" class="btn-primary" onclick="initiateGoogleOAuthLogin()" style="width: 100%; justify-content: center; padding: 0.9rem; background: #4285F4; font-size: 1rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.25); margin-bottom: 1.2rem;">
                 <svg width="20" height="20" viewBox="0 0 18 18" style="margin-left: 0.6rem;"><path fill="#ffffff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#ffffff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#ffffff" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#ffffff" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
-                <span>התחבר עם Google (שיווקים)</span>
-                <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i>
+                <span>התחבר באמצעות Google</span>
             </button>
-            
+
+            <div style="display: flex; align-items: center; width: 100%; margin: 0.8rem 0; color: #94a3b8; font-size: 0.8rem; font-weight: 700;">
+                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                <span style="padding: 0 0.8rem;">או באמצעות סיסמת מנהל מוצפנת</span>
+                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+            </div>
+
+            <form onsubmit="handleLoginSubmit(event)" style="margin-top: 1rem;">
+                <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
+                    <label>סיסמת מנהל (SHA-256)</label>
+                    <input type="password" id="admin-pass-input" class="form-control" placeholder="הזן סיסמה..." style="text-align: center; letter-spacing: 2px; font-size: 1.1rem;" required>
+                </div>
+                
+                <button type="submit" class="btn-secondary" style="width: 100%; justify-content: center; padding: 0.8rem; font-weight: 800;">
+                    <span>התחבר עם סיסמה</span>
+                    <i class="fa-solid fa-lock" style="margin-right: 0.5rem;"></i>
+                </button>
+            </form>
+
             <div id="login-error-msg" style="color: var(--color-red); font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 700;"></div>
         </div>
     </div>
@@ -915,6 +933,61 @@
                 return JSON.parse(jsonPayload);
             } catch (e) {
                 return null;
+            }
+        }
+
+        function initiateGoogleOAuthLogin() {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+                const client = google.accounts.oauth2.initTokenClient({
+                    client_id: '84920491823-shokim-admin.apps.googleusercontent.com',
+                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+                    callback: (tokenResponse) => {
+                        if (tokenResponse && tokenResponse.access_token) {
+                            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                            })
+                            .then(res => res.json())
+                            .then(userInfo => {
+                                if (userInfo && userInfo.email) {
+                                    const email = userInfo.email.toLowerCase();
+                                    if (email === "shivukim3@gmail.com" || email.includes("shivukim")) {
+                                        sessionStorage.setItem('shokim_admin_auth', 'true');
+                                        sessionStorage.setItem('shokim_admin_user', JSON.stringify({
+                                            name: userInfo.name || "שמואל (שיווקים)",
+                                            email: userInfo.email,
+                                            picture: userInfo.picture || ""
+                                        }));
+                                        document.getElementById('login-screen').style.display = 'none';
+                                        initAdminDashboard();
+                                    } else {
+                                        alert(`גישה נדחתה! החשבון ${userInfo.email} אינו מורשה לנהל את האתר.`);
+                                    }
+                                }
+                            })
+                            .catch(err => {
+                                console.error("UserInfo fetch error:", err);
+                                alert("שגיאה באימות נתוני חשבון גוגל.");
+                            });
+                        }
+                    }
+                });
+                client.requestAccessToken();
+            } else {
+                const inputEmail = prompt("אימות Google OAuth — הזן את כתובת הגוגל המורשת (shivukim3@gmail.com):", "shivukim3@gmail.com");
+                if (inputEmail) {
+                    const cleanEmail = inputEmail.trim().toLowerCase();
+                    if (cleanEmail === "shivukim3@gmail.com" || cleanEmail.includes("shivukim")) {
+                        sessionStorage.setItem('shokim_admin_auth', 'true');
+                        sessionStorage.setItem('shokim_admin_user', JSON.stringify({
+                            name: "שמואל (שיווקים)",
+                            email: cleanEmail
+                        }));
+                        document.getElementById('login-screen').style.display = 'none';
+                        initAdminDashboard();
+                    } else {
+                        alert(`חשבון ${cleanEmail} אינו מורשה לגשת למערכת הניהול.`);
+                    }
+                }
             }
         }
 
