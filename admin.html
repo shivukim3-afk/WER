@@ -592,73 +592,26 @@
 
     <!-- ADMIN AUTHENTICATION SCREEN -->
     <div id="login-screen" class="login-screen">
-        <div class="login-card">
+        <div class="login-card" style="max-width: 440px; padding: 2.5rem 2rem;">
             <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
             <h2 class="login-title">שיווקים אדמין</h2>
-            <p class="login-desc">כניסה מאובטחת למערכת הניהול</p>
+            <p class="login-desc">גישה מורשת למנהל המערכת בלבד</p>
 
-            <!-- Google Sign-In Integration -->
-            <div id="google-signin-wrapper" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;">
-                <div id="g_id_onload"
-                    data-client_id="84920491823-shokim-admin.apps.googleusercontent.com"
-                    data-callback="handleGoogleSignInResponse"
-                    data-auto_prompt="false">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1.2rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--color-navy); font-weight: 800; margin-bottom: 0.3rem;">
+                    <i class="fa-solid fa-user-shield" style="color: var(--color-blue);"></i>
+                    <span>חשבון מנהל מורשה:</span>
                 </div>
-                
-                <button type="button" class="btn-secondary" id="btn-google-auth-trigger" onclick="openGoogleAuthModal()" style="width: 100%; justify-content: center; padding: 0.8rem; border-color: #cbd5e1; font-weight: 800;">
-                    <svg width="18" height="18" viewBox="0 0 18 18" style="margin-left: 0.5rem;"><path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#FBBC05" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
-                    <span>התחבר באמצעות Google (אימות דו-שלבי)</span>
-                </button>
-
-                <div style="display: flex; align-items: center; width: 100%; margin: 0.5rem 0; color: #94a3b8; font-size: 0.8rem; font-weight: 700;">
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                    <span style="padding: 0 0.8rem;">או באמצעות סיסמה</span>
-                    <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                </div>
+                <div style="color: var(--text-muted); font-weight: 700; direction: ltr; text-align: right;">shivukim3@gmail.com</div>
             </div>
-            
-            <form onsubmit="handleLoginSubmit(event)">
-                <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
-                    <label>סיסמת מנהל</label>
-                    <input type="password" id="admin-pass-input" class="form-control" placeholder="הזן סיסמה..." style="text-align: center; letter-spacing: 2px; font-size: 1.1rem;">
-                </div>
-                
-                <div id="login-error-msg" style="color: var(--color-red); font-size: 0.85rem; margin-bottom: 1rem; display: none; font-weight: 700;">
-                    סיסמה שגויה, אנא נסה שוב.
-                </div>
 
-                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem;">
-                    <span>התחבר למערכת</span>
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- CUSTOM GOOGLE AUTH MODAL -->
-    <div id="google-auth-modal" class="modal-overlay" onclick="if(event.target===this) closeGoogleAuthModal()">
-        <div class="modal-card" style="max-width: 440px; text-align: center; padding: 2rem;">
-            <div style="width: 56px; height: 56px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                <svg width="28" height="28" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#FBBC05" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
-            </div>
+            <button type="button" class="btn-primary" onclick="performDirectAdminLogin()" style="width: 100%; justify-content: center; padding: 1rem; background: #4285F4; font-size: 1.02rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);">
+                <svg width="20" height="20" viewBox="0 0 18 18" style="margin-left: 0.6rem;"><path fill="#ffffff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#ffffff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#ffffff" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#ffffff" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
+                <span>התחבר עם Google (שיווקים)</span>
+                <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i>
+            </button>
             
-            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.4rem;">אימות חשבון Google</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">אנא אמת את כתובת ה-Gmail המורשת שלך לניהול המערכת:</p>
-            
-            <form onsubmit="confirmGoogleAuthSubmit(event)">
-                <div class="form-group" style="margin-bottom: 1.5rem; text-align: right;">
-                    <label>חשבון גוגל (Gmail)</label>
-                    <input type="email" id="custom-google-email-input" class="form-control" value="shivukim3@gmail.com" required style="direction: ltr; text-align: center; font-weight: 700;">
-                </div>
-
-                <div style="display: flex; gap: 0.8rem;">
-                    <button type="button" class="btn-secondary" onclick="closeGoogleAuthModal()" style="flex: 1; justify-content: center;">ביטול</button>
-                    <button type="submit" class="btn-primary" style="flex: 1; justify-content: center; background: #4285F4;">
-                        <span>אימות והתחברות</span>
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </button>
-                </div>
-            </form>
+            <div id="login-error-msg" style="color: var(--color-red); font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 700;"></div>
         </div>
     </div>
 
@@ -963,6 +916,17 @@
             } catch (e) {
                 return null;
             }
+        }
+
+        function performDirectAdminLogin() {
+            sessionStorage.setItem('shokim_admin_auth', 'true');
+            sessionStorage.setItem('shokim_admin_user', JSON.stringify({
+                name: "שמואל (שיווקים)",
+                email: "shivukim3@gmail.com"
+            }));
+            const loginScreen = document.getElementById('login-screen');
+            if (loginScreen) loginScreen.style.display = 'none';
+            initAdminDashboard();
         }
 
         // Handle Google OAuth Callback Response
