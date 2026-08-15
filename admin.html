@@ -587,8 +587,38 @@
 </head>
 <body>
 
-    <!-- AUTH: Handled by Cloudflare Access (Zero Trust) at network level -->
-    <!-- No in-page login form needed — Cloudflare intercepts before this page loads -->
+    <!-- Google Identity Services (GSI) SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- ADMIN AUTHENTICATION SCREEN -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
+            <h2 class="login-title">שיווקים אדמין</h2>
+            <p class="login-desc">כניסה מאובטחת באמצעות חשבון Google מורשה בלבד</p>
+
+            <div id="google-btn-container" style="display: flex; justify-content: center; margin: 1.5rem 0 1rem;">
+                <div id="g_id_onload"
+                     data-client_id="84920491823-shokim.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left"
+                     data-width="280">
+                </div>
+            </div>
+
+            <!-- Error message container for unauthorized email attempts -->
+            <div id="login-error-msg" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.9rem; border-radius: var(--border-radius-sm); font-size: 0.88rem; font-weight: 700; margin-top: 1rem; line-height: 1.4;">
+            </div>
+        </div>
+    </div>
 
     <!-- MAIN ADMIN NAVIGATION NAVBAR -->
     <nav class="admin-nav">
@@ -598,9 +628,9 @@
         </div>
         
         <div class="admin-user-info">
-            <div class="admin-badge">
-                <i class="fa-solid fa-database"></i>
-                <span>DB: Connected</span>
+            <div class="admin-badge" id="admin-user-display">
+                <i class="fa-solid fa-user-check"></i>
+                <span id="admin-user-email">Shivukim3@gmail.com</span>
             </div>
             <button class="logout-btn" onclick="handleLogout()">
                 <i class="fa-solid fa-right-from-bracket"></i> יציאה
@@ -848,6 +878,8 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
+        const AUTHORIZED_EMAIL = "shivukim3@gmail.com";
+
         // XSS Sanitizer Helper
         function escapeHTML(str) {
             if (!str) return '';
@@ -859,15 +891,96 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Cloudflare Access handles authentication before this page loads.
-        // No in-page login logic needed.
+        // Decode JWT ID Token payload from Google
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Handle Google Credential Response
+        function handleCredentialResponse(response) {
+            const errorBox = document.getElementById('login-error-msg');
+            if (!response || !response.credential) {
+                errorBox.textContent = "אימות Google נכשל. אנא נסה שוב.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            const payload = parseJwt(response.credential);
+            if (!payload || !payload.email) {
+                errorBox.textContent = "לא התקבלו פרטי זיהוי תקינים מחשבון Google.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            const userEmail = payload.email.trim().toLowerCase();
+
+            // Strict check: ONLY Shivukim3@gmail.com
+            if (userEmail === AUTHORIZED_EMAIL.toLowerCase()) {
+                sessionStorage.setItem('shokim_admin_auth', 'true');
+                sessionStorage.setItem('shokim_admin_user', JSON.stringify({
+                    name: payload.name || "שמואל",
+                    email: payload.email,
+                    picture: payload.picture || ""
+                }));
+
+                errorBox.style.display = 'none';
+                document.getElementById('login-screen').style.display = 'none';
+                updateAdminUserNavbar(payload);
+                initAdminDashboard();
+            } else {
+                // Deny all other accounts
+                sessionStorage.removeItem('shokim_admin_auth');
+                sessionStorage.removeItem('shokim_admin_user');
+                errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>גישה נדחתה!</b><br>החשבון <u>${escapeHTML(payload.email)}</u> אינו מורשה לגשת למערכת הניהול.<br>הגישה מותרת אך ורק לכתובת: <b>Shivukim3@gmail.com</b>`;
+                errorBox.style.display = 'block';
+                
+                if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                    google.accounts.id.disableAutoSelect();
+                }
+            }
+        }
+
+        // Check authentication state on page load
         document.addEventListener('DOMContentLoaded', () => {
-            initAdminDashboard();
+            checkAuth();
         });
 
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('shokim_admin_auth');
+            const loginScreen = document.getElementById('login-screen');
+            if (isAuth === 'true') {
+                loginScreen.style.display = 'none';
+                const savedUser = JSON.parse(sessionStorage.getItem('shokim_admin_user') || '{}');
+                updateAdminUserNavbar(savedUser);
+                initAdminDashboard();
+            } else {
+                loginScreen.style.display = 'flex';
+            }
+        }
+
+        function updateAdminUserNavbar(user) {
+            const emailEl = document.getElementById('admin-user-email');
+            if (emailEl && user && user.email) {
+                emailEl.textContent = user.email;
+            }
+        }
+
         function handleLogout() {
-            // Redirect to Cloudflare Access logout
-            window.location.href = 'https://wer-308.pages.dev/cdn-cgi/access/logout';
+            sessionStorage.removeItem('shokim_admin_auth');
+            sessionStorage.removeItem('shokim_admin_user');
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                google.accounts.id.disableAutoSelect();
+            }
+            checkAuth();
         }
 
         function initAdminDashboard() {
