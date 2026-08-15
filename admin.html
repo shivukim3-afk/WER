@@ -587,51 +587,8 @@
 </head>
 <body>
 
-    <!-- Google Identity Services SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <!-- ADMIN AUTHENTICATION SCREEN -->
-    <div id="login-screen" class="login-screen">
-        <div class="login-card" style="max-width: 440px; padding: 2.5rem 2rem;">
-            <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
-            <h2 class="login-title">שיווקים אדמין</h2>
-            <p class="login-desc">כניסה מאובטחת למנהל המערכת</p>
-
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
-                <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--color-navy); font-weight: 800; margin-bottom: 0.3rem;">
-                    <i class="fa-solid fa-user-shield" style="color: var(--color-blue);"></i>
-                    <span>חשבון מנהל מורשה:</span>
-                </div>
-                <div style="color: var(--text-muted); font-weight: 700; direction: ltr; text-align: right;">shivukim3@gmail.com</div>
-            </div>
-
-            <!-- Google OAuth2 Button -->
-            <button type="button" class="btn-primary" onclick="initiateGoogleOAuthLogin()" style="width: 100%; justify-content: center; padding: 0.9rem; background: #4285F4; font-size: 1rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.25); margin-bottom: 1.2rem;">
-                <svg width="20" height="20" viewBox="0 0 18 18" style="margin-left: 0.6rem;"><path fill="#ffffff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#ffffff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#ffffff" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#ffffff" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
-                <span>התחבר באמצעות Google</span>
-            </button>
-
-            <div style="display: flex; align-items: center; width: 100%; margin: 0.8rem 0; color: #94a3b8; font-size: 0.8rem; font-weight: 700;">
-                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-                <span style="padding: 0 0.8rem;">או באמצעות סיסמת מנהל מוצפנת</span>
-                <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
-            </div>
-
-            <form onsubmit="handleLoginSubmit(event)" style="margin-top: 1rem;">
-                <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
-                    <label>סיסמת מנהל (SHA-256)</label>
-                    <input type="password" id="admin-pass-input" class="form-control" placeholder="הזן סיסמה..." style="text-align: center; letter-spacing: 2px; font-size: 1.1rem;" required>
-                </div>
-                
-                <button type="submit" class="btn-secondary" style="width: 100%; justify-content: center; padding: 0.8rem; font-weight: 800;">
-                    <span>התחבר עם סיסמה</span>
-                    <i class="fa-solid fa-lock" style="margin-right: 0.5rem;"></i>
-                </button>
-            </form>
-
-            <div id="login-error-msg" style="color: var(--color-red); font-size: 0.85rem; margin-top: 1rem; display: none; font-weight: 700;"></div>
-        </div>
-    </div>
+    <!-- AUTH: Handled by Cloudflare Access (Zero Trust) at network level -->
+    <!-- No in-page login form needed — Cloudflare intercepts before this page loads -->
 
     <!-- MAIN ADMIN NAVIGATION NAVBAR -->
     <nav class="admin-nav">
@@ -890,22 +847,7 @@
     </div>
 
     <!-- JAVASCRIPT APP LOGIC -->
-    <!-- JAVASCRIPT APP LOGIC WITH HIGH-SECURITY ENHANCEMENTS -->
     <script>
-        // SHA-256 Hash of default password "shokim2026"
-        const DEFAULT_PASS_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; 
-        let loginAttempts = 0;
-        let lockoutTimer = null;
-        let idleTimer = null;
-
-        // SHA-256 Hash Generator Helper
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
         // XSS Sanitizer Helper
         function escapeHTML(str) {
             if (!str) return '';
@@ -917,184 +859,15 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // List of Authorized Google Admin Emails
-        const AUTHORIZED_GOOGLE_EMAILS = [
-            "shivukim3@gmail.com"
-        ];
-
-        // Decode JWT Token Payload
-        function parseJwtPayload(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function initiateGoogleOAuthLogin() {
-            openGoogleAuthModal();
-        }
-
-        function performDirectAdminLogin() {
-            sessionStorage.setItem('shokim_admin_auth', 'true');
-            sessionStorage.setItem('shokim_admin_user', JSON.stringify({
-                name: "שמואל (שיווקים)",
-                email: "shivukim3@gmail.com"
-            }));
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) loginScreen.style.display = 'none';
-            initAdminDashboard();
-        }
-
-        // Handle Google OAuth Callback Response
-        function handleGoogleSignInResponse(response) {
-            const errorMsg = document.getElementById('login-error-msg');
-            if (!response || !response.credential) {
-                errorMsg.textContent = "אימות גוגל נכשל. אנא נסה שוב.";
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            const payload = parseJwtPayload(response.credential);
-            if (payload && payload.email) {
-                const email = payload.email.toLowerCase();
-                const isAuthorized = AUTHORIZED_GOOGLE_EMAILS.some(e => e.toLowerCase() === email) || email.includes("shivukim");
-
-                if (isAuthorized) {
-                    sessionStorage.setItem('shokim_admin_auth', 'true');
-                    sessionStorage.setItem('shokim_admin_user', JSON.stringify({
-                        name: payload.name || "מנהל מערכת",
-                        email: payload.email,
-                        picture: payload.picture || ""
-                    }));
-                    document.getElementById('login-screen').style.display = 'none';
-                    errorMsg.style.display = 'none';
-                    initAdminDashboard();
-                } else {
-                    errorMsg.textContent = `חשבון גוגל זה (${email}) אינו מורשה לניהול המערכת.`;
-                    errorMsg.style.display = 'block';
-                }
-            }
-        }
-
-        function openGoogleAuthModal() {
-            const modal = document.getElementById('google-auth-modal');
-            if (modal) modal.style.display = 'flex';
-        }
-
-        function simulateGoogleSignInPrompt() {
-            openGoogleAuthModal();
-        }
-
-        function closeGoogleAuthModal() {
-            document.getElementById('google-auth-modal').style.display = 'none';
-        }
-
-        function confirmGoogleAuthSubmit(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('custom-google-email-input').value;
-            if (!emailInput) return;
-
-            const cleanEmail = emailInput.trim().toLowerCase();
-            const isAuth = AUTHORIZED_GOOGLE_EMAILS.some(e => e.toLowerCase() === cleanEmail) || cleanEmail.includes("shivukim");
-
-            closeGoogleAuthModal();
-
-            if (isAuth) {
-                handleGoogleSignInResponse({
-                    credential: btoa(JSON.stringify({ header: true })) + "." + btoa(JSON.stringify({
-                        email: cleanEmail,
-                        name: "שמואל (שיווקים)",
-                        picture: ""
-                    })) + ".sig"
-                });
-            } else {
-                const errorMsg = document.getElementById('login-error-msg');
-                errorMsg.textContent = `חשבון גוגל ${cleanEmail} אינו מורשה לניהול המערכת.`;
-                errorMsg.style.display = 'block';
-            }
-        }
-
-        // Check authentication state on page load
+        // Cloudflare Access handles authentication before this page loads.
+        // No in-page login logic needed.
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            setupIdleTimer();
+            initAdminDashboard();
         });
 
-        function setupIdleTimer() {
-            const resetIdle = () => {
-                if (sessionStorage.getItem('shokim_admin_auth') === 'true') {
-                    clearTimeout(idleTimer);
-                    // 30 Minutes Session Timeout
-                    idleTimer = setTimeout(() => {
-                        alert("פג תוקף הסשן עקב חוסר פעילות. אנא להתחבר מחדש.");
-                        handleLogout();
-                    }, 30 * 60 * 1000);
-                }
-            };
-
-            window.onload = resetIdle;
-            window.onmousemove = resetIdle;
-            window.onmousedown = resetIdle;
-            window.onclick = resetIdle;
-            window.onkeydown = resetIdle;
-            window.addEventListener('scroll', resetIdle, true);
-        }
-
-        function checkAuth() {
-            const isAuth = sessionStorage.getItem('shokim_admin_auth');
-            const loginScreen = document.getElementById('login-screen');
-            if (isAuth === 'true') {
-                loginScreen.style.display = 'none';
-                initAdminDashboard();
-            } else {
-                loginScreen.style.display = 'flex';
-            }
-        }
-
-        async function handleLoginSubmit(e) {
-            e.preventDefault();
-            const passInput = document.getElementById('admin-pass-input').value;
-            const errorMsg = document.getElementById('login-error-msg');
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-
-            if (loginAttempts >= 5) {
-                errorMsg.textContent = "חשבון ננעל זמנית עקב ריבוי ניסיונות. אנא נסה שוב בעוד 15 דקות.";
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            const inputHash = await sha256(passInput);
-            const savedHash = localStorage.getItem(SHOKIM_DB_CONFIG.adminPassKey) || DEFAULT_PASS_HASH;
-
-            if (inputHash === savedHash || passInput === "shokim2026") {
-                loginAttempts = 0;
-                sessionStorage.setItem('shokim_admin_auth', 'true');
-                document.getElementById('login-screen').style.display = 'none';
-                errorMsg.style.display = 'none';
-                document.getElementById('admin-pass-input').value = '';
-                initAdminDashboard();
-            } else {
-                loginAttempts++;
-                const remaining = 5 - loginAttempts;
-                if (remaining <= 0) {
-                    errorMsg.textContent = "חריגה מניסיונות גישה! המערכת ננעלה ל-15 דקות (הגנת Brute-Force).";
-                } else {
-                    errorMsg.textContent = `סיסמה שגויה. נותרו ${remaining} ניסיונות לפני נעילת אבטחה.`;
-                }
-                errorMsg.style.display = 'block';
-            }
-        }
-
         function handleLogout() {
-            sessionStorage.removeItem('shokim_admin_auth');
-            clearTimeout(idleTimer);
-            checkAuth();
+            // Redirect to Cloudflare Access logout
+            window.location.href = 'https://wer-308.pages.dev/cdn-cgi/access/logout';
         }
 
         function initAdminDashboard() {
