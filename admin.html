@@ -937,58 +937,7 @@
         }
 
         function initiateGoogleOAuthLogin() {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-                const client = google.accounts.oauth2.initTokenClient({
-                    client_id: '84920491823-shokim-admin.apps.googleusercontent.com',
-                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
-                    callback: (tokenResponse) => {
-                        if (tokenResponse && tokenResponse.access_token) {
-                            fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-                            })
-                            .then(res => res.json())
-                            .then(userInfo => {
-                                if (userInfo && userInfo.email) {
-                                    const email = userInfo.email.toLowerCase();
-                                    if (email === "shivukim3@gmail.com" || email.includes("shivukim")) {
-                                        sessionStorage.setItem('shokim_admin_auth', 'true');
-                                        sessionStorage.setItem('shokim_admin_user', JSON.stringify({
-                                            name: userInfo.name || "שמואל (שיווקים)",
-                                            email: userInfo.email,
-                                            picture: userInfo.picture || ""
-                                        }));
-                                        document.getElementById('login-screen').style.display = 'none';
-                                        initAdminDashboard();
-                                    } else {
-                                        alert(`גישה נדחתה! החשבון ${userInfo.email} אינו מורשה לנהל את האתר.`);
-                                    }
-                                }
-                            })
-                            .catch(err => {
-                                console.error("UserInfo fetch error:", err);
-                                alert("שגיאה באימות נתוני חשבון גוגל.");
-                            });
-                        }
-                    }
-                });
-                client.requestAccessToken();
-            } else {
-                const inputEmail = prompt("אימות Google OAuth — הזן את כתובת הגוגל המורשת (shivukim3@gmail.com):", "shivukim3@gmail.com");
-                if (inputEmail) {
-                    const cleanEmail = inputEmail.trim().toLowerCase();
-                    if (cleanEmail === "shivukim3@gmail.com" || cleanEmail.includes("shivukim")) {
-                        sessionStorage.setItem('shokim_admin_auth', 'true');
-                        sessionStorage.setItem('shokim_admin_user', JSON.stringify({
-                            name: "שמואל (שיווקים)",
-                            email: cleanEmail
-                        }));
-                        document.getElementById('login-screen').style.display = 'none';
-                        initAdminDashboard();
-                    } else {
-                        alert(`חשבון ${cleanEmail} אינו מורשה לגשת למערכת הניהול.`);
-                    }
-                }
-            }
+            openGoogleAuthModal();
         }
 
         function performDirectAdminLogin() {
