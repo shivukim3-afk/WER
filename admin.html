@@ -635,6 +635,33 @@
         </div>
     </div>
 
+    <!-- CUSTOM GOOGLE AUTH MODAL -->
+    <div id="google-auth-modal" class="modal-overlay" onclick="if(event.target===this) closeGoogleAuthModal()">
+        <div class="modal-card" style="max-width: 440px; text-align: center; padding: 2rem;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                <svg width="28" height="28" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#FBBC05" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
+            </div>
+            
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.4rem;">אימות חשבון Google</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">אנא אמת את כתובת ה-Gmail המורשת שלך לניהול המערכת:</p>
+            
+            <form onsubmit="confirmGoogleAuthSubmit(event)">
+                <div class="form-group" style="margin-bottom: 1.5rem; text-align: right;">
+                    <label>חשבון גוגל (Gmail)</label>
+                    <input type="email" id="custom-google-email-input" class="form-control" value="shivukim3@gmail.com" required style="direction: ltr; text-align: center; font-weight: 700;">
+                </div>
+
+                <div style="display: flex; gap: 0.8rem;">
+                    <button type="button" class="btn-secondary" onclick="closeGoogleAuthModal()" style="flex: 1; justify-content: center;">ביטול</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; justify-content: center; background: #4285F4;">
+                        <span>אימות והתחברות</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MAIN ADMIN NAVIGATION NAVBAR -->
     <nav class="admin-nav">
         <div class="admin-brand">
@@ -970,11 +997,22 @@
         }
 
         function simulateGoogleSignInPrompt() {
-            const userEmail = prompt("כניסת מנהל — הזן את כתובת הגוגל המורשת שלך (Google OAuth Verification):", "shivukim3@gmail.com");
-            if (!userEmail) return;
+            document.getElementById('google-auth-modal').style.display = 'flex';
+        }
 
-            const cleanEmail = userEmail.trim().toLowerCase();
+        function closeGoogleAuthModal() {
+            document.getElementById('google-auth-modal').style.display = 'none';
+        }
+
+        function confirmGoogleAuthSubmit(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('custom-google-email-input').value;
+            if (!emailInput) return;
+
+            const cleanEmail = emailInput.trim().toLowerCase();
             const isAuth = AUTHORIZED_GOOGLE_EMAILS.some(e => e.toLowerCase() === cleanEmail) || cleanEmail.includes("shivukim");
+
+            closeGoogleAuthModal();
 
             if (isAuth) {
                 handleGoogleSignInResponse({
