@@ -1,16 +1,40 @@
 /**
- * Shokim Database & Store Management API (Shokim DB Engine)
- * Database Project ID: b362b102-e747-475d-ab24-402aaa00a963
+ * Shokim Cloud Database & Store Management Engine
+ * Powered by Google Cloud Firestore & Firebase Auth
+ * Project: oval-bazaar-505723-j9
  */
 
-const SHOKIM_DB_CONFIG = {
-    projectId: "b362b102-e747-475d-ab24-402aaa00a963",
-    couponsKey: "shokim_db_coupons_v2",
-    ordersKey: "shokim_db_orders_v2",
-    adminPassKey: "shokim_db_admin_pass"
+const firebaseConfig = {
+    apiKey: "AIzaSyDHpEwCNhlb1Nxu_RsYsjqf24ubdMI1J_Y",
+    authDomain: "oval-bazaar-505723-j9.firebaseapp.com",
+    projectId: "oval-bazaar-505723-j9",
+    storageBucket: "oval-bazaar-505723-j9.firebasestorage.app",
+    messagingSenderId: "732672749324",
+    appId: "1:732672749324:web:139dc7e85b129d9e436329",
+    measurementId: "G-65XTZEYSVJ"
 };
 
-// Default initial coupons if DB is empty
+// Initialize Firebase SDK
+let fbApp = null;
+let firestoreDb = null;
+let fbAuth = null;
+
+try {
+    if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+            fbApp = firebase.initializeApp(firebaseConfig);
+        } else {
+            fbApp = firebase.app();
+        }
+        firestoreDb = firebase.firestore();
+        fbAuth = firebase.auth();
+        console.log("✅ Shokim Cloud Firestore Database connected successfully!");
+    }
+} catch (e) {
+    console.warn("Firebase initialization notice:", e);
+}
+
+// Default initial coupons if Cloud DB is fresh
 const DEFAULT_COUPONS = {
     "VIP8": { 
         code: "VIP8", 
@@ -54,31 +78,81 @@ const DEFAULT_COUPONS = {
     }
 };
 
-class ShokimDB {
+class ShokimCloudDB {
     constructor() {
+        this.cacheCoupons = {};
+        this.cacheOrders = [];
+        this.isCloudConnected = !!firestoreDb;
         this.init();
     }
 
     init() {
-        // Initialize Coupons Table
-        if (!localStorage.getItem(SHOKIM_DB_CONFIG.couponsKey)) {
-            localStorage.setItem(SHOKIM_DB_CONFIG.couponsKey, JSON.stringify(DEFAULT_COUPONS));
+        // Load initial local cache
+        try {
+            const localCp = localStorage.getItem('shokim_db_coupons_v2');
+            this.cacheCoupons = localCp ? JSON.parse(localCp) : DEFAULT_COUPONS;
+            const localOrd = localStorage.getItem('shokim_db_orders_v2');
+            this.cacheOrders = localOrd ? JSON.parse(localOrd) : [];
+        } catch (e) {
+            this.cacheCoupons = DEFAULT_COUPONS;
+            this.cacheOrders = [];
         }
-        // Initialize Orders Table
-        if (!localStorage.getItem(SHOKIM_DB_CONFIG.ordersKey)) {
-            localStorage.setItem(SHOKIM_DB_CONFIG.ordersKey, JSON.stringify([]));
+
+        // Setup real-time Cloud Firestore listeners if available
+        if (firestoreDb) {
+            this.setupCloudListeners();
+        }
+    }
+
+    setupCloudListeners() {
+        // Real-time Cloud Coupons Listener
+        firestoreDb.collection("coupons").onSnapshot((snapshot) => {
+            if (!snapshot.empty) {
+                const cloudCoupons = {};
+                snapshot.forEach(doc => {
+                    cloudCoupons[doc.id] = doc.data();
+                });
+                this.cacheCoupons = cloudCoupons;
+                localStorage.setItem('shokim_db_coupons_v2', JSON.stringify(cloudCoupons));
+                this.notifyChange('coupons');
+            } else {
+                // Seed default coupons if collection is empty
+                this.seedDefaultCoupons();
+            }
+        }, (err) => {
+            console.warn("Firestore coupons listener note (auth dependent):", err.message);
+        });
+
+        // Real-time Cloud Orders Listener
+        firestoreDb.collection("orders").orderBy("created_at", "desc").onSnapshot((snapshot) => {
+            const cloudOrders = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                data.docId = doc.id;
+                cloudOrders.push(data);
+            });
+            this.cacheOrders = cloudOrders;
+            localStorage.setItem('shokim_db_orders_v2', JSON.stringify(cloudOrders));
+            this.notifyChange('orders');
+        }, (err) => {
+            console.warn("Firestore orders listener note (auth dependent):", err.message);
+        });
+    }
+
+    async seedDefaultCoupons() {
+        if (!firestoreDb) return;
+        try {
+            for (const [code, cData] of Object.entries(DEFAULT_COUPONS)) {
+                await firestoreDb.collection("coupons").doc(code).set(cData, { merge: true });
+            }
+        } catch (e) {
+            console.warn("Could not seed default coupons to Firestore:", e);
         }
     }
 
     // --- COUPONS ENGINE ---
     getCoupons() {
-        try {
-            const data = localStorage.getItem(SHOKIM_DB_CONFIG.couponsKey);
-            return data ? JSON.parse(data) : DEFAULT_COUPONS;
-        } catch (e) {
-            console.error("Error reading coupons DB:", e);
-            return DEFAULT_COUPONS;
-        }
+        return this.cacheCoupons && Object.keys(this.cacheCoupons).length > 0 ? this.cacheCoupons : DEFAULT_COUPONS;
     }
 
     getCoupon(codeStr) {
@@ -88,12 +162,12 @@ class ShokimDB {
         return coupons[cleanCode] || null;
     }
 
-    saveCoupon(couponObj) {
+    async saveCoupon(couponObj) {
         if (!couponObj || !couponObj.code) return false;
         const cleanCode = couponObj.code.trim().toUpperCase();
-        const coupons = this.getCoupons();
-        
-        coupons[cleanCode] = {
+        const existing = this.getCoupon(cleanCode);
+
+        const couponData = {
             code: cleanCode,
             category: couponObj.category || "custom",
             type: couponObj.type || "percent",
@@ -102,72 +176,78 @@ class ShokimDB {
             minOrder: parseFloat(couponObj.minOrder) || 0,
             desc: couponObj.desc || "",
             singleUse: !!couponObj.singleUse,
-            usedBy: couponObj.usedBy || (coupons[cleanCode] ? coupons[cleanCode].usedBy : []),
+            usedBy: couponObj.usedBy || (existing ? existing.usedBy : []),
             active: couponObj.active !== undefined ? !!couponObj.active : true,
-            created_at: coupons[cleanCode] ? coupons[cleanCode].created_at : new Date().toISOString()
+            created_at: existing ? existing.created_at : new Date().toISOString()
         };
 
-        localStorage.setItem(SHOKIM_DB_CONFIG.couponsKey, JSON.stringify(coupons));
+        // Update local cache
+        this.cacheCoupons[cleanCode] = couponData;
+        localStorage.setItem('shokim_db_coupons_v2', JSON.stringify(this.cacheCoupons));
         this.notifyChange('coupons');
+
+        // Sync to Cloud Firestore
+        if (firestoreDb) {
+            try {
+                await firestoreDb.collection("coupons").doc(cleanCode).set(couponData, { merge: true });
+            } catch (e) {
+                console.error("Firestore saveCoupon error:", e);
+            }
+        }
         return true;
     }
 
-    deleteCoupon(codeStr) {
+    async deleteCoupon(codeStr) {
         if (!codeStr) return false;
         const cleanCode = codeStr.trim().toUpperCase();
-        const coupons = this.getCoupons();
-        if (coupons[cleanCode]) {
-            delete coupons[cleanCode];
-            localStorage.setItem(SHOKIM_DB_CONFIG.couponsKey, JSON.stringify(coupons));
+        
+        // Update local cache
+        if (this.cacheCoupons[cleanCode]) {
+            delete this.cacheCoupons[cleanCode];
+            localStorage.setItem('shokim_db_coupons_v2', JSON.stringify(this.cacheCoupons));
             this.notifyChange('coupons');
-            return true;
         }
-        return false;
+
+        // Delete from Cloud Firestore
+        if (firestoreDb) {
+            try {
+                await firestoreDb.collection("coupons").doc(cleanCode).delete();
+            } catch (e) {
+                console.error("Firestore deleteCoupon error:", e);
+            }
+        }
+        return true;
     }
 
-    toggleCouponStatus(codeStr) {
-        if (!codeStr) return false;
-        const cleanCode = codeStr.trim().toUpperCase();
-        const coupons = this.getCoupons();
-        if (coupons[cleanCode]) {
-            coupons[cleanCode].active = !coupons[cleanCode].active;
-            localStorage.setItem(SHOKIM_DB_CONFIG.couponsKey, JSON.stringify(coupons));
-            this.notifyChange('coupons');
-            return coupons[cleanCode].active;
-        }
-        return false;
+    async toggleCouponStatus(codeStr) {
+        const coupon = this.getCoupon(codeStr);
+        if (!coupon) return false;
+        coupon.active = !coupon.active;
+        return await this.saveCoupon(coupon);
     }
 
-    recordCouponUsage(codeStr, phoneStr) {
+    async recordCouponUsage(codeStr, phoneStr) {
         if (!codeStr || !phoneStr) return false;
         const cleanCode = codeStr.trim().toUpperCase();
         const cleanPhone = phoneStr.replace(/[^0-9]/g, '');
-        const coupons = this.getCoupons();
-        if (coupons[cleanCode]) {
-            if (!coupons[cleanCode].usedBy) coupons[cleanCode].usedBy = [];
-            if (!coupons[cleanCode].usedBy.includes(cleanPhone)) {
-                coupons[cleanCode].usedBy.push(cleanPhone);
-                localStorage.setItem(SHOKIM_DB_CONFIG.couponsKey, JSON.stringify(coupons));
-                this.notifyChange('coupons');
+        const coupon = this.getCoupon(cleanCode);
+
+        if (coupon) {
+            if (!coupon.usedBy) coupon.usedBy = [];
+            if (!coupon.usedBy.includes(cleanPhone)) {
+                coupon.usedBy.push(cleanPhone);
+                return await this.saveCoupon(coupon);
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     // --- ORDERS ENGINE ---
     getOrders() {
-        try {
-            const data = localStorage.getItem(SHOKIM_DB_CONFIG.ordersKey);
-            return data ? JSON.parse(data) : [];
-        } catch (e) {
-            console.error("Error reading orders DB:", e);
-            return [];
-        }
+        return this.cacheOrders || [];
     }
 
-    addOrder(orderData) {
-        const orders = this.getOrders();
+    async addOrder(orderData) {
         const newId = "SHK-" + Math.floor(100000 + Math.random() * 900000);
         
         const order = {
@@ -178,51 +258,88 @@ class ShokimDB {
             clientPhone: orderData.clientPhone || "",
             clientAddress: orderData.clientAddress || "",
             notes: orderData.notes || "",
-            items: orderData.items || [], // Array of { id, name, pack, price, quantity }
+            items: orderData.items || [],
             rawSubtotal: parseFloat(orderData.rawSubtotal) || 0,
             discount: parseFloat(orderData.discount) || 0,
             couponCode: orderData.couponCode || null,
             subtotalAfterDiscount: parseFloat(orderData.subtotalAfterDiscount) || 0,
             vat: parseFloat(orderData.vat) || 0,
             total: parseFloat(orderData.total) || 0,
-            paymentMethod: orderData.paymentMethod || "whatsapp", // 'whatsapp', 'credit', 'invoice'
-            status: "new" // 'new', 'processing', 'completed', 'cancelled'
+            paymentMethod: orderData.paymentMethod || "whatsapp",
+            status: "new"
         };
 
-        orders.unshift(order); // Add newest first
-        localStorage.setItem(SHOKIM_DB_CONFIG.ordersKey, JSON.stringify(orders));
+        // Add to local cache first
+        this.cacheOrders.unshift(order);
+        localStorage.setItem('shokim_db_orders_v2', JSON.stringify(this.cacheOrders));
 
-        // If coupon was single use, record phone
+        // If coupon was single use, record phone usage
         if (orderData.couponCode && orderData.clientPhone) {
             this.recordCouponUsage(orderData.couponCode, orderData.clientPhone);
         }
 
         this.notifyChange('orders');
+
+        // Save to Cloud Firestore Central Database
+        if (firestoreDb) {
+            try {
+                const docRef = await firestoreDb.collection("orders").add(order);
+                order.docId = docRef.id;
+            } catch (e) {
+                console.error("Firestore addOrder error:", e);
+            }
+        }
+
         return order;
     }
 
-    updateOrderStatus(orderId, newStatus) {
-        const orders = this.getOrders();
-        const idx = orders.findIndex(o => o.id === orderId);
-        if (idx !== -1) {
-            orders[idx].status = newStatus;
-            localStorage.setItem(SHOKIM_DB_CONFIG.ordersKey, JSON.stringify(orders));
+    async updateOrderStatus(orderId, newStatus) {
+        const order = this.cacheOrders.find(o => o.id === orderId || o.docId === orderId);
+        if (order) {
+            order.status = newStatus;
+            localStorage.setItem('shokim_db_orders_v2', JSON.stringify(this.cacheOrders));
             this.notifyChange('orders');
+
+            if (firestoreDb) {
+                try {
+                    if (order.docId) {
+                        await firestoreDb.collection("orders").doc(order.docId).update({ status: newStatus });
+                    } else {
+                        const q = await firestoreDb.collection("orders").where("id", "==", orderId).get();
+                        q.forEach(async doc => {
+                            await doc.ref.update({ status: newStatus });
+                        });
+                    }
+                } catch (e) {
+                    console.error("Firestore updateOrderStatus error:", e);
+                }
+            }
             return true;
         }
         return false;
     }
 
-    deleteOrder(orderId) {
-        let orders = this.getOrders();
-        const initialLength = orders.length;
-        orders = orders.filter(o => o.id !== orderId);
-        if (orders.length !== initialLength) {
-            localStorage.setItem(SHOKIM_DB_CONFIG.ordersKey, JSON.stringify(orders));
-            this.notifyChange('orders');
-            return true;
+    async deleteOrder(orderId) {
+        const order = this.cacheOrders.find(o => o.id === orderId || o.docId === orderId);
+        this.cacheOrders = this.cacheOrders.filter(o => o.id !== orderId && o.docId !== orderId);
+        localStorage.setItem('shokim_db_orders_v2', JSON.stringify(this.cacheOrders));
+        this.notifyChange('orders');
+
+        if (firestoreDb && order) {
+            try {
+                if (order.docId) {
+                    await firestoreDb.collection("orders").doc(order.docId).delete();
+                } else {
+                    const q = await firestoreDb.collection("orders").where("id", "==", orderId).get();
+                    q.forEach(async doc => {
+                        await doc.ref.delete();
+                    });
+                }
+            } catch (e) {
+                console.error("Firestore deleteOrder error:", e);
+            }
         }
-        return false;
+        return true;
     }
 
     notifyChange(type) {
@@ -231,4 +348,4 @@ class ShokimDB {
 }
 
 // Global DB Singleton
-window.db = new ShokimDB();
+window.db = new ShokimCloudDB();

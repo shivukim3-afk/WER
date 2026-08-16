@@ -14,6 +14,11 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <!-- DB Engine -->
     <script src="db.js"></script>
 
@@ -587,32 +592,27 @@
 </head>
 <body>
 
-    <!-- Google Identity Services (GSI) SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <!-- ADMIN AUTHENTICATION SCREEN -->
     <div id="login-screen" class="login-screen">
-        <div class="login-card">
+        <div class="login-card" style="max-width: 440px; padding: 2.5rem 2rem;">
             <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
             <h2 class="login-title">שיווקים אדמין</h2>
             <p class="login-desc">כניסה מאובטחת באמצעות חשבון Google מורשה בלבד</p>
 
-            <div id="google-btn-container" style="display: flex; justify-content: center; margin: 1.5rem 0 1rem;">
-                <div id="g_id_onload"
-                     data-client_id="732672749324-onutg5fds0rs4ek86o6e28irqq2lu36p.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--color-navy); font-weight: 800; margin-bottom: 0.3rem;">
+                    <i class="fa-solid fa-user-shield" style="color: var(--color-blue);"></i>
+                    <span>חשבון מנהל מורשה:</span>
                 </div>
-                <div id="g_id_signin_container" class="g_id_signin"
-                     data-type="standard"
-                     data-size="large"
-                     data-theme="outline"
-                     data-text="sign_in_with"
-                     data-shape="rectangular"
-                     data-logo_alignment="left"
-                     data-width="280">
-                </div>
+                <div style="color: var(--text-muted); font-weight: 700; direction: ltr; text-align: right;">Shivukim3@gmail.com</div>
             </div>
+
+            <!-- Firebase Google OAuth Button -->
+            <button type="button" class="btn-primary" onclick="loginWithGoogle()" style="width: 100%; justify-content: center; padding: 0.95rem; background: #4285F4; font-size: 1.02rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);">
+                <svg width="20" height="20" viewBox="0 0 18 18" style="margin-left: 0.6rem;"><path fill="#ffffff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#ffffff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#ffffff" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#ffffff" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
+                <span>התחבר באמצעות חשבון Google</span>
+                <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i>
+            </button>
 
             <!-- Error message container for unauthorized email attempts -->
             <div id="login-error-msg" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.9rem; border-radius: var(--border-radius-sm); font-size: 0.88rem; font-weight: 700; margin-top: 1rem; line-height: 1.4;">
@@ -878,7 +878,6 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        const GOOGLE_CLIENT_ID = "732672749324-onutg5fds0rs4ek86o6e28irqq2lu36p.apps.googleusercontent.com";
         const AUTHORIZED_EMAIL = "shivukim3@gmail.com";
 
         // XSS Sanitizer Helper
@@ -892,107 +891,60 @@
                 .replace(/'/g, '&#039;');
         }
 
-        // Decode JWT ID Token payload from Google
-        function parseJwt(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join(''));
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        // Handle Google Credential Response
-        function handleCredentialResponse(response) {
-            const errorBox = document.getElementById('login-error-msg');
-            if (!response || !response.credential) {
-                errorBox.textContent = "אימות Google נכשל. אנא נסה שוב.";
-                errorBox.style.display = 'block';
+        // Firebase Google OAuth Sign In Trigger
+        function loginWithGoogle() {
+            if (typeof firebase === 'undefined' || !firebase.auth) {
+                alert("טוען רכיבי אבטחה של Google... אנא נסה שוב בעוד מספר שניות.");
                 return;
             }
 
-            const payload = parseJwt(response.credential);
-            if (!payload || !payload.email) {
-                errorBox.textContent = "לא התקבלו פרטי זיהוי תקינים מחשבון Google.";
-                errorBox.style.display = 'block';
-                return;
-            }
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
 
-            const userEmail = payload.email.trim().toLowerCase();
-
-            // Strict check: ONLY Shivukim3@gmail.com
-            if (userEmail === AUTHORIZED_EMAIL.toLowerCase()) {
-                sessionStorage.setItem('shokim_admin_auth', 'true');
-                sessionStorage.setItem('shokim_admin_user', JSON.stringify({
-                    name: payload.name || "שמואל",
-                    email: payload.email,
-                    picture: payload.picture || ""
-                }));
-
-                errorBox.style.display = 'none';
-                document.getElementById('login-screen').style.display = 'none';
-                updateAdminUserNavbar(payload);
-                initAdminDashboard();
-            } else {
-                // Deny all other accounts
-                sessionStorage.removeItem('shokim_admin_auth');
-                sessionStorage.removeItem('shokim_admin_user');
-                errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>גישה נדחתה!</b><br>החשבון <u>${escapeHTML(payload.email)}</u> אינו מורשה לגשת למערכת הניהול.<br>הגישה מותרת אך ורק לכתובת: <b>Shivukim3@gmail.com</b>`;
-                errorBox.style.display = 'block';
-                
-                if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                    google.accounts.id.disableAutoSelect();
+            firebase.auth().signInWithPopup(provider).catch(error => {
+                console.error("Firebase Auth Error:", error);
+                const errorBox = document.getElementById('login-error-msg');
+                if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                    errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>שגיאת התחברות:</b> ${escapeHTML(error.message || error.code)}`;
+                    errorBox.style.display = 'block';
                 }
-            }
+            });
         }
 
-        function initGoogleGSI() {
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.initialize({
-                    client_id: GOOGLE_CLIENT_ID,
-                    callback: handleCredentialResponse
-                });
-                const btnContainer = document.getElementById('g_id_signin_container');
-                if (btnContainer) {
-                    google.accounts.id.renderButton(btnContainer, {
-                        type: "standard",
-                        size: "large",
-                        theme: "outline",
-                        text: "sign_in_with",
-                        shape: "rectangular",
-                        logo_alignment: "left",
-                        width: 280
-                    });
-                }
-            }
-        }
-
-        // Check authentication state on page load
+        // Firebase Auth State Listener (Server-enforced verification)
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-        });
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().onAuthStateChanged((user) => {
+                    const loginScreen = document.getElementById('login-screen');
+                    const errorBox = document.getElementById('login-error-msg');
 
-        window.addEventListener('load', () => {
-            initGoogleGSI();
-        });
-
-        function checkAuth() {
-            const isAuth = sessionStorage.getItem('shokim_admin_auth');
-            const loginScreen = document.getElementById('login-screen');
-            if (isAuth === 'true') {
-                loginScreen.style.display = 'none';
-                const savedUser = JSON.parse(sessionStorage.getItem('shokim_admin_user') || '{}');
-                updateAdminUserNavbar(savedUser);
-                initAdminDashboard();
-            } else {
-                loginScreen.style.display = 'flex';
-                initGoogleGSI();
+                    if (user) {
+                        const email = (user.email || '').trim().toLowerCase();
+                        if (email === AUTHORIZED_EMAIL.toLowerCase()) {
+                            // Authorized! Google server verified shivukim3@gmail.com
+                            loginScreen.style.display = 'none';
+                            if (errorBox) errorBox.style.display = 'none';
+                            updateAdminUserNavbar({
+                                email: user.email,
+                                name: user.displayName || 'שמואל (שיווקים)'
+                            });
+                            initAdminDashboard();
+                        } else {
+                            // Unauthorized Google account - sign out immediately
+                            firebase.auth().signOut().then(() => {
+                                loginScreen.style.display = 'flex';
+                                if (errorBox) {
+                                    errorBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>גישה נדחתה!</b><br>החשבון <u>${escapeHTML(user.email)}</u> אינו מורשה לגשת למערכת הניהול.<br>הגישה מותרת אך ורק לכתובת: <b>Shivukim3@gmail.com</b>`;
+                                    errorBox.style.display = 'block';
+                                }
+                            });
+                        }
+                    } else {
+                        loginScreen.style.display = 'flex';
+                    }
+                });
             }
-        }
+        });
 
         function updateAdminUserNavbar(user) {
             const emailEl = document.getElementById('admin-user-email');
@@ -1002,12 +954,11 @@
         }
 
         function handleLogout() {
-            sessionStorage.removeItem('shokim_admin_auth');
-            sessionStorage.removeItem('shokim_admin_user');
-            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                google.accounts.id.disableAutoSelect();
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                firebase.auth().signOut().then(() => {
+                    window.location.reload();
+                });
             }
-            checkAuth();
         }
 
         function initAdminDashboard() {
