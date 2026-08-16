@@ -1259,10 +1259,10 @@
                         <td>${statusBadge}</td>
                         <td>
                             <div class="actions-cell">
-                                <button class="icon-btn" onclick="toggleCouponStatus('${c.code}')" title="${c.active?'השבת קופון':'הפעל קופון'}">
+                                <button class="icon-btn" onclick="toggleCouponStatus('${safeCode}')" title="${c.active?'השבת קופון':'הפעל קופון'}">
                                     <i class="fa-solid ${c.active?'fa-pause':'fa-play'}"></i>
                                 </button>
-                                <button class="icon-btn delete" onclick="confirmDeleteCoupon('${c.code}')" title="מחק קופון">
+                                <button class="icon-btn delete" onclick="confirmDeleteCoupon('${safeCode}')" title="מחק קופון">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
