@@ -597,25 +597,17 @@
         <div class="login-card" style="max-width: 440px; padding: 2.5rem 2rem;">
             <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
             <h2 class="login-title">שיווקים אדמין</h2>
-            <p class="login-desc">כניסה מאובטחת באמצעות חשבון Google מורשה בלבד</p>
-
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.88rem;">
-                <div style="display: flex; align-items: center; gap: 0.6rem; color: var(--color-navy); font-weight: 800; margin-bottom: 0.3rem;">
-                    <i class="fa-solid fa-user-shield" style="color: var(--color-blue);"></i>
-                    <span>חשבון מנהל מורשה:</span>
-                </div>
-                <div style="color: var(--text-muted); font-weight: 700; direction: ltr; text-align: right;">Shivukim3@gmail.com</div>
-            </div>
+            <p class="login-desc">כניסה מאובטחת למנהלי המערכת בלבד</p>
 
             <!-- Firebase Google OAuth Button -->
-            <button type="button" class="btn-primary" onclick="loginWithGoogle()" style="width: 100%; justify-content: center; padding: 0.95rem; background: #4285F4; font-size: 1.02rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);">
+            <button type="button" class="btn-primary" onclick="loginWithGoogle()" style="width: 100%; justify-content: center; padding: 0.95rem; background: #4285F4; font-size: 1.02rem; font-weight: 800; border-radius: var(--border-radius-md); box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3); margin-top: 1rem;">
                 <svg width="20" height="20" viewBox="0 0 18 18" style="margin-left: 0.6rem;"><path fill="#ffffff" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#ffffff" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.72L.98 13.06C2.5 16.03 5.51 18 9 18z"/><path fill="#ffffff" d="M3.87 10.8c-.2-.58-.31-1.2-.31-1.8s.11-1.22.31-1.8L.98 4.94C.35 6.17 0 7.55 0 9s.35 2.83.98 4.06l2.89-2.26z"/><path fill="#ffffff" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.51 0 2.5 1.97.98 4.94l2.89 2.26c.72-2.15 2.75-3.62 5.13-3.62z"/></svg>
                 <span>התחבר באמצעות חשבון Google</span>
                 <i class="fa-solid fa-arrow-left" style="margin-right: 0.5rem;"></i>
             </button>
 
             <!-- Error message container for unauthorized email attempts -->
-            <div id="login-error-msg" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.9rem; border-radius: var(--border-radius-sm); font-size: 0.88rem; font-weight: 700; margin-top: 1rem; line-height: 1.4;">
+            <div id="login-error-msg" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 0.9rem; border-radius: var(--border-radius-sm); font-size: 0.88rem; font-weight: 700; margin-top: 1.2rem; line-height: 1.4;">
             </div>
         </div>
     </div>
@@ -1036,18 +1028,23 @@
             let html = '';
             orders.forEach(o => {
                 const statusBadge = getOrderStatusBadge(o.status);
-                const couponBadge = o.couponCode ? `<span class="badge" style="background:#e0f2fe; color:#0369a1;">${o.couponCode}</span>` : '<span style="color:#94a3b8;">—</span>';
+                const couponBadge = o.couponCode ? `<span class="badge" style="background:#e0f2fe; color:#0369a1;">${escapeHTML(o.couponCode)}</span>` : '<span style="color:#94a3b8;">—</span>';
+                const safeId = escapeHTML(o.id);
+                const safeName = escapeHTML(o.clientName);
+                const safePhone = escapeHTML(o.clientPhone);
+                const safeDate = escapeHTML(o.dateFormatted || new Date(o.created_at).toLocaleDateString('he-IL'));
+                const safeTotal = typeof o.total === 'number' ? o.total.toFixed(2) : (parseFloat(o.total) || 0).toFixed(2);
                 
                 html += `
                     <tr>
-                        <td><strong>${o.id}</strong></td>
-                        <td>${o.dateFormatted || new Date(o.created_at).toLocaleDateString('he-IL')}</td>
-                        <td><strong>${o.clientName}</strong></td>
-                        <td><a href="tel:${o.clientPhone}" style="color: var(--color-blue); font-weight: 700; text-decoration: none;">${o.clientPhone}</a></td>
-                        <td><strong style="color: var(--color-navy);">₪${o.total.toFixed(2)}</strong></td>
+                        <td><strong>${safeId}</strong></td>
+                        <td>${safeDate}</td>
+                        <td><strong>${safeName}</strong></td>
+                        <td><a href="tel:${safePhone}" style="color: var(--color-blue); font-weight: 700; text-decoration: none;">${safePhone}</a></td>
+                        <td><strong style="color: var(--color-navy);">₪${safeTotal}</strong></td>
                         <td>${couponBadge}</td>
                         <td>
-                            <select onchange="updateOrderStatus('${o.id}', this.value)" class="select-input" style="padding: 0.25rem 0.6rem; font-size: 0.82rem;">
+                            <select onchange="updateOrderStatus('${safeId}', this.value)" class="select-input" style="padding: 0.25rem 0.6rem; font-size: 0.82rem;">
                                 <option value="new" ${o.status==='new'?'selected':''}>🆕 חדש</option>
                                 <option value="processing" ${o.status==='processing'?'selected':''}>⏳ בטיפול</option>
                                 <option value="completed" ${o.status==='completed'?'selected':''}>✅ הושלם</option>
@@ -1056,9 +1053,9 @@
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="icon-btn" onclick="openOrderDetailsModal('${o.id}')" title="צפה בפרטים"><i class="fa-solid fa-eye"></i></button>
-                                <button class="icon-btn whatsapp" onclick="openOrderWhatsApp('${o.id}')" title="צור קשר בוואטסאפ"><i class="fa-brands fa-whatsapp"></i></button>
-                                <button class="icon-btn delete" onclick="confirmDeleteOrder('${o.id}')" title="מחק הזמנה"><i class="fa-solid fa-trash-can"></i></button>
+                                <button class="icon-btn" onclick="openOrderDetailsModal('${safeId}')" title="צפה בפרטים"><i class="fa-solid fa-eye"></i></button>
+                                <button class="icon-btn whatsapp" onclick="openOrderWhatsApp('${safeId}')" title="צור קשר בוואטסאפ"><i class="fa-brands fa-whatsapp"></i></button>
+                                <button class="icon-btn delete" onclick="confirmDeleteOrder('${safeId}')" title="מחק הזמנה"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -1090,47 +1087,62 @@
 
         function openOrderWhatsApp(orderId) {
             const orders = db.getOrders();
-            const o = orders.find(item => item.id === orderId);
+            const o = orders.find(item => item.id === orderId || item.docId === orderId);
             if (!o || !o.clientPhone) return;
 
             const cleanPhone = o.clientPhone.replace(/[^0-9]/g, '');
             const formattedPhone = cleanPhone.startsWith('0') ? '972' + cleanPhone.slice(1) : cleanPhone;
 
-            const msg = encodeURIComponent(`שלום ${o.clientName}, לגבי הזמנתך מספר ${o.id} בשיווקים בסך ₪${o.total.toFixed(2)}:`);
+            const msg = encodeURIComponent(`שלום ${o.clientName}, לגבי הזמנתך מספר ${o.id} בשיווקים בסך ₪${parseFloat(o.total || 0).toFixed(2)}:`);
             window.open(`https://wa.me/${formattedPhone}?text=${msg}`, '_blank');
         }
 
         function openOrderDetailsModal(orderId) {
             const orders = db.getOrders();
-            const o = orders.find(item => item.id === orderId);
+            const o = orders.find(item => item.id === orderId || item.docId === orderId);
             if (!o) return;
 
-            document.getElementById('mod-order-title').textContent = `פרטי הזמנה #${o.id}`;
+            const safeId = escapeHTML(o.id);
+            const safeName = escapeHTML(o.clientName);
+            const safePhone = escapeHTML(o.clientPhone);
+            const safeAddress = escapeHTML(o.clientAddress || 'לא צוין');
+            const safeNotes = escapeHTML(o.notes || '');
+
+            document.getElementById('mod-order-title').textContent = `פרטי הזמנה #${safeId}`;
 
             let itemsHtml = '';
             if (o.items && o.items.length > 0) {
                 o.items.forEach(it => {
+                    const itName = escapeHTML(it.name || '');
+                    const itPack = escapeHTML(it.pack || '');
+                    const itQty = parseInt(it.quantity) || 0;
+                    const itPrice = parseFloat(it.price) || 0;
                     itemsHtml += `
                         <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.88rem;">
                             <div>
-                                <strong>${it.name}</strong>
-                                <div style="font-size: 0.78rem; color: var(--text-muted);">${it.pack || ''}</div>
+                                <strong>${itName}</strong>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">${itPack}</div>
                             </div>
                             <div style="text-align: left;">
-                                <span>${it.quantity} יחידות</span> × ₪${it.price} = <strong>₪${(it.quantity * it.price).toFixed(2)}</strong>
+                                <span>${itQty} יחידות</span> × ₪${itPrice.toFixed(2)} = <strong>₪${(itQty * itPrice).toFixed(2)}</strong>
                             </div>
                         </div>
                     `;
                 });
             }
 
+            const rawSubtotal = (parseFloat(o.rawSubtotal) || 0).toFixed(2);
+            const discount = (parseFloat(o.discount) || 0).toFixed(2);
+            const vat = (parseFloat(o.vat) || 0).toFixed(2);
+            const total = (parseFloat(o.total) || 0).toFixed(2);
+
             document.getElementById('mod-order-content').innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-sm); padding: 1rem; font-size: 0.88rem;">
-                        <div><strong>שם הלקוח:</strong> ${o.clientName}</div>
-                        <div><strong>טלפון:</strong> ${o.clientPhone}</div>
-                        <div><strong>כתובת לאספקה:</strong> ${o.clientAddress || 'לא צוין'}</div>
-                        ${o.notes ? `<div><strong>הערות:</strong> ${o.notes}</div>` : ''}
+                        <div><strong>שם הלקוח:</strong> ${safeName}</div>
+                        <div><strong>טלפון:</strong> ${safePhone}</div>
+                        <div><strong>כתובת לאספקה:</strong> ${safeAddress}</div>
+                        ${safeNotes ? `<div><strong>הערות:</strong> ${safeNotes}</div>` : ''}
                     </div>
 
                     <div>
@@ -1139,11 +1151,11 @@
                     </div>
 
                     <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--border-radius-sm); padding: 1rem; font-size: 0.9rem;">
-                        <div style="display: flex; justify-content: space-between;"><span>סכום ביניים (ללא מע"מ):</span> <span>₪${o.rawSubtotal.toFixed(2)}</span></div>
-                        ${o.discount > 0 ? `<div style="display: flex; justify-content: space-between; color: #047857;"><span>הנחה (${o.couponCode}):</span> <span>-₪${o.discount.toFixed(2)}</span></div>` : ''}
-                        <div style="display: flex; justify-content: space-between;"><span>מע"מ (18%):</span> <span>₪${o.vat.toFixed(2)}</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>סכום ביניים (ללא מע"מ):</span> <span>₪${rawSubtotal}</span></div>
+                        ${parseFloat(discount) > 0 ? `<div style="display: flex; justify-content: space-between; color: #047857;"><span>הנחה (${escapeHTML(o.couponCode || '')}):</span> <span>-₪${discount}</span></div>` : ''}
+                        <div style="display: flex; justify-content: space-between;"><span>מע"מ (18%):</span> <span>₪${vat}</span></div>
                         <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 900; color: var(--color-navy); border-top: 1px solid #a7f3d0; padding-top: 0.5rem; margin-top: 0.5rem;">
-                            <span>סה"כ לתשלום:</span> <span>₪${o.total.toFixed(2)}</span>
+                            <span>סה"כ לתשלום:</span> <span>₪${total}</span>
                         </div>
                     </div>
                 </div>
@@ -1151,7 +1163,7 @@
 
             document.getElementById('mod-order-footer').innerHTML = `
                 <button class="btn-secondary" onclick="closeOrderDetailsModal()">סגור</button>
-                <button class="btn-primary" onclick="openOrderWhatsApp('${o.id}')"><i class="fa-brands fa-whatsapp"></i> פתח בוואטסאפ</button>
+                <button class="btn-primary" onclick="openOrderWhatsApp('${safeId}')"><i class="fa-brands fa-whatsapp"></i> פתח בוואטסאפ</button>
             `;
 
             document.getElementById('order-details-modal').style.display = 'flex';
@@ -1172,7 +1184,7 @@
             csvContent += "מספר הזמנה,תאריך,שם לקוח,טלפון,כתובת,קופון,סה\"כ לתשלום,סטטוס\n";
 
             orders.forEach(o => {
-                csvContent += `"${o.id}","${o.dateFormatted || ''}","${o.clientName}","${o.clientPhone}","${o.clientAddress || ''}","${o.couponCode || ''}","₪${o.total.toFixed(2)}","${o.status}"\n`;
+                csvContent += `"${escapeHTML(o.id)}","${escapeHTML(o.dateFormatted || '')}","${escapeHTML(o.clientName)}","${escapeHTML(o.clientPhone)}","${escapeHTML(o.clientAddress || '')}","${escapeHTML(o.couponCode || '')}","₪${(parseFloat(o.total)||0).toFixed(2)}","${escapeHTML(o.status)}"\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1215,6 +1227,7 @@
 
             let html = '';
             couponList.forEach(c => {
+                const safeCode = escapeHTML(c.code);
                 let typeText = "אחוזים (%)";
                 let valText = `${c.value}%`;
                 if (c.type === 'fixed') {
@@ -1237,7 +1250,7 @@
 
                 html += `
                     <tr>
-                        <td><strong style="color: var(--color-blue); font-size: 1rem;">${c.code}</strong></td>
+                        <td><strong style="color: var(--color-blue); font-size: 1rem;">${safeCode}</strong></td>
                         <td>${typeText}</td>
                         <td><strong>${valText}</strong></td>
                         <td>₪${c.minOrder || 0}</td>
