@@ -5271,46 +5271,66 @@
                 activePortal = portal;
             }
             
+            // Render category gateways (sub-portals) if portal is selected (but not 'all')
             const subGrid = document.getElementById('sub-portals-grid');
-            const wrapper = document.querySelector('.portals-grid-wrapper');
-            const portalsGrid = document.getElementById('portals-grid');
-            const dotsBar = document.getElementById('mobile-categories-dots');
-            const isMobile = window.innerWidth <= 600;
             
-            if (activePortal && activePortal !== 'all') {
-                if (wrapper) wrapper.style.display = 'none';
-                if (portalsGrid) portalsGrid.style.display = 'none';
-                if (dotsBar) dotsBar.style.display = 'none';
-                if (isMobile) document.body.classList.add('mobile-in-category');
+            // Modern check for mobile layout based on mobile home extra banner or body classes
+            const isMobile = document.body.classList.contains('mobile-catalog-active') || 
+                             document.body.classList.contains('mobile-quick-active') || 
+                             window.innerWidth <= 600;
+            
+            if (activePortal) {
+                // On mobile: hide the entire slider wrapper (grid + dots + arrows)
+                if (isMobile) {
+                    document.body.classList.add('mobile-in-category');
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = 'none';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = 'none';
+                    const backText = document.getElementById('back-btn-text');
+                    if (backText) backText.textContent = 'חזרה לקטגוריות';
+                } else {
+                    if (activePortal !== 'all') {
+                        document.getElementById('portals-grid').style.display = 'none';
+                    } else {
+                        document.getElementById('portals-grid').style.display = 'grid';
+                    }
+                }
                 
-                // Fetch categories belonging to active portal
-                const categoriesToShow = Object.keys(CATEGORIES).filter(catId => {
-                    return PRODUCTS.some(p => p.category === catId && p.portals.includes(activePortal));
-                });
-                
-                let subHtml = '';
-                categoriesToShow.forEach(catId => {
-                    const cat = CATEGORIES[catId];
-                    subHtml += `
-                        <div class="sub-portal-card ${activeSubCategory === catId ? 'active' : ''}" onclick="filterSubCategory('${catId}', this)">
-                            <div class="sub-portal-card-icon"><i class="fa-solid ${cat.fa}"></i></div>
-                            <div class="sub-portal-card-title">${cat.name}</div>
-                            <div class="sub-portal-card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                        </div>
-                    `;
-                });
-                
-                subGrid.innerHTML = subHtml;
-                subGrid.style.display = 'grid';
-                document.getElementById('active-portal-header').style.display = 'flex';
-                
-                let activeTitle = 'כל המוצרים';
-                if (activePortal === 'institution') activeTitle = 'ציוד למוסד';
-                if (activePortal === 'home') activeTitle = 'מוצרים לבית';
-                if (activePortal === 'bb') activeTitle = 'מוצרים לצימרים';
-                if (activePortal === 'office') activeTitle = 'ציוד למשרד';
-                
-                document.getElementById('active-portal-title-text').textContent = activeTitle;
+                if (activePortal !== 'all') {
+                    // Fetch categories belonging to active portal
+                    const categoriesToShow = Object.keys(CATEGORIES).filter(catId => {
+                        return PRODUCTS.some(p => p.category === catId && p.portals.includes(activePortal));
+                    });
+                    
+                    let subHtml = '';
+                    categoriesToShow.forEach(catId => {
+                        const cat = CATEGORIES[catId];
+                        subHtml += `
+                            <div class="sub-portal-card ${activeSubCategory === catId ? 'active' : ''}" onclick="filterSubCategory('${catId}', this)">
+                                <div class="sub-portal-card-icon"><i class="fa-solid ${cat.fa}"></i></div>
+                                <div class="sub-portal-card-title">${cat.name}</div>
+                                <div class="sub-portal-card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                            </div>
+                        `;
+                    });
+                    
+                    subGrid.innerHTML = subHtml;
+                    subGrid.style.display = 'grid';
+                    document.getElementById('active-portal-header').style.display = 'flex';
+                    
+                    // Safe dynamic title text generation to prevent ReferenceError (since PORTALS array is not defined)
+                    let activeTitle = 'כל המוצרים';
+                    if (activePortal === 'institution') activeTitle = 'ציוד למוסד';
+                    if (activePortal === 'home') activeTitle = 'מוצרים לבית';
+                    if (activePortal === 'bb') activeTitle = 'מוצרים לצימרים';
+                    if (activePortal === 'office') activeTitle = 'ציוד למשרד';
+                    
+                    document.getElementById('active-portal-title-text').textContent = activeTitle;
+                } else {
+                    subGrid.style.display = 'none';
+                    document.getElementById('active-portal-header').style.display = 'none';
+                }
                 
                 // Sync URL hash
                 if (typeof isHandlingHashChange !== 'undefined' && !isHandlingHashChange) {
@@ -5318,13 +5338,11 @@
                 }
             } else {
                 // activePortal is empty string (homepage catalog mode selected)
-                if (wrapper) wrapper.style.display = '';
-                if (portalsGrid) portalsGrid.style.display = '';
-                if (dotsBar) dotsBar.style.display = '';
-                if (isMobile) document.body.classList.remove('mobile-in-category');
-                
+                document.getElementById('portals-grid').style.display = 'grid';
                 subGrid.style.display = 'none';
                 document.getElementById('active-portal-header').style.display = 'none';
+                const backText = document.getElementById('back-btn-text');
+                if (backText) backText.textContent = 'חזרה למסך הבית';
                 
                 // Sync URL hash
                 if (typeof isHandlingHashChange !== 'undefined' && !isHandlingHashChange) {
@@ -5338,6 +5356,7 @@
             
             renderCatalog();
             if (isMobile && activePortal) {
+                // Scroll to catalog container so products are immediately visible
                 setTimeout(() => {
                     const cat = document.getElementById('catalog-container');
                     if (cat) cat.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5352,16 +5371,19 @@
             activePortal = '';
             activeSubCategory = '';
             
+            // Show main portals and welcome banner
             const isMobile = window.innerWidth <= 600;
-            if (isMobile) document.body.classList.remove('mobile-in-category');
-            
-            const wrapper = document.querySelector('.portals-grid-wrapper');
-            if (wrapper) wrapper.style.display = '';
-            const portalsGrid = document.getElementById('portals-grid');
-            if (portalsGrid) portalsGrid.style.display = '';
-            const dotsBar = document.getElementById('mobile-categories-dots');
-            if (dotsBar) dotsBar.style.display = '';
-            
+            if (isMobile) {
+                document.body.classList.remove('mobile-in-category');
+                // Restore the slider wrapper and dots
+                const wrapper = document.querySelector('.portals-grid-wrapper');
+                if (wrapper) wrapper.style.display = '';
+                const dotsBar = document.getElementById('mobile-categories-dots');
+                if (dotsBar) dotsBar.style.display = '';
+                document.getElementById('portals-grid').style.display = 'flex';
+            } else {
+                document.getElementById('portals-grid').style.display = 'grid';
+            }
             document.getElementById('active-portal-header').style.display = 'none';
             document.getElementById('sub-portals-grid').style.display = 'none';
             
@@ -5529,26 +5551,40 @@
             const effPortal = activePortal || 'all';
             const effSubCat = (activeSubCategory && activeSubCategory !== '') ? activeSubCategory : 'all';
 
-            // Show a top banner on the home view when no filter is active
+            // Show a friendly visual guide if no portal (category) is active and no sub-category or search is entered
             if (!activePortal && (!activeSubCategory || activeSubCategory === 'all' || activeSubCategory === '') && !searchQuery) {
+                const isMobile = window.innerWidth <= 600;
+                const desktopBannerHtml = isMobile ? '' : `
+                    <div class="empty-state-banner">
+                        <div class="banner-logo-container">
+                            <div class="banner-logo-main">
+                                <span class="banner-logo-text">שיווקים</span>
+                                <span class="banner-logo-arrow"></span>
+                            </div>
+                            <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
+                        </div>
+                    </div>
+                `;
                 container.innerHTML = `
-                    <div class="banner-features-bar" style="margin-bottom: 2rem;">
+                    ${desktopBannerHtml}
+                    <div class="banner-features-bar">
                         <div class="feature-item">
                             <i class="fa-solid fa-truck-fast"></i>
-                            <span>משלוחים מהירים למוסדות</span>
+                            <span>משלוחים מהירים</span>
                         </div>
                         <div class="feature-divider"></div>
                         <div class="feature-item">
                             <i class="fa-solid fa-handshake-angle"></i>
-                            <span>שירות אישי ואמין</span>
+                            <span>שירות אישי</span>
                         </div>
                         <div class="feature-divider"></div>
                         <div class="feature-item">
                             <i class="fa-solid fa-award"></i>
-                            <span>איכות ומחירים סיטונאיים</span>
+                            <span>איכות מנצחת</span>
                         </div>
                     </div>
                 `;
+                return;
             }
 
             // Group products by category
@@ -6035,35 +6071,50 @@
             }
         }
 
-        // Open/Close Sumit Redirect Modal
-        function openSumitModal(amount, payData) {
-            document.getElementById('sumit-modal-amount').textContent = `₪${amount}`;
-            
-            // Check if merchant configured a direct Sumit Payment Page URL in db
-            const sumitConfig = (typeof db !== 'undefined' && db.getSumitConfig) ? db.getSumitConfig() : {};
-            const directLink = sumitConfig.paymentLink || "";
-            const payBtn = document.getElementById('sumit-direct-pay-btn');
-
-            if (directLink && directLink.startsWith('http')) {
-                try {
-                    const targetUrl = new URL(directLink);
-                    targetUrl.searchParams.set('amount', amount);
-                    if (payData && payData.clientName) targetUrl.searchParams.set('customer_name', payData.clientName);
-                    if (payData && payData.clientPhone) targetUrl.searchParams.set('phone', payData.clientPhone);
-                    payBtn.href = targetUrl.toString();
-                } catch(e) {
-                    payBtn.href = directLink;
+        // Open/Close Credit Card Modal
+        function openPaymentModal(amount, shouldUpdateHash = true) {
+            document.getElementById('payment-amount-val').textContent = `₪${amount}`;
+            document.getElementById('payment-modal').style.display = 'flex';
+            document.getElementById('payment-form').style.display = 'block';
+            document.getElementById('payment-success-box').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash || '#catalog';
+                if (!currentHash.includes('/payment')) {
+                    updateHash(currentHash + '/payment');
                 }
-            } else {
-                payBtn.href = `https://wa.me/972505178445?text=${encodeURIComponent(`שלום שמואל, ברצוני לשלם באשראי באמצעות סאמיט (Sumit) עבור הזמנה בסך ₪${amount}:`)}`;
-                payBtn.innerHTML = `<span>מעבר לתשלום מאובטח ב-Sumit</span> <i class="fa-solid fa-arrow-left"></i>`;
             }
-
-            document.getElementById('sumit-notice-modal').style.display = 'flex';
         }
 
-        function closeSumitModal() {
-            document.getElementById('sumit-notice-modal').style.display = 'none';
+        function closePaymentModal(shouldUpdateHash = true) {
+            document.getElementById('payment-modal').style.display = 'none';
+            if (shouldUpdateHash) {
+                const currentHash = window.location.hash;
+                if (currentHash.includes('/payment')) {
+                    updateHash(currentHash.split('/payment')[0]);
+                }
+            }
+        }
+
+        // Card formatters
+        function formatCardNumber(input) {
+            let val = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formatted += ' ';
+                }
+                formatted += val[i];
+            }
+            input.value = formatted;
+        }
+
+        function formatExpiry(input) {
+            let val = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (val.length > 2) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                input.value = val;
+            }
         }
 
         // Get checkout items list based on source
@@ -6120,12 +6171,11 @@
                 renderCartList();
             }
 
-            const subtotal = checkoutAmount;
-            const vat = subtotal * 0.18;
-            const totalWithVat = subtotal + vat;
-
-            // Record order in Cloud Firestore Database Engine
+            // Record order in Database Engine
             if (typeof db !== 'undefined') {
+                const subtotal = checkoutAmount;
+                const vat = subtotal * 0.18;
+                const totalWithVat = subtotal + vat;
                 db.addOrder({
                     clientName: `${clientName} (${contactName})`,
                     clientPhone: clientPhone,
@@ -6137,18 +6187,11 @@
                     subtotalAfterDiscount: subtotal,
                     vat: vat,
                     total: totalWithVat,
-                    paymentMethod: method === 'credit' ? 'sumit' : method
+                    paymentMethod: method
                 });
             }
 
-            if (method === 'sumit' || method === 'credit') {
-                closeCheckoutDetailsModal();
-                openSumitModal(totalWithVat.toFixed(2), {
-                    clientName: `${clientName} (${contactName})`,
-                    clientPhone: clientPhone
-                });
-
-            } else if (method === 'whatsapp') {
+            if (method === 'whatsapp') {
                 // Send directly to WhatsApp
                 let orderText = `*הזמנה חדשה - שיווקים*\n\n`;
                 orderText += `*פרטי המוסד:*\n`;
@@ -6158,12 +6201,16 @@
                 if (clientAddress) orderText += `📍 כתובת: ${clientAddress}\n`;
                 orderText += `\n*רשימת מוצרים להזמנה:*\n`;
 
+                const subtotal = checkoutAmount;
+                const vat = subtotal * 0.17;
+                const totalWithVat = subtotal + vat;
+
                 items.forEach(item => {
                     const itemSum = item.price * item.quantity;
                     orderText += `• *${item.name}* (${item.pack}) - כמות: *${item.quantity}* | מחיר: ${item.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
                 });
                 orderText += `\n💵 סכום הזמנה (לפני מע"מ): ${subtotal.toFixed(2)} ₪`;
-                orderText += `\n➕ מע"מ (18%): ${vat.toFixed(2)} ₪`;
+                orderText += `\n➕ מע"מ (17%): ${vat.toFixed(2)} ₪`;
                 orderText += `\n💰 *סה"כ לתשלום (כולל מע"מ): ${totalWithVat.toFixed(2)} ₪*`;
                 orderText += `\n\n_המחירים אינם כוללים מע"מ וסופיים בכפוף לתנאי האספקה._`;
 
@@ -6172,6 +6219,13 @@
                 
                 closeCheckoutDetailsModal();
                 window.open(waLink, '_blank');
+
+            } else if (method === 'credit') {
+                // Morph to Credit Card form modal
+                const subtotal = checkoutAmount;
+                const totalWithVat = subtotal * 1.17;
+                closeCheckoutDetailsModal();
+                openPaymentModal(totalWithVat.toFixed(2));
 
             } else if (method === 'pdf') {
                 // Dynamic invoice printing
@@ -9354,36 +9408,46 @@
             // Re-render portals grid in case we resized or switched layouts
             initPortalsGrid();
             
-            if (hash === '#home' || hash === '#catalog') {
-                activePortal = '';
-                activeSubCategory = '';
-                
-                document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active', 'revealed'));
-                const activeView = document.getElementById('view-catalog');
-                if (activeView) {
-                    activeView.classList.add('active');
-                    if (isMobile) activeView.classList.add('revealed');
-                }
-
+            if (hash === '#home') {
                 if (isMobile) {
+                    // Mobile Home View: Show Catalog View with Welcome State (no selection squares)
                     document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
                     document.body.classList.add('mobile-catalog-active');
+                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
+                    const activeView = document.getElementById('view-catalog');
+                    if (activeView) activeView.classList.add('revealed');
+                    
+                    activePortal = '';
+                    activeSubCategory = '';
+                    
+                    // Restore slider wrapper and dots
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = '';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = '';
+
+                    document.getElementById('portals-grid').style.display = 'flex';
+                    document.getElementById('sub-portals-grid').style.display = 'none';
+                    document.getElementById('active-portal-header').style.display = 'none';
+                    
+                    renderCatalog();
+                } else {
+                    // Desktop Home View: Show Catalog View with Welcome State
+                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+                    document.getElementById('view-catalog').classList.add('active');
+                    
+                    activePortal = '';
+                    activeSubCategory = '';
+                    
+                    document.getElementById('portals-grid').style.display = 'grid';
+                    document.getElementById('sub-portals-grid').style.display = 'none';
+                    document.getElementById('active-portal-header').style.display = 'none';
+                    
+                    // Clear active styling from all cards in portals-grid
+                    document.querySelectorAll('#portals-grid .portal-card').forEach(c => c.classList.remove('active'));
+                    
+                    renderCatalog();
                 }
-
-                const wrapper = document.querySelector('.portals-grid-wrapper');
-                if (wrapper) wrapper.style.display = '';
-                const portalsGrid = document.getElementById('portals-grid');
-                if (portalsGrid) portalsGrid.style.display = '';
-                const dotsBar = document.getElementById('mobile-categories-dots');
-                if (dotsBar) dotsBar.style.display = '';
-
-                document.getElementById('sub-portals-grid').style.display = 'none';
-                document.getElementById('active-portal-header').style.display = 'none';
-                
-                // Clear active styling from all cards in portals-grid
-                document.querySelectorAll('#portals-grid .portal-card').forEach(c => c.classList.remove('active'));
-                
-                renderCatalog();
             } 
             else if (hash === '#quick') {
                 switchMode('quick');
@@ -9393,6 +9457,42 @@
                     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
                     const activeView = document.getElementById('view-quick');
                     if (activeView) activeView.classList.add('revealed');
+                }
+            } 
+            else if (hash === '#catalog') {
+                switchMode('catalog');
+                if (isMobile) {
+                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
+                    document.body.classList.add('mobile-catalog-active');
+                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
+                    const activeView = document.getElementById('view-catalog');
+                    if (activeView) activeView.classList.add('revealed');
+                    
+                    activePortal = '';
+                    activeSubCategory = '';
+                    
+                    // Restore slider wrapper and dots
+                    const wrapper = document.querySelector('.portals-grid-wrapper');
+                    if (wrapper) wrapper.style.display = '';
+                    const dotsBar = document.getElementById('mobile-categories-dots');
+                    if (dotsBar) dotsBar.style.display = '';
+
+                    document.getElementById('portals-grid').style.display = 'flex';
+                    document.getElementById('sub-portals-grid').style.display = 'none';
+                    document.getElementById('active-portal-header').style.display = 'none';
+                    
+                    renderCatalog();
+                } else {
+                    activePortal = 'all';
+                    activeSubCategory = 'all';
+                    
+                    document.getElementById('portals-grid').style.display = 'none';
+                    document.getElementById('sub-portals-grid').style.display = 'none';
+                    document.getElementById('active-portal-header').style.display = 'flex';
+                    
+                    document.getElementById('active-portal-title-text').textContent = 'כל המוצרים';
+                    
+                    renderCatalog();
                 }
             } 
             else if (hash.startsWith('#catalog/')) {
@@ -9787,16 +9887,15 @@
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.95rem; border-radius: var(--border-radius-md); background: #059669; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.25);" onclick="submitCheckoutFlow('sumit')">
-                        <i class="fa-solid fa-credit-card"></i>
-                        <span>תשלום מאובטח באשראי (Sumit)</span>
-                        <i class="fa-solid fa-shield-check"></i>
-                    </button>
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #2563eb; color: #ffffff; border: none; font-size: 1.02rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('whatsapp')">
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #3b82f6; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('whatsapp')">
                         <i class="fa-brands fa-whatsapp"></i>
-                        <span>השלמת הזמנה בוואטסאפ</span>
+                        <span>הזמנה בוואטסאפ</span>
                     </button>
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.85rem; border-radius: var(--border-radius-md); background: #64748b; color: #ffffff; border: none; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('pdf')">
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: var(--color-navy); color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('credit')">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span>תשלום באשראי באתר</span>
+                    </button>
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #64748b; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('pdf')">
                         <i class="fa-solid fa-file-pdf"></i>
                         <span>הדפס / שמור כ-PDF</span>
                     </button>
@@ -9805,40 +9904,57 @@
         </div>
     </div>
 
-    <!-- SUMIT SECURE PAYMENT REDIRECT MODAL -->
-    <div class="payment-modal" id="sumit-notice-modal" style="display: none;" onclick="closeSumitModal()">
-        <div class="payment-card" onclick="event.stopPropagation()" style="max-width: 480px; text-align: center;">
-            <button class="payment-close-btn" onclick="closeSumitModal()"><i class="fa-solid fa-xmark"></i></button>
+    <!-- CREDIT CARD PAYMENT MODAL -->
+    <div class="payment-modal" id="payment-modal" style="display: none;" onclick="closePaymentModal()">
+        <div class="payment-card" onclick="event.stopPropagation()">
+            <button class="payment-close-btn" onclick="closePaymentModal()"><i class="fa-solid fa-xmark"></i></button>
             
-            <div style="margin-bottom: 1.2rem;">
-                <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: #ecfdf5; border-radius: 50%; color: #059669; font-size: 2rem; margin-bottom: 1rem; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.15);">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <h3 style="font-size: 1.4rem; font-weight: 900; color: var(--color-navy); margin-bottom: 0.4rem;">סליקה מאובטחת — Sumit</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">פרטי ההזמנה נקלטו בהצלחה במערכת שיווקים</p>
+            <div class="payment-header">
+                <i class="fa-solid fa-shield-halved" style="color: var(--color-blue); font-size: 2.2rem; margin-bottom: 0.8rem; display: block;"></i>
+                <h3 class="payment-title">תשלום מאובטח בכרטיס אשראי</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">אנא הזן את פרטי כרטיס האשראי לחיוב</p>
             </div>
-
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--border-radius-sm); padding: 1.2rem; margin-bottom: 1.5rem; text-align: right; font-size: 0.92rem;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                    <span style="color: var(--text-muted);">סה"כ לתשלום:</span>
-                    <strong style="color: var(--color-navy); font-size: 1.15rem;" id="sumit-modal-amount">₪0</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
-                    <span>אבטחת תשלום:</span>
-                    <span style="color: #059669; font-weight: 700;"><i class="fa-solid fa-lock"></i> תקן PCI-DSS ברמה הגבוהה ביותר</span>
-                </div>
+            
+            <div class="payment-summary-box">
+                <span>סה"ך לתשלום:</span>
+                <span class="payment-amount-val" id="payment-amount-val">₪0</span>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                <a id="sumit-direct-pay-btn" href="#" target="_blank" class="pay-submit-btn" style="width: 100%; padding: 1rem; border-radius: var(--border-radius-md); background: #059669; color: #ffffff; text-decoration: none; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);">
-                    <span>המשך לתשלום מאובטח ב-Sumit</span>
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <button type="button" class="btn-secondary" onclick="closeSumitModal()" style="width: 100%; padding: 0.8rem; border-radius: var(--border-radius-md); background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--text-dark); font-weight: 700; cursor: pointer;">
-                    סגור
+            
+            <form id="payment-form" onsubmit="handlePaymentSubmit(event)">
+                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם בעל הכרטיס</label>
+                    <input type="text" id="card-name" required placeholder="לדוגמה: ישראל ישראלי" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">מספר כרטיס אשראי</label>
+                    <div style="position: relative;">
+                        <input type="text" id="card-number" required maxlength="19" placeholder="xxxx xxxx xxxx xxxx" oninput="formatCardNumber(this)" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: monospace; letter-spacing: 1px;">
+                        <i class="fa-solid fa-credit-card" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: right;">
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">תוקף (MM/YY)</label>
+                        <input type="text" id="card-expiry" required maxlength="5" placeholder="MM/YY" oninput="formatExpiry(this)" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); text-align: center;">
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">CVV (3 ספרות בגב)</label>
+                        <input type="text" id="card-cvv" required maxlength="3" placeholder="123" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); text-align: center;">
+                    </div>
+                </div>
+                
+                <button type="submit" class="pay-submit-btn" id="pay-submit-btn" style="width: 100%; padding: 1rem; border-radius: var(--border-radius-md); background: var(--color-navy); color: #ffffff; border: none; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>בצע תשלום מאובטח</span>
                 </button>
+            </form>
+            
+            <div id="payment-success-box" style="display: none; text-align: center; padding: 2rem 0;">
+                <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 4.5rem; margin-bottom: 1.2rem; display: block; animation: scale-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;"></i>
+                <h4 style="font-size: 1.5rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.5rem;">התשלום בוצע בהצלחה!</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">פרטי העסקה נשלחים כעת לוואטסאפ לצורך תיאום אספקה</p>
+                <button class="pay-success-close-btn" onclick="closePaymentModal()" style="padding: 0.8rem 2rem; border-radius: var(--border-radius-sm); background: var(--color-blue); color: #ffffff; border: none; font-weight: 700; cursor: pointer;">סגור חלון</button>
             </div>
-            <p style="color: #94a3b8; font-size: 0.78rem; margin-top: 1rem;">* החיוב וחשבונית המס מופקים אוטומטית כחוק באמצעות מערכת Sumit</p>
         </div>
     </div>
 
