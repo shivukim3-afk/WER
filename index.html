@@ -5551,40 +5551,26 @@
             const effPortal = activePortal || 'all';
             const effSubCat = (activeSubCategory && activeSubCategory !== '') ? activeSubCategory : 'all';
 
-            // Show a friendly visual guide if no portal (category) is active and no sub-category or search is entered
+            // Show a top banner on the home view when no filter is active
             if (!activePortal && (!activeSubCategory || activeSubCategory === 'all' || activeSubCategory === '') && !searchQuery) {
-                const isMobile = window.innerWidth <= 600;
-                const desktopBannerHtml = isMobile ? '' : `
-                    <div class="empty-state-banner">
-                        <div class="banner-logo-container">
-                            <div class="banner-logo-main">
-                                <span class="banner-logo-text">שיווקים</span>
-                                <span class="banner-logo-arrow"></span>
-                            </div>
-                            <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
-                        </div>
-                    </div>
-                `;
                 container.innerHTML = `
-                    ${desktopBannerHtml}
-                    <div class="banner-features-bar">
+                    <div class="banner-features-bar" style="margin-bottom: 2rem;">
                         <div class="feature-item">
                             <i class="fa-solid fa-truck-fast"></i>
-                            <span>משלוחים מהירים</span>
+                            <span>משלוחים מהירים למוסדות</span>
                         </div>
                         <div class="feature-divider"></div>
                         <div class="feature-item">
                             <i class="fa-solid fa-handshake-angle"></i>
-                            <span>שירות אישי</span>
+                            <span>שירות אישי ואמין</span>
                         </div>
                         <div class="feature-divider"></div>
                         <div class="feature-item">
                             <i class="fa-solid fa-award"></i>
-                            <span>איכות מנצחת</span>
+                            <span>איכות ומחירים סיטונאיים</span>
                         </div>
                     </div>
                 `;
-                return;
             }
 
             // Group products by category
