@@ -677,6 +677,9 @@
                 <button class="tab-btn" onclick="switchAdminTab('coupons', this)">
                     <i class="fa-solid fa-ticket"></i> ניהול קופונים
                 </button>
+                <button class="tab-btn" onclick="switchAdminTab('sumit', this)">
+                    <i class="fa-solid fa-credit-card"></i> הגדרות סליקה (Sumit)
+                </button>
             </div>
 
             <div id="tab-actions-area">
@@ -760,6 +763,56 @@
                         <!-- Dynamic rows injected here -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- TAB: SUMIT PAYMENT SETTINGS -->
+        <div id="tab-sumit" class="tab-content">
+            <div style="max-width: 650px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow-soft);">
+                <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #ecfdf5; border-radius: 50%; color: #059669; font-size: 1.5rem;">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--color-navy);">חיבור מערכת סליקה — Sumit (סאמיט)</h4>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">סליקת כרטיסי אשראי והפקת חשבוניות מס ירוקות בתקן PCI-DSS</p>
+                    </div>
+                </div>
+
+                <form onsubmit="handleSaveSumitSettings(event)">
+                    <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
+                        <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">כתובת דף תשלום מאובטח של Sumit (Hosted Payment Link)</label>
+                        <input type="url" id="sumit-payment-link" class="form-control" placeholder="https://app.sumit.co.il/pay/..." style="direction: ltr; font-family: monospace; font-size: 0.95rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">הדבק כאן את קישור דף התשלום שנוצר במערכת Sumit</span>
+                    </div>
+
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
+                        <div class="form-group" style="text-align: right;">
+                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מזהה חברה (Company ID)</label>
+                            <input type="text" id="sumit-company-id" class="form-control" placeholder="למשל: 123456" style="direction: ltr; font-family: monospace;">
+                        </div>
+
+                        <div class="form-group" style="text-align: right;">
+                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מפתח API Key</label>
+                            <input type="password" id="sumit-api-key" class="form-control" placeholder="••••••••••••••••" style="direction: ltr; font-family: monospace;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem; text-align: right; background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: var(--border-radius-sm);">
+                        <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
+                            <input type="checkbox" id="sumit-enabled" style="width: 18px; height: 18px; accent-color: var(--color-blue);" checked>
+                            <span style="font-weight: 700; color: var(--color-navy);">הפעל אפשרות תשלום באשראי (Sumit) בסל הקניות באתר</span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+                        <button type="submit" class="btn-primary" style="padding: 0.8rem 1.8rem;">
+                            <i class="fa-solid fa-floppy-disk"></i> שמור הגדרות סליקה
+                        </button>
+                    </div>
+                </form>
+
+                <div id="sumit-save-msg" style="display: none; margin-top: 1rem; padding: 0.8rem; border-radius: var(--border-radius-sm); font-weight: 700; font-size: 0.9rem; text-align: center;"></div>
             </div>
         </div>
 
@@ -957,13 +1010,57 @@
             renderStats();
             renderOrdersTable();
             renderCouponsTable();
+            renderSumitSettings();
 
             // Listen for DB changes
             window.addEventListener('shokim_db_change', () => {
                 renderStats();
                 renderOrdersTable();
                 renderCouponsTable();
+                renderSumitSettings();
             });
+        }
+
+        // --- SUMIT & PAYMENT SETTINGS ---
+        function renderSumitSettings() {
+            if (typeof db === 'undefined' || !db.getSumitConfig) return;
+            const config = db.getSumitConfig();
+            const linkInput = document.getElementById('sumit-payment-link');
+            const compInput = document.getElementById('sumit-company-id');
+            const keyInput = document.getElementById('sumit-api-key');
+            const enabledInput = document.getElementById('sumit-enabled');
+
+            if (linkInput) linkInput.value = config.paymentLink || "";
+            if (compInput) compInput.value = config.companyId || "";
+            if (keyInput) keyInput.value = config.apiKey || "";
+            if (enabledInput) enabledInput.checked = config.enabled !== undefined ? !!config.enabled : true;
+        }
+
+        async function handleSaveSumitSettings(e) {
+            e.preventDefault();
+            const link = document.getElementById('sumit-payment-link').value.trim();
+            const companyId = document.getElementById('sumit-company-id').value.trim();
+            const apiKey = document.getElementById('sumit-api-key').value.trim();
+            const enabled = document.getElementById('sumit-enabled').checked;
+            const msgEl = document.getElementById('sumit-save-msg');
+
+            await db.saveSumitConfig({
+                paymentLink: link,
+                companyId: companyId,
+                apiKey: apiKey,
+                enabled: enabled
+            });
+
+            if (msgEl) {
+                msgEl.style.display = 'block';
+                msgEl.style.background = '#ecfdf5';
+                msgEl.style.color = '#065f46';
+                msgEl.style.border = '1px solid #a7f3d0';
+                msgEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> הגדרות הסליקה של Sumit נשמרו בהצלחה בענן!';
+                setTimeout(() => {
+                    msgEl.style.display = 'none';
+                }, 4000);
+            }
         }
 
         // --- STATS OVERVIEW ---
@@ -989,7 +1086,8 @@
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
             btn.classList.add('active');
-            document.getElementById(`tab-${tabName}`).classList.add('active');
+            const target = document.getElementById(`tab-${tabName}`);
+            if (target) target.classList.add('active');
         }
 
         // --- ORDERS HISTORY TAB ---

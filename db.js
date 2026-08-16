@@ -342,6 +342,44 @@ class ShokimCloudDB {
         return true;
     }
 
+    // --- SUMIT & SETTINGS ENGINE ---
+    getSumitConfig() {
+        if (this.cacheSumitConfig) return this.cacheSumitConfig;
+        try {
+            const local = localStorage.getItem('shokim_db_sumit_config');
+            return local ? JSON.parse(local) : {
+                companyId: "",
+                apiKey: "",
+                paymentLink: "",
+                enabled: true
+            };
+        } catch(e) {
+            return { companyId: "", apiKey: "", paymentLink: "", enabled: true };
+        }
+    }
+
+    async saveSumitConfig(configObj) {
+        this.cacheSumitConfig = {
+            companyId: configObj.companyId || "",
+            apiKey: configObj.apiKey || "",
+            paymentLink: configObj.paymentLink || "",
+            enabled: configObj.enabled !== undefined ? !!configObj.enabled : true,
+            updated_at: new Date().toISOString()
+        };
+
+        localStorage.setItem('shokim_db_sumit_config', JSON.stringify(this.cacheSumitConfig));
+        this.notifyChange('settings');
+
+        if (firestoreDb) {
+            try {
+                await firestoreDb.collection("settings").doc("sumit_config").set(this.cacheSumitConfig, { merge: true });
+            } catch(e) {
+                console.error("Firestore saveSumitConfig error:", e);
+            }
+        }
+        return true;
+    }
+
     notifyChange(type) {
         window.dispatchEvent(new CustomEvent('shokim_db_change', { detail: { type } }));
     }
