@@ -599,11 +599,11 @@
 
             <div id="google-btn-container" style="display: flex; justify-content: center; margin: 1.5rem 0 1rem;">
                 <div id="g_id_onload"
-                     data-client_id="84920491823-shokim.apps.googleusercontent.com"
+                     data-client_id="732672749324-onutg5fds0rs4ek86o6e28irqq2lu36p.apps.googleusercontent.com"
                      data-callback="handleCredentialResponse"
                      data-auto_prompt="false">
                 </div>
-                <div class="g_id_signin"
+                <div id="g_id_signin_container" class="g_id_signin"
                      data-type="standard"
                      data-size="large"
                      data-theme="outline"
@@ -878,6 +878,7 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
+        const GOOGLE_CLIENT_ID = "732672749324-onutg5fds0rs4ek86o6e28irqq2lu36p.apps.googleusercontent.com";
         const AUTHORIZED_EMAIL = "shivukim3@gmail.com";
 
         // XSS Sanitizer Helper
@@ -949,9 +950,34 @@
             }
         }
 
+        function initGoogleGSI() {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleCredentialResponse
+                });
+                const btnContainer = document.getElementById('g_id_signin_container');
+                if (btnContainer) {
+                    google.accounts.id.renderButton(btnContainer, {
+                        type: "standard",
+                        size: "large",
+                        theme: "outline",
+                        text: "sign_in_with",
+                        shape: "rectangular",
+                        logo_alignment: "left",
+                        width: 280
+                    });
+                }
+            }
+        }
+
         // Check authentication state on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
+        });
+
+        window.addEventListener('load', () => {
+            initGoogleGSI();
         });
 
         function checkAuth() {
@@ -964,6 +990,7 @@
                 initAdminDashboard();
             } else {
                 loginScreen.style.display = 'flex';
+                initGoogleGSI();
             }
         }
 
