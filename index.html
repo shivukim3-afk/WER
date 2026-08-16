@@ -5271,66 +5271,46 @@
                 activePortal = portal;
             }
             
-            // Render category gateways (sub-portals) if portal is selected (but not 'all')
             const subGrid = document.getElementById('sub-portals-grid');
+            const wrapper = document.querySelector('.portals-grid-wrapper');
+            const portalsGrid = document.getElementById('portals-grid');
+            const dotsBar = document.getElementById('mobile-categories-dots');
+            const isMobile = window.innerWidth <= 600;
             
-            // Modern check for mobile layout based on mobile home extra banner or body classes
-            const isMobile = document.body.classList.contains('mobile-catalog-active') || 
-                             document.body.classList.contains('mobile-quick-active') || 
-                             window.innerWidth <= 600;
-            
-            if (activePortal) {
-                // On mobile: hide the entire slider wrapper (grid + dots + arrows)
-                if (isMobile) {
-                    document.body.classList.add('mobile-in-category');
-                    const wrapper = document.querySelector('.portals-grid-wrapper');
-                    if (wrapper) wrapper.style.display = 'none';
-                    const dotsBar = document.getElementById('mobile-categories-dots');
-                    if (dotsBar) dotsBar.style.display = 'none';
-                    const backText = document.getElementById('back-btn-text');
-                    if (backText) backText.textContent = 'חזרה לקטגוריות';
-                } else {
-                    if (activePortal !== 'all') {
-                        document.getElementById('portals-grid').style.display = 'none';
-                    } else {
-                        document.getElementById('portals-grid').style.display = 'grid';
-                    }
-                }
+            if (activePortal && activePortal !== 'all') {
+                if (wrapper) wrapper.style.display = 'none';
+                if (portalsGrid) portalsGrid.style.display = 'none';
+                if (dotsBar) dotsBar.style.display = 'none';
+                if (isMobile) document.body.classList.add('mobile-in-category');
                 
-                if (activePortal !== 'all') {
-                    // Fetch categories belonging to active portal
-                    const categoriesToShow = Object.keys(CATEGORIES).filter(catId => {
-                        return PRODUCTS.some(p => p.category === catId && p.portals.includes(activePortal));
-                    });
-                    
-                    let subHtml = '';
-                    categoriesToShow.forEach(catId => {
-                        const cat = CATEGORIES[catId];
-                        subHtml += `
-                            <div class="sub-portal-card ${activeSubCategory === catId ? 'active' : ''}" onclick="filterSubCategory('${catId}', this)">
-                                <div class="sub-portal-card-icon"><i class="fa-solid ${cat.fa}"></i></div>
-                                <div class="sub-portal-card-title">${cat.name}</div>
-                                <div class="sub-portal-card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                            </div>
-                        `;
-                    });
-                    
-                    subGrid.innerHTML = subHtml;
-                    subGrid.style.display = 'grid';
-                    document.getElementById('active-portal-header').style.display = 'flex';
-                    
-                    // Safe dynamic title text generation to prevent ReferenceError (since PORTALS array is not defined)
-                    let activeTitle = 'כל המוצרים';
-                    if (activePortal === 'institution') activeTitle = 'ציוד למוסד';
-                    if (activePortal === 'home') activeTitle = 'מוצרים לבית';
-                    if (activePortal === 'bb') activeTitle = 'מוצרים לצימרים';
-                    if (activePortal === 'office') activeTitle = 'ציוד למשרד';
-                    
-                    document.getElementById('active-portal-title-text').textContent = activeTitle;
-                } else {
-                    subGrid.style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
-                }
+                // Fetch categories belonging to active portal
+                const categoriesToShow = Object.keys(CATEGORIES).filter(catId => {
+                    return PRODUCTS.some(p => p.category === catId && p.portals.includes(activePortal));
+                });
+                
+                let subHtml = '';
+                categoriesToShow.forEach(catId => {
+                    const cat = CATEGORIES[catId];
+                    subHtml += `
+                        <div class="sub-portal-card ${activeSubCategory === catId ? 'active' : ''}" onclick="filterSubCategory('${catId}', this)">
+                            <div class="sub-portal-card-icon"><i class="fa-solid ${cat.fa}"></i></div>
+                            <div class="sub-portal-card-title">${cat.name}</div>
+                            <div class="sub-portal-card-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                        </div>
+                    `;
+                });
+                
+                subGrid.innerHTML = subHtml;
+                subGrid.style.display = 'grid';
+                document.getElementById('active-portal-header').style.display = 'flex';
+                
+                let activeTitle = 'כל המוצרים';
+                if (activePortal === 'institution') activeTitle = 'ציוד למוסד';
+                if (activePortal === 'home') activeTitle = 'מוצרים לבית';
+                if (activePortal === 'bb') activeTitle = 'מוצרים לצימרים';
+                if (activePortal === 'office') activeTitle = 'ציוד למשרד';
+                
+                document.getElementById('active-portal-title-text').textContent = activeTitle;
                 
                 // Sync URL hash
                 if (typeof isHandlingHashChange !== 'undefined' && !isHandlingHashChange) {
@@ -5338,11 +5318,13 @@
                 }
             } else {
                 // activePortal is empty string (homepage catalog mode selected)
-                document.getElementById('portals-grid').style.display = 'grid';
+                if (wrapper) wrapper.style.display = '';
+                if (portalsGrid) portalsGrid.style.display = '';
+                if (dotsBar) dotsBar.style.display = '';
+                if (isMobile) document.body.classList.remove('mobile-in-category');
+                
                 subGrid.style.display = 'none';
                 document.getElementById('active-portal-header').style.display = 'none';
-                const backText = document.getElementById('back-btn-text');
-                if (backText) backText.textContent = 'חזרה למסך הבית';
                 
                 // Sync URL hash
                 if (typeof isHandlingHashChange !== 'undefined' && !isHandlingHashChange) {
@@ -5356,7 +5338,6 @@
             
             renderCatalog();
             if (isMobile && activePortal) {
-                // Scroll to catalog container so products are immediately visible
                 setTimeout(() => {
                     const cat = document.getElementById('catalog-container');
                     if (cat) cat.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -5371,19 +5352,16 @@
             activePortal = '';
             activeSubCategory = '';
             
-            // Show main portals and welcome banner
             const isMobile = window.innerWidth <= 600;
-            if (isMobile) {
-                document.body.classList.remove('mobile-in-category');
-                // Restore the slider wrapper and dots
-                const wrapper = document.querySelector('.portals-grid-wrapper');
-                if (wrapper) wrapper.style.display = '';
-                const dotsBar = document.getElementById('mobile-categories-dots');
-                if (dotsBar) dotsBar.style.display = '';
-                document.getElementById('portals-grid').style.display = 'flex';
-            } else {
-                document.getElementById('portals-grid').style.display = 'grid';
-            }
+            if (isMobile) document.body.classList.remove('mobile-in-category');
+            
+            const wrapper = document.querySelector('.portals-grid-wrapper');
+            if (wrapper) wrapper.style.display = '';
+            const portalsGrid = document.getElementById('portals-grid');
+            if (portalsGrid) portalsGrid.style.display = '';
+            const dotsBar = document.getElementById('mobile-categories-dots');
+            if (dotsBar) dotsBar.style.display = '';
+            
             document.getElementById('active-portal-header').style.display = 'none';
             document.getElementById('sub-portals-grid').style.display = 'none';
             
@@ -9376,46 +9354,36 @@
             // Re-render portals grid in case we resized or switched layouts
             initPortalsGrid();
             
-            if (hash === '#home') {
+            if (hash === '#home' || hash === '#catalog') {
+                activePortal = '';
+                activeSubCategory = '';
+                
+                document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active', 'revealed'));
+                const activeView = document.getElementById('view-catalog');
+                if (activeView) {
+                    activeView.classList.add('active');
+                    if (isMobile) activeView.classList.add('revealed');
+                }
+
                 if (isMobile) {
-                    // Mobile Home View: Show Catalog View with Welcome State (no selection squares)
                     document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
                     document.body.classList.add('mobile-catalog-active');
-                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
-                    const activeView = document.getElementById('view-catalog');
-                    if (activeView) activeView.classList.add('revealed');
-                    
-                    activePortal = '';
-                    activeSubCategory = '';
-                    
-                    // Restore slider wrapper and dots
-                    const wrapper = document.querySelector('.portals-grid-wrapper');
-                    if (wrapper) wrapper.style.display = '';
-                    const dotsBar = document.getElementById('mobile-categories-dots');
-                    if (dotsBar) dotsBar.style.display = '';
-
-                    document.getElementById('portals-grid').style.display = 'flex';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
-                    
-                    renderCatalog();
-                } else {
-                    // Desktop Home View: Show Catalog View with Welcome State
-                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
-                    document.getElementById('view-catalog').classList.add('active');
-                    
-                    activePortal = '';
-                    activeSubCategory = '';
-                    
-                    document.getElementById('portals-grid').style.display = 'grid';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
-                    
-                    // Clear active styling from all cards in portals-grid
-                    document.querySelectorAll('#portals-grid .portal-card').forEach(c => c.classList.remove('active'));
-                    
-                    renderCatalog();
                 }
+
+                const wrapper = document.querySelector('.portals-grid-wrapper');
+                if (wrapper) wrapper.style.display = '';
+                const portalsGrid = document.getElementById('portals-grid');
+                if (portalsGrid) portalsGrid.style.display = '';
+                const dotsBar = document.getElementById('mobile-categories-dots');
+                if (dotsBar) dotsBar.style.display = '';
+
+                document.getElementById('sub-portals-grid').style.display = 'none';
+                document.getElementById('active-portal-header').style.display = 'none';
+                
+                // Clear active styling from all cards in portals-grid
+                document.querySelectorAll('#portals-grid .portal-card').forEach(c => c.classList.remove('active'));
+                
+                renderCatalog();
             } 
             else if (hash === '#quick') {
                 switchMode('quick');
@@ -9425,42 +9393,6 @@
                     document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
                     const activeView = document.getElementById('view-quick');
                     if (activeView) activeView.classList.add('revealed');
-                }
-            } 
-            else if (hash === '#catalog') {
-                switchMode('catalog');
-                if (isMobile) {
-                    document.body.classList.remove('mobile-home-active', 'mobile-quick-active', 'mobile-in-category');
-                    document.body.classList.add('mobile-catalog-active');
-                    document.querySelectorAll('.content-view').forEach(v => v.classList.remove('revealed'));
-                    const activeView = document.getElementById('view-catalog');
-                    if (activeView) activeView.classList.add('revealed');
-                    
-                    activePortal = '';
-                    activeSubCategory = '';
-                    
-                    // Restore slider wrapper and dots
-                    const wrapper = document.querySelector('.portals-grid-wrapper');
-                    if (wrapper) wrapper.style.display = '';
-                    const dotsBar = document.getElementById('mobile-categories-dots');
-                    if (dotsBar) dotsBar.style.display = '';
-
-                    document.getElementById('portals-grid').style.display = 'flex';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
-                    
-                    renderCatalog();
-                } else {
-                    activePortal = 'all';
-                    activeSubCategory = 'all';
-                    
-                    document.getElementById('portals-grid').style.display = 'none';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'flex';
-                    
-                    document.getElementById('active-portal-title-text').textContent = 'כל המוצרים';
-                    
-                    renderCatalog();
                 }
             } 
             else if (hash.startsWith('#catalog/')) {
