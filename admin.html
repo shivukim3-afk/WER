@@ -677,8 +677,8 @@
                 <button class="tab-btn" onclick="switchAdminTab('coupons', this)">
                     <i class="fa-solid fa-ticket"></i> ניהול קופונים
                 </button>
-                <button class="tab-btn" onclick="switchAdminTab('sumit', this)">
-                    <i class="fa-solid fa-credit-card"></i> הגדרות סליקה (Sumit)
+                <button class="tab-btn" onclick="switchAdminTab('icount', this)">
+                    <i class="fa-solid fa-credit-card"></i> הגדרות סליקה (iCount)
                 </button>
             </div>
 
@@ -766,42 +766,42 @@
             </div>
         </div>
 
-        <!-- TAB: SUMIT PAYMENT SETTINGS -->
-        <div id="tab-sumit" class="tab-content">
+        <!-- TAB: ICOUNT PAYMENT SETTINGS -->
+        <div id="tab-icount" class="tab-content">
             <div style="max-width: 650px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: var(--border-radius-lg); padding: 2rem; box-shadow: var(--shadow-soft);">
                 <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
                     <div style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: #ecfdf5; border-radius: 50%; color: #059669; font-size: 1.5rem;">
                         <i class="fa-solid fa-credit-card"></i>
                     </div>
                     <div>
-                        <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--color-navy);">חיבור מערכת סליקה — Sumit (סאמיט)</h4>
-                        <p style="color: var(--text-muted); font-size: 0.85rem;">סליקת כרטיסי אשראי והפקת חשבוניות מס ירוקות בתקן PCI-DSS</p>
+                        <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--color-navy);">חיבור מערכת סליקה — iCount (איקאונט)</h4>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">סליקת כרטיסי אשראי, ביט, והפקת חשבוניות/קבלות ירוקות אוטומטיות בתקן PCI-DSS</p>
                     </div>
                 </div>
 
-                <form onsubmit="handleSaveSumitSettings(event)">
+                <form onsubmit="handleSaveIcountSettings(event)">
                     <div class="form-group" style="margin-bottom: 1.2rem; text-align: right;">
-                        <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">כתובת דף תשלום מאובטח של Sumit (Hosted Payment Link)</label>
-                        <input type="url" id="sumit-payment-link" class="form-control" placeholder="https://app.sumit.co.il/pay/..." style="direction: ltr; font-family: monospace; font-size: 0.95rem;">
-                        <span style="font-size: 0.8rem; color: var(--text-muted);">הדבק כאן את קישור דף התשלום שנוצר במערכת Sumit</span>
+                        <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">כתובת דף תשלום מאובטח של iCount (Hosted Payment Link)</label>
+                        <input type="url" id="icount-payment-link" class="form-control" placeholder="https://app.icount.co.il/m/..." style="direction: ltr; font-family: monospace; font-size: 0.95rem;">
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">הדבק כאן את קישור דף התשלום שנוצר במערכת iCount</span>
                     </div>
 
                     <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem;">
                         <div class="form-group" style="text-align: right;">
-                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מזהה חברה (Company ID)</label>
-                            <input type="text" id="sumit-company-id" class="form-control" placeholder="למשל: 123456" style="direction: ltr; font-family: monospace;">
+                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מזהה חברה ב-iCount (CID)</label>
+                            <input type="text" id="icount-company-id" class="form-control" placeholder="למשל: 123456 או שם חברה" style="direction: ltr; font-family: monospace;">
                         </div>
 
                         <div class="form-group" style="text-align: right;">
-                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מפתח API Key</label>
-                            <input type="password" id="sumit-api-key" class="form-control" placeholder="••••••••••••••••" style="direction: ltr; font-family: monospace;">
+                            <label style="font-weight: 700; color: var(--color-navy); display: block; margin-bottom: 0.4rem;">מפתח API / סיסמת API ב-iCount</label>
+                            <input type="password" id="icount-api-key" class="form-control" placeholder="••••••••••••••••" style="direction: ltr; font-family: monospace;">
                         </div>
                     </div>
 
                     <div class="form-group" style="margin-bottom: 1.5rem; text-align: right; background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: var(--border-radius-sm);">
                         <label style="display: flex; align-items: center; gap: 0.8rem; cursor: pointer;">
-                            <input type="checkbox" id="sumit-enabled" style="width: 18px; height: 18px; accent-color: var(--color-blue);" checked>
-                            <span style="font-weight: 700; color: var(--color-navy);">הפעל אפשרות תשלום באשראי (Sumit) בסל הקניות באתר</span>
+                            <input type="checkbox" id="icount-enabled" style="width: 18px; height: 18px; accent-color: var(--color-blue);" checked>
+                            <span style="font-weight: 700; color: var(--color-navy);">הפעל אפשרות תשלום באשראי (iCount) בסל הקניות באתר</span>
                         </label>
                     </div>
 
@@ -812,7 +812,7 @@
                     </div>
                 </form>
 
-                <div id="sumit-save-msg" style="display: none; margin-top: 1rem; padding: 0.8rem; border-radius: var(--border-radius-sm); font-weight: 700; font-size: 0.9rem; text-align: center;"></div>
+                <div id="icount-save-msg" style="display: none; margin-top: 1rem; padding: 0.8rem; border-radius: var(--border-radius-sm); font-weight: 700; font-size: 0.9rem; text-align: center;"></div>
             </div>
         </div>
 
@@ -1010,25 +1010,25 @@
             renderStats();
             renderOrdersTable();
             renderCouponsTable();
-            renderSumitSettings();
+            renderIcountSettings();
 
             // Listen for DB changes
             window.addEventListener('shokim_db_change', () => {
                 renderStats();
                 renderOrdersTable();
                 renderCouponsTable();
-                renderSumitSettings();
+                renderIcountSettings();
             });
         }
 
-        // --- SUMIT & PAYMENT SETTINGS ---
-        function renderSumitSettings() {
-            if (typeof db === 'undefined' || !db.getSumitConfig) return;
-            const config = db.getSumitConfig();
-            const linkInput = document.getElementById('sumit-payment-link');
-            const compInput = document.getElementById('sumit-company-id');
-            const keyInput = document.getElementById('sumit-api-key');
-            const enabledInput = document.getElementById('sumit-enabled');
+        // --- ICOUNT & PAYMENT SETTINGS ---
+        function renderIcountSettings() {
+            if (typeof db === 'undefined' || !db.getIcountConfig) return;
+            const config = db.getIcountConfig();
+            const linkInput = document.getElementById('icount-payment-link');
+            const compInput = document.getElementById('icount-company-id');
+            const keyInput = document.getElementById('icount-api-key');
+            const enabledInput = document.getElementById('icount-enabled');
 
             if (linkInput) linkInput.value = config.paymentLink || "";
             if (compInput) compInput.value = config.companyId || "";
@@ -1036,15 +1036,15 @@
             if (enabledInput) enabledInput.checked = config.enabled !== undefined ? !!config.enabled : true;
         }
 
-        async function handleSaveSumitSettings(e) {
+        async function handleSaveIcountSettings(e) {
             e.preventDefault();
-            const link = document.getElementById('sumit-payment-link').value.trim();
-            const companyId = document.getElementById('sumit-company-id').value.trim();
-            const apiKey = document.getElementById('sumit-api-key').value.trim();
-            const enabled = document.getElementById('sumit-enabled').checked;
-            const msgEl = document.getElementById('sumit-save-msg');
+            const link = document.getElementById('icount-payment-link').value.trim();
+            const companyId = document.getElementById('icount-company-id').value.trim();
+            const apiKey = document.getElementById('icount-api-key').value.trim();
+            const enabled = document.getElementById('icount-enabled').checked;
+            const msgEl = document.getElementById('icount-save-msg');
 
-            await db.saveSumitConfig({
+            await db.saveIcountConfig({
                 paymentLink: link,
                 companyId: companyId,
                 apiKey: apiKey,
@@ -1056,7 +1056,7 @@
                 msgEl.style.background = '#ecfdf5';
                 msgEl.style.color = '#065f46';
                 msgEl.style.border = '1px solid #a7f3d0';
-                msgEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> הגדרות הסליקה של Sumit נשמרו בהצלחה בענן!';
+                msgEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> הגדרות הסליקה של iCount נשמרו בהצלחה בענן!';
                 setTimeout(() => {
                     msgEl.style.display = 'none';
                 }, 4000);

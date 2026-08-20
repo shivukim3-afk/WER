@@ -78,10 +78,18 @@ const DEFAULT_COUPONS = {
     }
 };
 
+const DEFAULT_ICOUNT_CONFIG = {
+    companyId: "sl8407440",
+    apiKey: "API3E8-C0A83414-6A8613B1-0380E320669F4668",
+    paymentLink: "https://app.icount.co.il/m/7125d",
+    enabled: true
+};
+
 class ShokimCloudDB {
     constructor() {
         this.cacheCoupons = {};
         this.cacheOrders = [];
+        this.cacheIcountConfig = null;
         this.isCloudConnected = !!firestoreDb;
         this.init();
     }
@@ -93,9 +101,12 @@ class ShokimCloudDB {
             this.cacheCoupons = localCp ? JSON.parse(localCp) : DEFAULT_COUPONS;
             const localOrd = localStorage.getItem('shokim_db_orders_v2');
             this.cacheOrders = localOrd ? JSON.parse(localOrd) : [];
+            const localConf = localStorage.getItem('shokim_db_icount_config');
+            this.cacheIcountConfig = localConf ? JSON.parse(localConf) : DEFAULT_ICOUNT_CONFIG;
         } catch (e) {
             this.cacheCoupons = DEFAULT_COUPONS;
             this.cacheOrders = [];
+            this.cacheIcountConfig = DEFAULT_ICOUNT_CONFIG;
         }
 
         // Setup real-time Cloud Firestore listeners if available
@@ -136,6 +147,17 @@ class ShokimCloudDB {
             this.notifyChange('orders');
         }, (err) => {
             console.warn("Firestore orders listener note (auth dependent):", err.message);
+        });
+
+        // Real-time Cloud iCount Settings Listener
+        firestoreDb.collection("settings").doc("icount_config").onSnapshot((doc) => {
+            if (doc.exists) {
+                this.cacheIcountConfig = doc.data();
+                localStorage.setItem('shokim_db_icount_config', JSON.stringify(this.cacheIcountConfig));
+                this.notifyChange('settings');
+            }
+        }, (err) => {
+            console.warn("Firestore iCount settings listener note:", err.message);
         });
     }
 
@@ -342,24 +364,24 @@ class ShokimCloudDB {
         return true;
     }
 
-    // --- SUMIT & SETTINGS ENGINE ---
-    getSumitConfig() {
-        if (this.cacheSumitConfig) return this.cacheSumitConfig;
+    // --- ICOUNT & SETTINGS ENGINE ---
+    getIcountConfig() {
+        if (this.cacheIcountConfig) return this.cacheIcountConfig;
         try {
-            const local = localStorage.getItem('shokim_db_sumit_config');
-            return local ? JSON.parse(local) : {
-                companyId: "",
-                apiKey: "",
-                paymentLink: "",
-                enabled: true
-            };
+            const local = localStorage.getItem('shokim_db_icount_config');
+            return local ? JSON.parse(local) : DEFAULT_ICOUNT_CONFIG;
         } catch(e) {
-            return { companyId: "", apiKey: "", paymentLink: "", enabled: true };
+            return DEFAULT_ICOUNT_CONFIG;
         }
     }
 
-    async saveSumitConfig(configObj) {
-        this.cacheSumitConfig = {
+    // Backward compatibility alias
+    getSumitConfig() {
+        return this.getIcountConfig();
+    }
+
+    async saveIcountConfig(configObj) {
+        this.cacheIcountConfig = {
             companyId: configObj.companyId || "",
             apiKey: configObj.apiKey || "",
             paymentLink: configObj.paymentLink || "",
@@ -367,17 +389,22 @@ class ShokimCloudDB {
             updated_at: new Date().toISOString()
         };
 
-        localStorage.setItem('shokim_db_sumit_config', JSON.stringify(this.cacheSumitConfig));
+        localStorage.setItem('shokim_db_icount_config', JSON.stringify(this.cacheIcountConfig));
         this.notifyChange('settings');
 
         if (firestoreDb) {
             try {
-                await firestoreDb.collection("settings").doc("sumit_config").set(this.cacheSumitConfig, { merge: true });
+                await firestoreDb.collection("settings").doc("icount_config").set(this.cacheIcountConfig, { merge: true });
             } catch(e) {
-                console.error("Firestore saveSumitConfig error:", e);
+                console.error("Firestore saveIcountConfig error:", e);
             }
         }
         return true;
+    }
+
+    // Backward compatibility alias
+    async saveSumitConfig(configObj) {
+        return this.saveIcountConfig(configObj);
     }
 
     notifyChange(type) {

@@ -6071,51 +6071,6 @@
             }
         }
 
-        // Open/Close Credit Card Modal
-        function openPaymentModal(amount, shouldUpdateHash = true) {
-            document.getElementById('payment-amount-val').textContent = `₪${amount}`;
-            document.getElementById('payment-modal').style.display = 'flex';
-            document.getElementById('payment-form').style.display = 'block';
-            document.getElementById('payment-success-box').style.display = 'none';
-            if (shouldUpdateHash) {
-                const currentHash = window.location.hash || '#catalog';
-                if (!currentHash.includes('/payment')) {
-                    updateHash(currentHash + '/payment');
-                }
-            }
-        }
-
-        function closePaymentModal(shouldUpdateHash = true) {
-            document.getElementById('payment-modal').style.display = 'none';
-            if (shouldUpdateHash) {
-                const currentHash = window.location.hash;
-                if (currentHash.includes('/payment')) {
-                    updateHash(currentHash.split('/payment')[0]);
-                }
-            }
-        }
-
-        // Card formatters
-        function formatCardNumber(input) {
-            let val = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            let formatted = '';
-            for (let i = 0; i < val.length; i++) {
-                if (i > 0 && i % 4 === 0) {
-                    formatted += ' ';
-                }
-                formatted += val[i];
-            }
-            input.value = formatted;
-        }
-
-        function formatExpiry(input) {
-            let val = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            if (val.length > 2) {
-                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
-            } else {
-                input.value = val;
-            }
-        }
 
         // Get checkout items list based on source
         function getCheckoutItems() {
@@ -6202,7 +6157,7 @@
                 orderText += `\n*רשימת מוצרים להזמנה:*\n`;
 
                 const subtotal = checkoutAmount;
-                const vat = subtotal * 0.17;
+                const vat = subtotal * 0.18;
                 const totalWithVat = subtotal + vat;
 
                 items.forEach(item => {
@@ -6210,7 +6165,7 @@
                     orderText += `• *${item.name}* (${item.pack}) - כמות: *${item.quantity}* | מחיר: ${item.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
                 });
                 orderText += `\n💵 סכום הזמנה (לפני מע"מ): ${subtotal.toFixed(2)} ₪`;
-                orderText += `\n➕ מע"מ (17%): ${vat.toFixed(2)} ₪`;
+                orderText += `\n➕ מע"מ (18%): ${vat.toFixed(2)} ₪`;
                 orderText += `\n💰 *סה"כ לתשלום (כולל מע"מ): ${totalWithVat.toFixed(2)} ₪*`;
                 orderText += `\n\n_המחירים אינם כוללים מע"מ וסופיים בכפוף לתנאי האספקה._`;
 
@@ -6221,11 +6176,19 @@
                 window.open(waLink, '_blank');
 
             } else if (method === 'credit') {
-                // Morph to Credit Card form modal
-                const subtotal = checkoutAmount;
-                const totalWithVat = subtotal * 1.17;
-                closeCheckoutDetailsModal();
-                openPaymentModal(totalWithVat.toFixed(2));
+                const icountConf = (typeof db !== 'undefined' && db.getIcountConfig) ? db.getIcountConfig() : null;
+                const payLink = icountConf && icountConf.paymentLink ? icountConf.paymentLink.trim() : '';
+                
+                if (payLink) {
+                    closeCheckoutDetailsModal();
+                    // Direct secure redirection to external payment gateway
+                    const win = window.open(payLink, '_blank');
+                    if (!win || win.closed || typeof win.closed === 'undefined') {
+                        window.location.href = payLink;
+                    }
+                } else {
+                    alert('דף התשלום המאובטח עדיין לא הוגדר במערכת הניהול. באפשרותך להשלים את ההזמנה בוואטסאפ או בטלפון.');
+                }
 
             } else if (method === 'pdf') {
                 // Dynamic invoice printing
@@ -8644,64 +8607,6 @@
             printWindow.document.close();
         }
 
-        // Handle Credit Card Payment Submit
-        function handlePaymentSubmit(event) {
-            event.preventDefault();
-            const btn = document.getElementById('pay-submit-btn');
-            const originalContent = btn.innerHTML;
-            
-            // Show loading spinner
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> מאמת פרטים...`;
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-                
-                // Hide form, show success checkmark!
-                document.getElementById('payment-form').style.display = 'none';
-                document.getElementById('payment-success-box').style.display = 'block';
-
-                // Empty the form values
-                document.getElementById('card-name').value = '';
-                document.getElementById('card-number').value = '';
-                document.getElementById('card-expiry').value = '';
-                document.getElementById('card-cvv').value = '';
-
-                // Get details from form
-                const clientName = document.getElementById('checkout-client-name').value.trim();
-                const contactName = document.getElementById('checkout-contact-name').value.trim();
-                const clientPhone = document.getElementById('checkout-client-phone').value.trim();
-                const clientAddress = document.getElementById('checkout-client-address').value.trim();
-
-                const items = getCheckoutItems();
-
-                // Format WhatsApp paid message
-                let orderText = `*הזמנה שולמה באשראי באתר - שיווקים*\n\n`;
-                orderText += `*פרטי המוסד:*\n`;
-                orderText += `🏢 מוסד: ${clientName}\n`;
-                orderText += `👤 איש קשר: ${contactName}\n`;
-                orderText += `📞 טלפון: ${clientPhone}\n`;
-                if (clientAddress) orderText += `📍 כתובת: ${clientAddress}\n`;
-                orderText += `\n*רשימת מוצרים שנרכשו:*\n`;
-
-                items.forEach(item => {
-                    const itemSum = item.price * item.quantity;
-                    orderText += `• *${item.name}* (${item.pack}) - כמות: *${item.quantity}* | מחיר: ${item.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
-                });
-
-                orderText += `\n💰 *סה"ך ששולם באשראי: ${checkoutAmount} ₪*\n*אישור עסקה: MOCK-${Math.floor(Math.random() * 900000) + 100000}*`;
-
-                const waText = encodeURIComponent(orderText.replace(/\\n/g, '\n'));
-                const waLink = `https://wa.me/972505178445?text=${waText}`;
-                
-                // Delay opening WhatsApp slightly
-                setTimeout(() => {
-                    window.open(waLink, '_blank');
-                }, 1500);
-
-            }, 2000);
-        }
 
         // Live Header Search event
 
@@ -9389,7 +9294,6 @@
             // Extract suffix state for modals
             let openProduct = null;
             let openCheckout = false;
-            let openPayment = false;
             
             if (hash.includes('/product/')) {
                 const parts = hash.split('/product/');
@@ -9399,10 +9303,6 @@
             if (hash.includes('/checkout')) {
                 hash = hash.split('/checkout')[0];
                 openCheckout = true;
-            }
-            if (hash.includes('/payment')) {
-                hash = hash.split('/payment')[0];
-                openPayment = true;
             }
             
             // Re-render portals grid in case we resized or switched layouts
@@ -9541,12 +9441,6 @@
                 closeCheckoutDetailsModal(false);
             }
 
-            if (openPayment) {
-                const totalWithVat = checkoutAmount * 1.18; // default VAT calculation
-                openPaymentModal(totalWithVat.toFixed(2), false);
-            } else {
-                closePaymentModal(false);
-            }
         }
 
         function initPortalsGrid() {
@@ -9904,59 +9798,6 @@
         </div>
     </div>
 
-    <!-- CREDIT CARD PAYMENT MODAL -->
-    <div class="payment-modal" id="payment-modal" style="display: none;" onclick="closePaymentModal()">
-        <div class="payment-card" onclick="event.stopPropagation()">
-            <button class="payment-close-btn" onclick="closePaymentModal()"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="payment-header">
-                <i class="fa-solid fa-shield-halved" style="color: var(--color-blue); font-size: 2.2rem; margin-bottom: 0.8rem; display: block;"></i>
-                <h3 class="payment-title">תשלום מאובטח בכרטיס אשראי</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">אנא הזן את פרטי כרטיס האשראי לחיוב</p>
-            </div>
-            
-            <div class="payment-summary-box">
-                <span>סה"ך לתשלום:</span>
-                <span class="payment-amount-val" id="payment-amount-val">₪0</span>
-            </div>
-            
-            <form id="payment-form" onsubmit="handlePaymentSubmit(event)">
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם בעל הכרטיס</label>
-                    <input type="text" id="card-name" required placeholder="לדוגמה: ישראל ישראלי" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
-                </div>
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">מספר כרטיס אשראי</label>
-                    <div style="position: relative;">
-                        <input type="text" id="card-number" required maxlength="19" placeholder="xxxx xxxx xxxx xxxx" oninput="formatCardNumber(this)" style="width: 100%; padding: 0.8rem 1rem 0.8rem 2.8rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: monospace; letter-spacing: 1px;">
-                        <i class="fa-solid fa-credit-card" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: right;">
-                    <div class="form-group">
-                        <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">תוקף (MM/YY)</label>
-                        <input type="text" id="card-expiry" required maxlength="5" placeholder="MM/YY" oninput="formatExpiry(this)" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); text-align: center;">
-                    </div>
-                    <div class="form-group">
-                        <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">CVV (3 ספרות בגב)</label>
-                        <input type="text" id="card-cvv" required maxlength="3" placeholder="123" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); text-align: center;">
-                    </div>
-                </div>
-                
-                <button type="submit" class="pay-submit-btn" id="pay-submit-btn" style="width: 100%; padding: 1rem; border-radius: var(--border-radius-md); background: var(--color-navy); color: #ffffff; border: none; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
-                    <i class="fa-solid fa-lock"></i>
-                    <span>בצע תשלום מאובטח</span>
-                </button>
-            </form>
-            
-            <div id="payment-success-box" style="display: none; text-align: center; padding: 2rem 0;">
-                <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 4.5rem; margin-bottom: 1.2rem; display: block; animation: scale-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;"></i>
-                <h4 style="font-size: 1.5rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.5rem;">התשלום בוצע בהצלחה!</h4>
-                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">פרטי העסקה נשלחים כעת לוואטסאפ לצורך תיאום אספקה</p>
-                <button class="pay-success-close-btn" onclick="closePaymentModal()" style="padding: 0.8rem 2rem; border-radius: var(--border-radius-sm); background: var(--color-blue); color: #ffffff; border: none; font-weight: 700; cursor: pointer;">סגור חלון</button>
-            </div>
-        </div>
-    </div>
 
 
     <!-- PRODUCT DETAILS MODAL (QUICK VIEW) -->
