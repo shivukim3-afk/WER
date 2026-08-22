@@ -22,12 +22,10 @@
     <link rel="preload" as="image" href="assets/fresh_studio_bg.webp" type="image/webp" fetchpriority="high">
     <link rel="preload" as="image" href="assets/mobile_studio_bg.webp" media="(max-width: 600px)" type="image/webp" fetchpriority="high">
 
-    <!-- Google Fonts: Heebo & Outfit with display=swap (Non-blocking) -->
+    <!-- Google Fonts: Heebo & Outfit with display=optional (Zero CLS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap"></noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=optional">
     
     <!-- FontAwesome: Asynchronous non-render-blocking preload -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -46,14 +44,14 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
 
@@ -120,6 +118,7 @@
             object-position: center right !important;
             pointer-events: none !important;
             z-index: -99999 !important;
+            aspect-ratio: 16 / 9 !important;
         }
 
         .fixed-bg-layer {
@@ -2011,6 +2010,7 @@
             object-position: center right !important;
             pointer-events: none !important;
             z-index: -99999 !important;
+            aspect-ratio: 16 / 9 !important;
         }
 
         .fixed-bg-layer {
@@ -2359,6 +2359,7 @@
         .product-img {
             width: 100%;
             height: 100%;
+            aspect-ratio: 1 / 1;
             object-fit: contain;
             object-position: center;
             transition: var(--transition-elastic);
@@ -4103,7 +4104,7 @@
     <div class="fixed-bg-layer" id="fixed-bg-layer">
         <picture>
             <source media="(max-width: 600px)" srcset="assets/mobile_studio_bg.webp" type="image/webp">
-            <img src="assets/fresh_studio_bg.webp" alt="שיווקים אספקה מקצועית" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
+            <img src="assets/fresh_studio_bg.webp" alt="שיווקים אספקה מקצועית" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
         </picture>
     </div>
 
@@ -5782,7 +5783,7 @@
                     const activeImg = (activeColor === 'white' && prod.image_white) ? prod.image_white : prod.image;
                     
                     const visualHtml = prod.image 
-                        ? `<img src="${activeImg}" alt="${prod.name}" class="product-img" id="prod-img-${prod.id}" loading="lazy" decoding="async">`
+                        ? `<img src="${activeImg}" alt="${prod.name}" class="product-img" id="prod-img-${prod.id}" width="200" height="160" loading="lazy" decoding="async">`
                         : iconSvg;
 
                     const colorSwatchesHtml = prod.hasColors ? `
@@ -6396,14 +6397,14 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
 
@@ -6580,13 +6581,18 @@
             requestAnimationFrame(updateFollower);
         }
 
-        // Bind cursor hover triggers
+        // Delegated cursor hover handler for zero main-thread overhead
         function bindCursorHover() {
-            const interactiveElements = document.querySelectorAll('a, button, .portal-card, .product-card, .qty-btn');
-            interactiveElements.forEach(el => {
-                el.addEventListener('mouseenter', () => document.body.classList.add('hover-link'));
-                el.addEventListener('mouseleave', () => document.body.classList.remove('hover-link'));
-            });
+            document.addEventListener('mouseover', (e) => {
+                if (e.target && e.target.closest && e.target.closest('a, button, .portal-card, .product-card, .qty-btn, .mode-square-btn')) {
+                    document.body.classList.add('hover-link');
+                }
+            }, { passive: true });
+            document.addEventListener('mouseout', (e) => {
+                if (e.target && e.target.closest && e.target.closest('a, button, .portal-card, .product-card, .qty-btn, .mode-square-btn')) {
+                    document.body.classList.remove('hover-link');
+                }
+            }, { passive: true });
         }
 
         // 7. HERO ABSTRACT BACKGROUND NETWORK (Custom Canvas Interactive Animation)
@@ -7591,9 +7597,6 @@
             const currentHash = window.location.hash;
             if (currentHash && currentHash !== '#home') {
                 handleHashChange();
-            } else {
-                updateHash('#home');
-                handleHashChange(); // Force default render on desktop
             }
         });
         
