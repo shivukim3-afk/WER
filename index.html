@@ -4918,12 +4918,84 @@
             };
         }
 
-        // 3. CART SYSTEM LOGIC
+        // 3. CART PERSISTENCE & LONG-TERM MEMORY ENGINE
+        const STORAGE_CART_KEY = 'shokim_customer_cart_v2';
+        const STORAGE_COUPON_KEY = 'shokim_customer_coupon_v2';
         let cart = [];
+
+        function saveCartToStorage() {
+            try {
+                localStorage.setItem(STORAGE_CART_KEY, JSON.stringify(cart));
+                if (appliedCoupon) {
+                    localStorage.setItem(STORAGE_COUPON_KEY, JSON.stringify(appliedCoupon));
+                } else {
+                    localStorage.removeItem(STORAGE_COUPON_KEY);
+                }
+            } catch (e) {
+                console.warn('Could not save cart state to localStorage:', e);
+            }
+        }
+
+        function loadCartFromStorage() {
+            try {
+                const savedCart = localStorage.getItem(STORAGE_CART_KEY);
+                if (savedCart) {
+                    const parsed = JSON.parse(savedCart);
+                    if (Array.isArray(parsed)) {
+                        // Re-validate and sync with live catalog definitions
+                        cart = parsed.filter(item => item && item.id && item.quantity > 0).map(item => {
+                            const freshProd = PRODUCTS.find(p => p.id === item.id);
+                            if (freshProd) {
+                                return {
+                                    ...freshProd,
+                                    quantity: parseInt(item.quantity, 10) || 1,
+                                    activeImage: item.activeImage || freshProd.image,
+                                    colorLabel: item.colorLabel || (freshProd.hasColors ? 'שחור' : undefined)
+                                };
+                            }
+                            return item;
+                        });
+                    }
+                }
+
+                const savedCoupon = localStorage.getItem(STORAGE_COUPON_KEY);
+                if (savedCoupon) {
+                    appliedCoupon = JSON.parse(savedCoupon);
+                }
+            } catch (e) {
+                console.warn('Could not load cart state from localStorage:', e);
+                cart = [];
+            }
+        }
+
+        // Initialize persistent cart immediately
+        loadCartFromStorage();
+
+        // Listen for multi-tab cart updates
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_CART_KEY || e.key === STORAGE_COUPON_KEY) {
+                loadCartFromStorage();
+                updateCartCounter();
+                renderCartList();
+                if (typeof renderCatalog === 'function') renderCatalog();
+                if (typeof renderQuickOrderTable === 'function') renderQuickOrderTable();
+            }
+        });
+
+        function clearCart() {
+            cart = [];
+            appliedCoupon = null;
+            saveCartToStorage();
+            updateCartCounter();
+            renderCartList();
+            if (typeof renderCatalog === 'function') renderCatalog();
+            if (typeof renderQuickOrderTable === 'function') renderQuickOrderTable();
+        }
 
         function updateCartCounter() {
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.getElementById('cart-counter').textContent = count;
+            const counterEl = document.getElementById('cart-counter');
+            if (counterEl) counterEl.textContent = count;
             
             // Sync mobile sticky bar cart badge
             const mobileStickyCounter = document.getElementById('mobile-sticky-cart-count');
@@ -4946,6 +5018,7 @@
             } else {
                 cart.push({ ...product, quantity: count });
             }
+            saveCartToStorage();
             updateCartCounter();
             renderCartList();
             
@@ -4959,6 +5032,7 @@
 
         function removeFromCart(productId) {
             cart = cart.filter(item => item.id !== productId);
+            saveCartToStorage();
             updateCartCounter();
             renderCartList();
         }
@@ -4970,6 +5044,7 @@
             if (item.quantity <= 0) {
                 removeFromCart(productId);
             } else {
+                saveCartToStorage();
                 updateCartCounter();
                 renderCartList();
             }
@@ -5953,6 +6028,7 @@
                     }
                 }
             });
+            saveCartToStorage();
             updateCartCounter();
             renderCartList();
             if (addedCount > 0) {
