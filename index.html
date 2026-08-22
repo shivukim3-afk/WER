@@ -200,18 +200,9 @@
         ------------------------------------------------------------- */
         #splash-screen {
             display: none !important;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-dark);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         .splash-logo-container {
@@ -4072,7 +4063,7 @@
     <div class="custom-cursor-follower" id="custom-cursor-follower"></div>
 
     <!-- INTRO LOADING SCREEN (SPLASH ANIMATION) -->
-    <div id="splash-screen">
+    <div id="splash-screen" style="display: none !important;">
         <div class="splash-logo-container">
             <div class="splash-logo" role="banner">שיווקים<span>.</span></div>
             <div class="splash-subtitle">למוסד • לבית • למשרד • לצימרים</div>
@@ -7534,11 +7525,22 @@
         
         // 8. INITIALIZE EVERYTHING
         loadAccessibilitySettings();
-        initCanvas();
-        drawCanvas();
         handleHashChange();
         updateCartCounter();
-        setTimeout(bindCursorHover, 600); // Wait for splash screens to complete to bind hover triggers
+        bindCursorHover();
+        
+        // Defer canvas animation to idle to protect First Contentful Paint / CPU
+        if (window.innerWidth > 768 && window.requestIdleCallback) {
+            requestIdleCallback(() => {
+                initCanvas();
+                drawCanvas();
+            });
+        } else if (window.innerWidth > 768) {
+            window.addEventListener('load', () => {
+                initCanvas();
+                drawCanvas();
+            });
+        }
     </script>
 
     <!-- CHECKOUT DETAILS MODAL -->
