@@ -18,6 +18,10 @@
     <meta property="og:site_name" content="שיווקים">
     <meta property="og:image" content="assets/fresh_studio_bg.webp">
     
+    <!-- Preload LCP Hero & Background Images with High Priority -->
+    <link rel="preload" as="image" href="assets/fresh_studio_bg.webp" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/mobile_studio_bg.webp" media="(max-width: 600px)" type="image/webp" fetchpriority="high">
+
     <!-- Google Fonts: Heebo & Outfit with display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +47,7 @@
             --bg-secondary: #f8fafc;
             --bg-dark: #07162c;
             --text-main: #0f172a;
-            --text-muted: #64748b;
+            --text-muted: #475569;
             --text-light: #f8fafc;
             
             /* Logo colors */
@@ -4070,7 +4074,7 @@
     <!-- INTRO LOADING SCREEN (SPLASH ANIMATION) -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <h1 class="splash-logo">שיווקים<span>.</span></h1>
+            <div class="splash-logo" role="banner">שיווקים<span>.</span></div>
             <div class="splash-subtitle">למוסד • לבית • למשרד • לצימרים</div>
             <!-- Arrow svg pointer -->
             <div class="splash-arrow" id="splash-arrow">
@@ -4081,14 +4085,14 @@
 
     <!-- STICKY GLASSMORPHISM HEADER -->
     <header id="header">
-        <a href="#home" class="logo-wrap">
+        <a href="#home" class="logo-wrap" aria-label="דף הבית שיווקים">
             <div class="logo-arrow-icon"></div>
             <div class="logo-text">שיווקים</div>
             <div class="logo-tagline">למוסד • לבית • למשרד</div>
         </a>
 
         <!-- Center Nav Links -->
-        <nav class="header-nav">
+        <nav class="header-nav" aria-label="ניווט ראשי">
             <button class="header-nav-link" onclick="openLegalDoc('about')">מי אנחנו</button>
             <a href="tel:050-5178445" class="header-nav-link">צרו קשר</a>
             <button class="header-nav-link cta" onclick="toggleQuickOrderMode()">
@@ -4099,7 +4103,7 @@
 
         <div class="header-utils">
             <!-- Cart Trigger Button -->
-            <button class="cart-btn" onclick="toggleCart(true)">
+            <button class="cart-btn" onclick="toggleCart(true)" aria-label="פתח עגלת קניות">
                 <i class="fa-solid fa-basket-shopping"></i>
                 <span class="cart-badge" id="cart-counter">0</span>
             </button>
@@ -4116,8 +4120,8 @@
             
             <!-- Branded Search Bar inside Hero -->
             <div class="hero-search-wrapper">
-                <input type="text" id="catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי...">
-                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="catalog-search" placeholder="חפשו חומרי ניקוי, מוצרי נייר, חד-פעמי..." aria-label="חיפוש מוצרים בקטלוג">
+                <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
             </div>
         </div>
     </section>
@@ -4194,8 +4198,8 @@
                 </div>
 
                 <div class="mobile-search-wrapper" id="mobile-search-wrapper" style="width: 100%; max-width: 100%; margin: 0.5rem 0 1.2rem 0; position: relative;">
-                    <input type="text" id="mobile-catalog-search" placeholder="חיפוש מוצרים..." style="width: 100%; height: 46px; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 0 1rem 0 3rem; font-family: var(--font-main); font-size: 16px; background: #ffffff; outline: none; transition: var(--transition-smooth); box-shadow: var(--shadow-soft);">
-                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
+                    <input type="text" id="mobile-catalog-search" placeholder="חיפוש מוצרים..." aria-label="חיפוש מוצרים בקטלוג" style="width: 100%; height: 46px; border: 1px solid #e2e8f0; border-radius: var(--border-radius-md); padding: 0 1rem 0 3rem; font-family: var(--font-main); font-size: 16px; background: #ffffff; outline: none; transition: var(--transition-smooth); box-shadow: var(--shadow-soft);">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"></i>
                 </div>
             </div>
             <!-- PORTAL CATEGORY GATEWAYS (Wrapped with Slider Controls for Desktop) -->
@@ -4416,7 +4420,7 @@
                     <p>חברת שיווקים מתמחה באספקת חומרי ניקוי מקצועיים, מוצרי נייר ניגוב, ומוצרים משלימים למוסדות, גנים, משרדים וצימרים. שמים דגש על שירות מהיר, אמין ויחס אישי.</p>
                 </div>
                 <div class="footer-nav-links">
-                    <h4 class="footer-title">ניווט מהיר</h4>
+                    <h3 class="footer-title">ניווט מהיר</h3>
                     <ul class="footer-links">
                         <li><a href="#" onclick="switchMode('catalog'); return false;">קטלוג מוצרים</a></li>
                         <li><a href="#" onclick="switchMode('quick'); return false;">הזמנה מהירה לגננות</a></li>
@@ -4428,7 +4432,7 @@
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h4 class="footer-title">פרטים ליצירת קשר</h4>
+                    <h3 class="footer-title">פרטים ליצירת קשר</h3>
                     <ul class="footer-contact-info">
                         <li><i class="fa-solid fa-user"></i> מנהל מכירות: שמואל לוי</li>
                         <li><i class="fa-solid fa-phone"></i> <a href="tel:050-5178445" style="color: inherit; text-decoration: none;">050-5178445</a></li>
@@ -4439,7 +4443,7 @@
             </div>
             <div class="footer-bottom" style="text-align: center;">
                 <p>© 2026 שיווקים - למוסד, לבית, למשרד ולצימרים. כל הזכויות שמורות לשמואל לוי. מעצב על ידי Antigravity Builder.</p>
-                <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.8rem; margin-top: 0.6rem; font-weight: 600;">* כל מחירי המוצרים באתר מוצגים לפני מע"מ (ללא מע"מ). חיוב מע"מ בשיעור 17% יתווסף לסכום ההזמנה בסיכום הרכישה בעגלת הקניות.</p>
+                <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.8rem; margin-top: 0.6rem; font-weight: 600;">* כל מחירי המוצרים באתר מוצגים לפני מע"מ (ללא מע"מ). חיוב מע"מ בשיעור 18% יתווסף לסכום ההזמנה בסיכום הרכישה בעגלת הקניות.</p>
             </div>
         </div>
     </footer>
@@ -8925,12 +8929,14 @@
         // Header scroll behavior
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
             }
-        });
+        }, { passive: true });
 
         
         // Helper to determine product badge
@@ -9096,7 +9102,7 @@
                     <ul>
                         <li>מכיוון שהאתר פועל במתכונת מוסדית ועסקית (B2B), **כל מחירי המוצרים המוצגים בקטלוג האתר אינם כוללים מע"מ (ללא מע"מ)**.</li>
                         <li>ליד כל מחיר מוצג בבירור הכיתוב "ללא מע"מ".</li>
-                        <li>חיוב מע"מ תקני בשיעור 17% (או כפי שיהיה קבוע בחוק מעת לעת) יתווסף לחשבון באופן אוטומטי בעגלת הקניות ובסיכום הקופה לפני ביצוע התשלום או שליחת ההזמנה.</li>
+                        <li>חיוב מע"מ תקני בשיעור 18% (או כפי שיהיה קבוע בחוק מעת לעת) יתווסף לחשבון באופן אוטומטי בעגלת הקניות ובסיכום הקופה לפני ביצוע התשלום או שליחת ההזמנה.</li>
                         <li>הנהלת האתר שומרת לעצמה את הזכות לעדכן את מחירי המוצרים, מגוון הפריטים ותעריפי האספקה בכל עת וללא הודעה מוקדמת.</li>
                     </ul>
 

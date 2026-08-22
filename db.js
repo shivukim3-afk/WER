@@ -135,24 +135,27 @@ class ShokimCloudDB {
                 // Seed default coupons if collection is empty
                 this.seedDefaultCoupons();
             }
-        }, (err) => {
-            console.warn("Firestore coupons listener note (auth dependent):", err.message);
+        }, () => {
+            // Graceful fallback to local cache
         });
 
-        // Real-time Cloud Orders Listener
-        firestoreDb.collection("orders").orderBy("created_at", "desc").onSnapshot((snapshot) => {
-            const cloudOrders = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                data.docId = doc.id;
-                cloudOrders.push(data);
+        // Real-time Cloud Orders Listener (Only active in admin or authenticated sessions)
+        const isAdminSession = typeof window !== 'undefined' && (window.location.pathname.includes('admin') || (typeof firebaseAuth !== 'undefined' && firebaseAuth && firebaseAuth.currentUser));
+        if (isAdminSession) {
+            firestoreDb.collection("orders").orderBy("created_at", "desc").onSnapshot((snapshot) => {
+                const cloudOrders = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    data.docId = doc.id;
+                    cloudOrders.push(data);
+                });
+                this.cacheOrders = cloudOrders;
+                localStorage.setItem('shokim_db_orders_v2', JSON.stringify(cloudOrders));
+                this.notifyChange('orders');
+            }, () => {
+                // Graceful fallback to local cache
             });
-            this.cacheOrders = cloudOrders;
-            localStorage.setItem('shokim_db_orders_v2', JSON.stringify(cloudOrders));
-            this.notifyChange('orders');
-        }, (err) => {
-            console.warn("Firestore orders listener note (auth dependent):", err.message);
-        });
+        }
 
         // Real-time Cloud iCount Settings Listener
         firestoreDb.collection("settings").doc("icount_config").onSnapshot((doc) => {
@@ -160,16 +163,16 @@ class ShokimCloudDB {
                 let cloudData = doc.data();
                 if (cloudData && (!cloudData.paymentLink || cloudData.paymentLink.includes('7125d') || cloudData.paymentLink.includes('sumit'))) {
                     cloudData.paymentLink = DEFAULT_ICOUNT_CONFIG.paymentLink;
-                    firestoreDb.collection("settings").doc("icount_config").set(cloudData, { merge: true }).catch(console.error);
+                    firestoreDb.collection("settings").doc("icount_config").set(cloudData, { merge: true }).catch(() => {});
                 }
                 this.cacheIcountConfig = cloudData;
                 localStorage.setItem('shokim_db_icount_config', JSON.stringify(this.cacheIcountConfig));
                 this.notifyChange('settings');
             } else {
-                firestoreDb.collection("settings").doc("icount_config").set(DEFAULT_ICOUNT_CONFIG, { merge: true }).catch(console.error);
+                firestoreDb.collection("settings").doc("icount_config").set(DEFAULT_ICOUNT_CONFIG, { merge: true }).catch(() => {});
             }
-        }, (err) => {
-            console.warn("Firestore iCount settings listener note:", err.message);
+        }, () => {
+            // Graceful fallback
         });
     }
 
