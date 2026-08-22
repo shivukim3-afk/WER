@@ -5,21 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>שיווקים — למוסד, לבית, למשרד ולצימרים</title>
     
-    <!-- Google Fonts: Heebo & Outfit (English fonts for numbers/accents) -->
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="שיווקים — אספקה ישירה של מוצרי היגיינה, מוצרי נייר וניגוב, חומרי ניקוי וחיטוי, מתקני Tork, מפיצי ריח יוקרתיים ומוצרים חד-פעמיים למוסדות, משרדים, צימרים ובתים. משלוחים מהירים ושירות אישי.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a1931">
+    
+    <!-- Open Graph / Social Meta -->
+    <meta property="og:title" content="שיווקים — למוסד, לבית, למשרד ולצימרים">
+    <meta property="og:description" content="אספקה ישירה של מוצרי נייר, חומרי ניקוי, מוצרי Tork, היגיינה וחד-פעמי.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="he_IL">
+    <meta property="og:site_name" content="שיווקים">
+    <meta property="og:image" content="assets/fresh_studio_bg.webp">
+    
+    <!-- Google Fonts: Heebo & Outfit with display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <!-- FontAwesome for minimal clean icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FontAwesome: Asynchronous non-render-blocking preload -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <!-- DB Engine -->
-    <script src="db.js"></script>
+    <!-- Firebase SDKs & DB Engine (Deferred for non-blocking First Paint) -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script defer src="db.js"></script>
 
     <style>
 
@@ -86,7 +98,7 @@
             height: 100dvh !important;
             z-index: -99999 !important;
             pointer-events: none !important;
-            background: #ffffff url('assets/fresh_studio_bg.jpg') no-repeat center right !important;
+            background: #ffffff url('assets/fresh_studio_bg.webp') no-repeat center right !important;
             background-size: cover !important;
             background-attachment: fixed !important;
             transform: translateZ(0) !important;
@@ -1964,7 +1976,7 @@
                 background: transparent !important;
             }
             .fixed-bg-layer {
-                background: #ffffff url('assets/mobile_studio_bg.jpg') no-repeat center top !important;
+                background: #ffffff url('assets/mobile_studio_bg.webp') no-repeat center top !important;
                 background-size: cover !important;
                 background-attachment: fixed !important;
                 will-change: transform !important;
@@ -2164,7 +2176,7 @@
             .empty-state-banner {
                 width: 100%;
                 height: 400px;
-                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
+                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.webp') no-repeat center center;
                 background-size: cover;
                 border-radius: var(--border-radius-lg);
                 display: flex;
@@ -4449,8 +4461,8 @@
                 icon: "dispenser",
                 desc: "סדרת מתקנים למגבות נייר בגלילים ובדפים, בעיצוב מושלם המותאם לחדרי שירותים ציבוריים גדולים וקטנים. מנגנונים ייחודיים מבטיחים מילוי מהיר וקל ושימוש רציף ונוח. תכולה גדולה במיוחד מבטיחה תדירות החלפה נמוכה לחיסכון משולש. מנגנון Touch free ללא מגע להיגיינה מושלמת עם חיתוך מהיר וקל.",
                 specs: "גובה: 37.2 ס\"מ | רוחב: 33.7 ס\"מ | עומק: 20.3 ס\"מ",
-                image: "assets/t1.jpg",
-                image_white: "assets/t1_white.jpg",
+                image: "assets/t1.webp",
+                image_white: "assets/t1_white.webp",
                 hasColors: true,
                 keywords: ["מתקן", "טורק", "tork", "נייר", "מגבת", "גליל", "touch free", "touchfree", "טאצ פרי", "טאץ פרי", "טאצ' פרי", "טאץ' פרי", "קיר", "דיספנסר", "לבן", "שחור"] },
             { 
@@ -4463,14 +4475,14 @@
                 icon: "dispenser",
                 desc: "מתקן קומפקטי עם פתיחת צד, מתאים לחדרי שירותים קטנים. פתח תחתון עם מנגנון חיסכון ייחודי, מגבת אחת בכל שימוש.",
                 specs: "גובה: 29.5 ס\"מ | רוחב: 30.2 ס\"מ | עומק: 10.1 ס\"מ",
-                image: "assets/tork_interfold_dispenser.jpg",
-                image_white: "assets/t2_white.jpg",
+                image: "assets/tork_interfold_dispenser.webp",
+                image_white: "assets/t2_white.webp",
                 hasColors: true,
                 keywords: ["מתקן", "טורק", "tork", "צץ רץ", "צץרץ", "מיני", "קיר", "דיספנסר", "לבן", "שחור"] },
             { 
                 id: "t3", 
-                image: "assets/t3.jpg", 
-                image_white: "assets/t3_white.jpg",
+                image: "assets/t3.webp", 
+                image_white: "assets/t3_white.webp",
                 hasColors: true,
                 name: "מתקן לנייר ניגוב ידיים שולחני נייד Tork", 
                 pack: "שליפת דף-אחר-דף", 
@@ -4483,8 +4495,8 @@
                 keywords: ["מתקן", "טורק", "tork", "שולחני", "נייד", "נייר", "ניגוב", "דיספנסר", "לבן", "שחור"] },
             { 
                 id: "t4", 
-                image: "assets/tork_soap_dispenser.jpg", 
-                image_white: "assets/t4_white.jpg",
+                image: "assets/tork_soap_dispenser.webp", 
+                image_white: "assets/t4_white.webp",
                 hasColors: true,
                 name: "מתקן תחליב ידיים Tork", 
                 pack: "יחידה אחת", 
@@ -4505,8 +4517,8 @@
                 icon: "dispenser",
                 desc: "מתקנים מעוצבים עם מנגנון שליפה ייחודי, המבטיח דף אחד בכל פעם וללא מגע בדף הבא. בעלי תכולה ענקית עם מנגנון לחיתוך קל ועיצוב חצי שקוף ליעילות מעקב החלפת הגליל. מנפק דף אחד בכל משיכה, מבטיח חיסכון של 25% לפחות בצריכת הנייר ומשלב נייר איכותי ומפנק.",
                 specs: "גובה: 27.0 ס\"מ | רוחב: 27.0 ס\"מ | עומק: 17.3 ס\"מ",
-                image: "assets/tork_smartone_dispenser.jpg",
-                image_white: "assets/t5_white.jpg",
+                image: "assets/tork_smartone_dispenser.webp",
+                image_white: "assets/t5_white.webp",
                 hasColors: true,
                 keywords: ["מתקן", "טורק", "tork", "טואלט", "סמארט וואן", "smartone", "חסכן", "חסכוני", "קיר", "דיספנסר", "לבן", "שחור"] },
             { 
@@ -4519,12 +4531,12 @@
                 icon: "dispenser",
                 desc: "מתאים לשבת! מתקן צר בעל תכולה גדולה במיוחד, לנייר טואלט הנשלף דף אחרי דף.",
                 specs: "גובה: 27.1 ס\"מ | רוחב: 15.9 ס\"מ | עומק: 12.8 ס\"מ",
-                image: "assets/tork_hadar_dispenser.jpg",
-                image_white: "assets/t6_white.jpg",
+                image: "assets/tork_hadar_dispenser.webp",
+                image_white: "assets/t6_white.webp",
                 hasColors: true,
                 keywords: ["מתקן", "טורק", "tork", "טואלט", "שבת", "הדר", "צץ רץ", "קיר", "דיספנסר", "לבן", "שחור"] },
             { 
-                id: "t7", image: "assets/t7.jpg", name: "מגבות נייר TAD ספיגה משולשת Tork", 
+                id: "t7", image: "assets/t7.webp", name: "מגבות נייר TAD ספיגה משולשת Tork", 
                 pack: "מארז 6 גלילים", 
                 price: 350, 
                 category: "tork", 
@@ -4534,11 +4546,11 @@
             , keywords: ["נייר", "טורק", "tork", "גליל", "tad", "ספיגה", "מגבת"] },
 
             // Category: Paper
-            { id: "p1", name: "נייר צץ-רץ קרפ", pack: "מארז 4,000 יח'", price: 70, category: "paper", portals: ["institution", "office"], icon: "paper-stack", image: "assets/crepe_paper_towel.jpg" , keywords: ["נייר", "צץ רץ", "צץרץ", "קרפ", "ניגוב", "דפים", "מגבת"] },
-            { id: "p2", image: "assets/p2.jpg", name: "נייר צץ-רץ דו-שכבתי", pack: "מארז 2,400 יח'", price: 130, category: "paper", portals: ["institution", "office", "home"], icon: "paper-stack" , keywords: ["נייר", "צץ רץ", "צץרץ", "דו שכבתי", "ניגוב", "דפים", "מגבת"] },
+            { id: "p1", name: "נייר צץ-רץ קרפ", pack: "מארז 4,000 יח'", price: 70, category: "paper", portals: ["institution", "office"], icon: "paper-stack", image: "assets/crepe_paper_towel.webp" , keywords: ["נייר", "צץ רץ", "צץרץ", "קרפ", "ניגוב", "דפים", "מגבת"] },
+            { id: "p2", image: "assets/p2.webp", name: "נייר צץ-רץ דו-שכבתי", pack: "מארז 2,400 יח'", price: 130, category: "paper", portals: ["institution", "office", "home"], icon: "paper-stack" , keywords: ["נייר", "צץ רץ", "צץרץ", "דו שכבתי", "ניגוב", "דפים", "מגבת"] },
             { 
                 id: "p3", 
-                image: "assets/tork_interfold_paper.jpg", 
+                image: "assets/tork_interfold_paper.webp", 
                 name: "מגבת נייר צץ-רץ Interfold Tork Soft", 
                 pack: "דו-שכבתי רך וסופג", 
                 price: 180, 
@@ -4550,7 +4562,7 @@
                 keywords: ["נייר", "צץ רץ", "צץרץ", "אינטרפולד", "interfold", "טורק", "tork", "soft", "ניגוב", "מגבת"] },
             { 
                 id: "p4", 
-                image: "assets/tork_universal_paper_roll.jpg", 
+                image: "assets/tork_universal_paper_roll.webp", 
                 name: "מגבת נייר בגליל – חד-שכבתי Tork", 
                 pack: "מארז 6 גלילים (הגליל שלא נגמר)", 
                 price: 280, 
@@ -4562,7 +4574,7 @@
                 keywords: ["נייר", "גליל", "חד שכבתי", "ניגוב", "מגבת", "ידיים", "טורק", "tork"] },
             { 
                 id: "p5", 
-                image: "assets/tork_universal_paper_roll.jpg", 
+                image: "assets/tork_universal_paper_roll.webp", 
                 name: "מגבת נייר פרימיום בגליל – דו-שכבתי Tork", 
                 pack: "מארז 6 גלילים (סופג פי 3)", 
                 price: 285, 
@@ -4574,7 +4586,7 @@
                 keywords: ["נייר", "גליל", "דו שכבתי", "פרימיום", "ניגוב", "מגבת", "ידיים", "טורק", "tork"] },
             { 
                 id: "p6", 
-                image: "assets/tork_hadar_toilet_paper.jpg", 
+                image: "assets/tork_hadar_toilet_paper.webp", 
                 name: "נייר טואלט דו-שכבתי חתוך לשבת (הדר) Tork", 
                 pack: "100% תאית (חתוך לשבת)", 
                 price: 100, 
@@ -4586,7 +4598,7 @@
                 keywords: ["נייר", "טואלט", "דו שכבתי", "חתוך לשבת", "שבת", "הדר", "טורק", "tork", "תאית", "צץ רץ"] },
             { 
                 id: "p_smartone", 
-                image: "assets/tork_smartone_paper_roll.jpg", 
+                image: "assets/tork_smartone_paper_roll.webp", 
                 name: "גליל נייר טואלט SmartOne Tork", 
                 pack: "מארז 6 גלילים (נשלף אחד אחד)", 
                 price: 195, 
@@ -4596,9 +4608,9 @@
                 desc: "נייר טואלט SmartOne Tork - נייר איכותי נעים למגע, נשלף אחד אחד. מיועד למתקני SmartOne, מבטיח היגיינה מרבית וחיסכון ניכר בצריכת הנייר.",
                 specs: "100% תאית איכותית | נשלף דף-אחר-דף | מגע רך ומפנק",
                 keywords: ["נייר", "טואלט", "סמארט וואן", "smartone", "גליל", "טורק", "tork", "נשלף אחד אחד"] },
-            { id: "p7", image: "assets/p7.jpg", name: "נייר טואלט קומפקט דחוס", pack: "מארז 36 גלילים", price: 160, category: "paper", portals: ["institution", "office", "home"], icon: "paper-roll" , keywords: ["נייר", "טואלט", "קומפקט", "דחוס", "גלילים"] },
+            { id: "p7", image: "assets/p7.webp", name: "נייר טואלט קומפקט דחוס", pack: "מארז 36 גלילים", price: 160, category: "paper", portals: ["institution", "office", "home"], icon: "paper-roll" , keywords: ["נייר", "טואלט", "קומפקט", "דחוס", "גלילים"] },
             { 
-                id: "p8", image: "assets/p8.jpg", 
+                id: "p8", image: "assets/p8.webp", 
                 name: "נייר טואלט 'דואט' דו-שכבתי קומפקט", 
                 pack: "80 מטר בגליל, 36 גלילים", 
                 price: 110, 
@@ -4607,9 +4619,9 @@
                 icon: "paper-roll",
                 desc: "נייר טואלט איכותי חסכוני במיוחד! דואט נייר טואלט דו שכבתי קומפקט 80 מטר בגליל, רך ועבה לשימוש ממושך."
             , keywords: ["נייר", "טואלט", "דואט", "דו שכבתי", "קומפקט", "גלילים"] },
-            { id: "p9", image: "assets/p9.jpg", name: "סדיני נייר למיטות טיפול / בדיקה", pack: "גליל יחיד", price: 25, category: "paper", portals: ["institution"], icon: "paper-roll" , keywords: ["סדין", "מיטה", "סדינים", "גליל", "נייר למיטה", "טיפולים", "פרימיום"] },
+            { id: "p9", image: "assets/p9.webp", name: "סדיני נייר למיטות טיפול / בדיקה", pack: "גליל יחיד", price: 25, category: "paper", portals: ["institution"], icon: "paper-roll" , keywords: ["סדין", "מיטה", "סדינים", "גליל", "נייר למיטה", "טיפולים", "פרימיום"] },
             { 
-                id: "p10", image: "assets/p10.jpg", 
+                id: "p10", image: "assets/p10.webp", 
                 name: "סדיני נייר פרימיום למיטות", 
                 pack: "127 מטר / 50 ס\"מ", 
                 price: 40, 
@@ -4618,14 +4630,14 @@
                 icon: "paper-roll",
                 desc: "סדין נייר פרימיום למיטה, איכותי, עמיד ונעים למגע המותאם לקליניקות ומטפלים."
             , keywords: ["סדין", "מיטה", "סדינים", "גליל", "נייר למיטה", "טיפולים"] },
-            { id: "p11", image: "assets/p11.jpg", name: "דלי מגבוני ניקוי לחיטוי", pack: "דלי 400 מגבונים", price: 45, category: "paper", portals: ["institution", "office", "home"], icon: "bucket" , keywords: ["דלי", "מגבונים", "ניקוי", "חיטוי", "כלור"] },
+            { id: "p11", image: "assets/p11.webp", name: "דלי מגבוני ניקוי לחיטוי", pack: "דלי 400 מגבונים", price: 45, category: "paper", portals: ["institution", "office", "home"], icon: "bucket" , keywords: ["דלי", "מגבונים", "ניקוי", "חיטוי", "כלור"] },
 
             // Category: Cleaning
-            { id: "c1", name: "חומר לשטיפת רצפות ריחני", pack: "מכל 4 ליטר", price: 14.5, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "jug", image: "assets/floor_cleaner_jug.jpg" , keywords: ["חומר", "נוזל", "שטיפה", "רצפות", "ניקוי", "ריחני"] },
-            { id: "c2", image: "assets/bleach_cleaner_jug.jpg", name: "אקנומיקה מרוכזת לחיטוי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home"], icon: "jug" , keywords: ["אקנומיקה", "חומר", "נוזל", "חיטוי", "מלבין", "מרוכז"] },
-            { id: "c3", image: "assets/c3.jpg", name: "נוזל כלים איכותי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home", "office"], icon: "jug" , keywords: ["נוזל כלים", "חומר", "כלים", "סבון", "ניקוי"] },
-            { id: "c4", name: "תרסיס לניקוי חלונות ומראות", pack: "750 מ\"ל עם מתז", price: 8, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "spray", image: "assets/window_cleaner_spray.jpg" , keywords: ["תרסיס", "חלונות", "מראות", "נוזל", "ניקוי", "זכוכית", "מתז"] },
-            { id: "c5", image: "assets/c5.jpg", name: "מנקה אסלות עוצמתי", pack: "בקבוק 750 מ\"ל", price: 10, category: "cleaning", portals: ["institution", "home", "bb"], icon: "spray" , keywords: ["מנקה אסלות", "חומר", "אסלה", "שירותים", "ניקוי", "חומצה"] },
+            { id: "c1", name: "חומר לשטיפת רצפות ריחני", pack: "מכל 4 ליטר", price: 14.5, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "jug", image: "assets/floor_cleaner_jug.webp" , keywords: ["חומר", "נוזל", "שטיפה", "רצפות", "ניקוי", "ריחני"] },
+            { id: "c2", image: "assets/bleach_cleaner_jug.webp", name: "אקנומיקה מרוכזת לחיטוי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home"], icon: "jug" , keywords: ["אקנומיקה", "חומר", "נוזל", "חיטוי", "מלבין", "מרוכז"] },
+            { id: "c3", image: "assets/c3.webp", name: "נוזל כלים איכותי", pack: "מכל 4 ליטר", price: 11, category: "cleaning", portals: ["institution", "home", "office"], icon: "jug" , keywords: ["נוזל כלים", "חומר", "כלים", "סבון", "ניקוי"] },
+            { id: "c4", name: "תרסיס לניקוי חלונות ומראות", pack: "750 מ\"ל עם מתז", price: 8, category: "cleaning", portals: ["institution", "home", "office", "bb"], icon: "spray", image: "assets/window_cleaner_spray.webp" , keywords: ["תרסיס", "חלונות", "מראות", "נוזל", "ניקוי", "זכוכית", "מתז"] },
+            { id: "c5", image: "assets/c5.webp", name: "מנקה אסלות עוצמתי", pack: "בקבוק 750 מ\"ל", price: 10, category: "cleaning", portals: ["institution", "home", "bb"], icon: "spray" , keywords: ["מנקה אסלות", "חומר", "אסלה", "שירותים", "ניקוי", "חומצה"] },
             { 
                 id: "c6", 
                 name: "חומר ניקוי רב-תכליתי 7C", 
@@ -4635,10 +4647,10 @@
                 portals: ["institution", "office"], 
                 icon: "jug",
                 desc: "חומר איכותי רב תכליתי 7C. מנקה כל דבר בקלות ובמהירות, בעל ביצועים מעולים.",
-                image: "assets/c7_cleaner_jug.jpg",
+                image: "assets/c7_cleaner_jug.webp",
              keywords: ["חומר", "נוזל", "ניקוי", "רב תכליתי", "c7", "7c", "מנקה", "מסיר שומנים", "מסיר שומן", "שומנים"] },
             { 
-                id: "c7", image: "assets/c7.jpg", 
+                id: "c7", image: "assets/c7.webp", 
                 name: "מסיר אבנית וחלודה עוצמתי 100PLUS", 
                 pack: "מכל 4 ליטר / 4.5 ק\"ג", 
                 price: 45, 
@@ -4647,22 +4659,22 @@
                 icon: "jug",
                 desc: "חומר חזק במיוחד להסרת אבנית וחלודה! נוזל להסרת אבנית וחלודה 100PLUS - מנקה משטחים וכלים ביעילות."
             , keywords: ["מסיר אבנית", "חלודה", "100plus", "חומר", "ניקוי", "חומצה"] },
-            { id: "c8", image: "assets/c8.jpg", name: "תחליב ידיים מבושם", pack: "מכל 4 ליטר", price: 30, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["תחליב", "סבון", "ידיים", "מבושם", "נוזל"] },
-            { id: "c9", image: "assets/c9.jpg", name: "תחליף קצף ידיים", pack: "מכל 4 ליטר", price: 390, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["קצף ידיים", "סבון", "ידיים", "נוזל", "תחליף"] },
-            { id: "c10", image: "assets/c10.jpg", name: "ג'ל חיטוי לידיים", pack: "לכ-6,000 לחיצות", price: 350, category: "cleaning", portals: ["institution", "office"], icon: "dispenser" , keywords: ["אלכוג'ל", "ג'ל", "חיטוי", "ידיים", "חריצים", "לחיצות"] },
+            { id: "c8", image: "assets/c8.webp", name: "תחליב ידיים מבושם", pack: "מכל 4 ליטר", price: 30, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["תחליב", "סבון", "ידיים", "מבושם", "נוזל"] },
+            { id: "c9", image: "assets/c9.webp", name: "תחליף קצף ידיים", pack: "מכל 4 ליטר", price: 390, category: "cleaning", portals: ["institution", "office", "bb"], icon: "jug" , keywords: ["קצף ידיים", "סבון", "ידיים", "נוזל", "תחליף"] },
+            { id: "c10", image: "assets/c10.webp", name: "ג'ל חיטוי לידיים", pack: "לכ-6,000 לחיצות", price: 350, category: "cleaning", portals: ["institution", "office"], icon: "dispenser" , keywords: ["אלכוג'ל", "ג'ל", "חיטוי", "ידיים", "חריצים", "לחיצות"] },
 
             // Category: Tools
-            { id: "e1", image: "assets/e1.jpg", name: "מטאטא רגיל", pack: "יחידה אחת (ללא מקל)", price: 6, category: "tools", portals: ["institution", "home"], icon: "broom" , keywords: ["מטאטא", "מברשת", "טאטוא", "ניקיון"] },
-            { id: "e1_stick", image: "assets/e1_stick.jpg", name: "מקל עץ למטאטא/מגב", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "pen" , keywords: ["מקל", "ידית", "עץ", "מטאטא", "מגב"] },
-            { id: "e2", image: "assets/e2.jpg", name: "מטאטא אולם רחב", pack: "60 ס\"מ כולל מקל", price: 30, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מטאטא", "מברשת", "אולם", "טאטוא", "רחב"] },
-            { id: "e3", image: "assets/e3.jpg", name: "מגב רצפה", pack: "40 ס\"מ", price: 12, category: "tools", portals: ["home", "bb"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה"] },
-            { id: "e4", image: "assets/e4.jpg", name: "מגב רצפה תעשייתי", pack: "60 ס\"מ", price: 14, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה", "רחב"] },
-            { id: "e5", image: "assets/e5.jpg", name: "יעה פלסטיק איכותי", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "broom" , keywords: ["יעה", "איסוף", "אשפה", "לכלוך"] },
-            { id: "e6", image: "assets/e6.jpg", name: "דלי ניקוי פלסטיק", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "bucket" , keywords: ["שטיפה", "ניקוי", "פלסטיק", "סוחט"] },
-            { id: "e7", image: "assets/e7.jpg", name: "סחבות רצפה מיקרופייבר", pack: "חבילה של 3 יח'", price: 11, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["סמרטוט", "סחבה", "רצפה", "שטיפה", "בד"] },
-            { id: "e8", image: "assets/e8.jpg", name: "ספוג הפלא לניקוי קירות", pack: "חבילה של 10 יח'", price: 2, category: "tools", portals: ["institution", "home", "office"], icon: "towel" , keywords: ["מטלית", "מיקרופייבר", "רצפה", "שיש", "ניקוי", "בד"] },
-            { id: "e9", image: "assets/e9.jpg", name: "מטליות מיקרופייבר רב-שימושיות", pack: "חבילה של 5 יח'", price: 16, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["ספוג הפלא", "ספוג", "ניקוי", "הסרת כתמים"] },
-            { id: "e10", image: "assets/e10.jpg", name: "כריות יפניות איכותיות לניקוי", pack: "חבילה של 6 יח'", price: 2, category: "tools", portals: ["institution", "home"], icon: "towel" , keywords: ["כרית יפנית", "כרית", "קרצוף", "ספוג", "כלים"] },
+            { id: "e1", image: "assets/e1.webp", name: "מטאטא רגיל", pack: "יחידה אחת (ללא מקל)", price: 6, category: "tools", portals: ["institution", "home"], icon: "broom" , keywords: ["מטאטא", "מברשת", "טאטוא", "ניקיון"] },
+            { id: "e1_stick", image: "assets/e1_stick.webp", name: "מקל עץ למטאטא/מגב", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "pen" , keywords: ["מקל", "ידית", "עץ", "מטאטא", "מגב"] },
+            { id: "e2", image: "assets/e2.webp", name: "מטאטא אולם רחב", pack: "60 ס\"מ כולל מקל", price: 30, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מטאטא", "מברשת", "אולם", "טאטוא", "רחב"] },
+            { id: "e3", image: "assets/e3.webp", name: "מגב רצפה", pack: "40 ס\"מ", price: 12, category: "tools", portals: ["home", "bb"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה"] },
+            { id: "e4", image: "assets/e4.webp", name: "מגב רצפה תעשייתי", pack: "60 ס\"מ", price: 14, category: "tools", portals: ["institution", "office"], icon: "broom" , keywords: ["מגב", "מים", "ניקוי", "ריצפה", "רחב"] },
+            { id: "e5", image: "assets/e5.webp", name: "יעה פלסטיק איכותי", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "broom" , keywords: ["יעה", "איסוף", "אשפה", "לכלוך"] },
+            { id: "e6", image: "assets/e6.webp", name: "דלי ניקוי פלסטיק", pack: "יחידה אחת", price: 6, category: "tools", portals: ["institution", "home", "office"], icon: "bucket" , keywords: ["שטיפה", "ניקוי", "פלסטיק", "סוחט"] },
+            { id: "e7", image: "assets/e7.webp", name: "סחבות רצפה מיקרופייבר", pack: "חבילה של 3 יח'", price: 11, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["סמרטוט", "סחבה", "רצפה", "שטיפה", "בד"] },
+            { id: "e8", image: "assets/e8.webp", name: "ספוג הפלא לניקוי קירות", pack: "חבילה של 10 יח'", price: 2, category: "tools", portals: ["institution", "home", "office"], icon: "towel" , keywords: ["מטלית", "מיקרופייבר", "רצפה", "שיש", "ניקוי", "בד"] },
+            { id: "e9", image: "assets/e9.webp", name: "מטליות מיקרופייבר רב-שימושיות", pack: "חבילה של 5 יח'", price: 16, category: "tools", portals: ["institution", "home", "office", "bb"], icon: "towel" , keywords: ["ספוג הפלא", "ספוג", "ניקוי", "הסרת כתמים"] },
+            { id: "e10", image: "assets/e10.webp", name: "כריות יפניות איכותיות לניקוי", pack: "חבילה של 6 יח'", price: 2, category: "tools", portals: ["institution", "home"], icon: "towel" , keywords: ["כרית יפנית", "כרית", "קרצוף", "ספוג", "כלים"] },
 
             // Category: Bags
             { 
@@ -4674,11 +4686,11 @@
                 portals: ["institution", "office"], 
                 icon: "bag",
                 desc: "שקיות האשפה הכי חזקות בשוק! חרצית שקיות אשפה LD כתומות 77/90 בגליל, עבות במיוחד.",
-                image: "assets/orange_trash_bags.jpg",
+                image: "assets/orange_trash_bags.webp",
              keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "חרצית", "כתום", "חזק"] },
-            { id: "b2", image: "assets/black_trash_bags.jpg", name: "שקיות אשפה מחוזקות 'כלנית'", pack: "מידה 75/90, 50 יח'", price: 16, category: "bags", portals: ["institution", "office"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "כלנית", "שחור"] },
-            { id: "b3", image: "assets/b3.jpg", name: "שקיות אשפה קטנות לבנות", pack: "מידה 50/70, 100 יח'", price: 13, category: "bags", portals: ["institution", "home", "office", "bb"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "לבן", "קטן"] },
-            { id: "b4", image: "assets/b4.jpg", name: "מפות שולחן קריסטליות עבות", pack: "גליל 100 מטר", price: 150, category: "bags", portals: ["institution", "home", "bb"], icon: "paper-roll" , keywords: ["מפה", "מפות", "שולחן", "חד פעמי", "קריסטלי", "עבה"] },
+            { id: "b2", image: "assets/black_trash_bags.webp", name: "שקיות אשפה מחוזקות 'כלנית'", pack: "מידה 75/90, 50 יח'", price: 16, category: "bags", portals: ["institution", "office"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "כלנית", "שחור"] },
+            { id: "b3", image: "assets/b3.webp", name: "שקיות אשפה קטנות לבנות", pack: "מידה 50/70, 100 יח'", price: 13, category: "bags", portals: ["institution", "home", "office", "bb"], icon: "bag" , keywords: ["שקיות", "שקית", "אשפה", "פח", "ניילון", "לבן", "קטן"] },
+            { id: "b4", image: "assets/b4.webp", name: "מפות שולחן קריסטליות עבות", pack: "גליל 100 מטר", price: 150, category: "bags", portals: ["institution", "home", "bb"], icon: "paper-roll" , keywords: ["מפה", "מפות", "שולחן", "חד פעמי", "קריסטלי", "עבה"] },
             { 
                 id: "b5", 
                 name: "מפיץ ריח אוטומטי BATTERY S (סוללות)", 
@@ -4689,28 +4701,28 @@
                 icon: "dispenser",
                 desc: "מפיץ ריח אוטומטי BATTERY S - נטען על בטריות ללא צורך בחיבור לחשמל!! מפזר ניחוח יוקרתי, רענן ואחיד בחלל.",
                 specs: "נטען על סוללות | ללא חיבור לחשמל | כולל בקבוק תמצית ריח",
-                image: "assets/scent_diffuser_dispenser.jpg",
+                image: "assets/scent_diffuser_dispenser.webp",
                 keywords: ["מפיץ ריח", "דיפיוזר", "אוטומטי", "סוללות", "battery s", "בישום", "ללא חשמל"] },
-            { id: "b6", image: "assets/b6.jpg", name: "פחית ג'ל ריח עדין", pack: "יחידה אחת", price: 30, category: "bags", portals: ["home", "office", "bb"], icon: "spray" , keywords: ["פחית", "ג'ל", "ריח", "ריחן", "מטהר"] },
-            { id: "b7", image: "assets/b7.jpg", name: "קליפס סיליקון ריחני לאסלה", pack: "יחידה אחת", price: 30, category: "bags", portals: ["office", "bb"], icon: "spray" , keywords: ["קליפס", "סיליקון", "ריחני", "אסלה", "ריחן"] },
-            { id: "b8", image: "assets/b8.jpg", name: "רשתות ריחניות למשתנות", pack: "מארז 10 יח'", price: 25, category: "bags", portals: ["institution", "office"], icon: "spray" , keywords: ["רשת", "משתנה", "ריחני", "ריחן", "שירותים"] },
+            { id: "b6", image: "assets/b6.webp", name: "פחית ג'ל ריח עדין", pack: "יחידה אחת", price: 30, category: "bags", portals: ["home", "office", "bb"], icon: "spray" , keywords: ["פחית", "ג'ל", "ריח", "ריחן", "מטהר"] },
+            { id: "b7", image: "assets/b7.webp", name: "קליפס סיליקון ריחני לאסלה", pack: "יחידה אחת", price: 30, category: "bags", portals: ["office", "bb"], icon: "spray" , keywords: ["קליפס", "סיליקון", "ריחני", "אסלה", "ריחן"] },
+            { id: "b8", image: "assets/b8.webp", name: "רשתות ריחניות למשתנות", pack: "מארז 10 יח'", price: 25, category: "bags", portals: ["institution", "office"], icon: "spray" , keywords: ["רשת", "משתנה", "ריחני", "ריחן", "שירותים"] },
 
             // Category: Disposables
-            { id: "d1", image: "assets/d1.jpg", name: "צלחות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 5.8, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "קטן", "פלסטיק"] },
-            { id: "d2", image: "assets/d2.jpg", name: "צלחות חד-פעמיות גדולות", pack: "חבילה של 100 יח'", price: 6.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "גדול", "פלסטיק"] },
-            { id: "d3", image: "assets/d3.jpg", name: "מרקיות חד-פעמיות עמוקות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["מרקייה", "צלחת", "מרק", "חד פעמי", "פלסטיק"] },
-            { id: "d4", image: "assets/d4.jpg", name: "לפתניות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["לפתנייה", "קערה", "חד פעמי", "פלסטיק"] },
-            { id: "d5", image: "assets/d5.jpg", name: "מזלגות חד-פעמיים חזקים", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["מזלג", "סכו\"ם", "חד פעמי", "פלסטיק"] },
-            { id: "d6", image: "assets/d6.jpg", name: "סכינים חד-פעמיים חזקים", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["סכין", "סכו\"ם", "חד פעמי", "פלסטיק"] },
-            { id: "d7", image: "assets/d7.jpg", name: "כפות חד-פעמיות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["כף", "סכו\"ם", "חד פעמי", "פלסטיק"] },
-            { id: "d8", image: "assets/d8.jpg", name: "כפיות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["כפית", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d1", image: "assets/d1.webp", name: "צלחות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 5.8, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "קטן", "פלסטיק"] },
+            { id: "d2", image: "assets/d2.webp", name: "צלחות חד-פעמיות גדולות", pack: "חבילה של 100 יח'", price: 6.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["צלחת", "צלחות", "חד פעמי", "גדול", "פלסטיק"] },
+            { id: "d3", image: "assets/d3.webp", name: "מרקיות חד-פעמיות עמוקות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["מרקייה", "צלחת", "מרק", "חד פעמי", "פלסטיק"] },
+            { id: "d4", image: "assets/d4.webp", name: "לפתניות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["לפתנייה", "קערה", "חד פעמי", "פלסטיק"] },
+            { id: "d5", image: "assets/d5.webp", name: "מזלגות חד-פעמיים חזקים", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["מזלג", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d6", image: "assets/d6.webp", name: "סכינים חד-פעמיים חזקים", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["סכין", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d7", image: "assets/d7.webp", name: "כפות חד-פעמיות", pack: "חבילה של 100 יח'", price: 3.6, category: "disposables", portals: ["home", "office"], icon: "disposable" , keywords: ["כף", "סכו\"ם", "חד פעמי", "פלסטיק"] },
+            { id: "d8", image: "assets/d8.webp", name: "כפיות חד-פעמיות קטנות", pack: "חבילה של 100 יח'", price: 2.9, category: "disposables", portals: ["home", "office", "bb"], icon: "disposable" , keywords: ["כפית", "סכו\"ם", "חד פעמי", "פלסטיק"] },
 
             // Category: Hospitality (צימרים)
-            { id: "h1", image: "assets/h1.jpg", name: "מגבות גוף מפנקות לצימרים", pack: "מארז 5 מגבות כותנה עבות", price: 190, category: "hospitality", portals: ["bb"], icon: "towel" , keywords: ["מגבת", "גוף", "צימרים", "רחצה", "כותנה", "לבן"] },
-            { id: "h2", image: "assets/h2.jpg", name: "שמפו אישי קטן לבתי מלון", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["שמפו", "בקבוקון", "סבון", "צימרים", "אישי"] },
-            { id: "h3", image: "assets/h3.jpg", name: "ג'ל רחצה אישי מבושם", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["ג'ל רחצה", "בקבוקון", "סבון", "צימרים", "אישי"] },
+            { id: "h1", image: "assets/h1.webp", name: "מגבות גוף מפנקות לצימרים", pack: "מארז 5 מגבות כותנה עבות", price: 190, category: "hospitality", portals: ["bb"], icon: "towel" , keywords: ["מגבת", "גוף", "צימרים", "רחצה", "כותנה", "לבן"] },
+            { id: "h2", image: "assets/h2.webp", name: "שמפו אישי קטן לבתי מלון", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["שמפו", "בקבוקון", "סבון", "צימרים", "אישי"] },
+            { id: "h3", image: "assets/h3.webp", name: "ג'ל רחצה אישי מבושם", pack: 'מארז 300 יחידות (30 מ"ל)', price: 240, category: "hospitality", portals: ["bb"], icon: "hotel-soap" , keywords: ["ג'ל רחצה", "בקבוקון", "סבון", "צימרים", "אישי"] },
             { 
-                id: "h4", image: "assets/h4.jpg", name: "כפכפים חד-פעמיים סגורים לצימר", 
+                id: "h4", image: "assets/h4.webp", name: "כפכפים חד-פעמיים סגורים לצימר", 
                 pack: "מארז 100 יחידות", 
                 price: 340, 
                 category: "hospitality", 
@@ -4720,14 +4732,14 @@
             },
 
             // Category: Office (משרדי בסיסי)
-            { id: "o1", image: "assets/o1.jpg", name: "נייר צילום למדפסת A4", pack: "קרטון 5 חבילות (2500 דף)", price: 110, category: "office", portals: ["office", "institution"], icon: "paper-stack" , keywords: ["נייר", "צילום", "מדפסת", "a4", "משרד"] },
-            { id: "o2", image: "assets/o2.jpg", name: "טונר שחור למדפסת HP", pack: "יחידה אחת", price: 180, category: "office", portals: ["office"], icon: "toner" , keywords: ["טונר", "דיו", "מדפסת", "hp", "שחור"] },
-            { id: "o3", image: "assets/o3.jpg", name: "עטי פיילוט Pilot 0.7 כחול/שחור", pack: "מארז 12 עטים", price: 65, category: "office", portals: ["office", "institution"], icon: "pen" , keywords: ["עט", "עטים", "פיילוט", "pilot", "משרד"] },
-            { id: "o4", image: "assets/o4.jpg", name: "קלסר משרדי עבה גב 8 ס\"מ", pack: "מארז 10 קלסרים קשיחים", price: 80, category: "office", portals: ["office", "institution"], icon: "binders" , keywords: ["קלסר", "משרד", "תיוק", "עבה", "קרטון"] },
-            { id: "s1", image: "assets/lilya_scent_tab.jpg", name: "מפיץ ריח Lilya Tab (עד 25 מטר)", pack: "ערכה מלאה + 2 תמציות ריח 100 מ\"ל", price: 399, originalPrice: 519, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח חשמלי קומפקטי ואיכותי מסדרת Lilya Tab, מתאים לשטחים של עד 25 מ\"ר (חדרי שירותים, משרדים קטנים ולובאים). מגיע כערכה מלאה בתוספת 2 תמציות ריח יוקרתיות 100 מ\"ל.", specs: "כיסוי: עד 25 מ\"ר | מתאים ל: חדרי שירותים, לובאים קטנים", keywords: ["מפיץ", "ריח", "לליה", "lilya", "tab", "בישום", "אוויר", "שירותים"] },
-            { id: "s2", image: "assets/lilya_grand_salon.jpg", name: "מפיץ ריח Lilya Grand Salon (עד 200 מטר)", pack: "ערכה מלאה + 2 תמציות ריח", price: 529, originalPrice: 779, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח עוצמתי בעיצוב מקומר מודרני מסדרת Lilya Grand Salon, מתאים לדירות בכל הגדלים ולסלונים גדולים של עד 200 מ\"ר. מגיע כערכה מלאה בתוספת 2 תמציות ריח.", specs: "כיסוי: עד 200 מ\"ר | מתאים ל: דירות בכל הגדלים, סלונים", keywords: ["מפיץ", "ריח", "לליה", "lilya", "grand", "salon", "גרנד", "סלון", "דירות"] },
-            { id: "s3", image: "assets/lilya_lounge_app.jpg", name: "מפיץ ריח Lilya Lounge App (עד 250 מטר)", pack: "ערכה מלאה + 2 תמציות + אפליקציה", price: 629, originalPrice: 879, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח חכם ויוקרתי עם שליטה מלאה באפליקציה מסדרת Lilya Lounge App, מתאים לשטחים של עד 250 מ\"ר (דירות, משרדים, חנויות בוטיק). ערכה מלאה כוללת 2 תמציות ריח.", specs: "כיסוי: עד 250 מ\"ר | מתאים ל: דירות, משרדים, חנויות קטנות", keywords: ["מפיץ", "ריח", "לליה", "lilya", "lounge", "app", "אפליקציה", "לאונג'"] },
-            { id: "s4", image: "assets/lilya_pro_app.jpg", name: "מפיץ ריח Lilya Pro App (עד 400 מטר)", pack: "ערכה מסחרית + 2 תמציות 250 מ\"ל", price: 1099, originalPrice: 1560, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח מסחרי עוצמתי במיוחד מסדרת Lilya Pro App עם חיבור לאפליקציה, מתאים לבתים מרווחים, משרדים גדולים ואולמות תצוגה עד 400 מ\"ר. ערכה כוללת 2 בקבוקי תמצית מוגדלים 250 מ\"ל.", specs: "כיסוי: עד 400 מ\"ר | מתאים ל: בתים גדולים, משרדים גדולים, אולמות תצוגה", keywords: ["מפיץ", "ריח", "לליה", "lilya", "pro", "app", "פרו", "אולמות", "אפליקציה"] }
+            { id: "o1", image: "assets/o1.webp", name: "נייר צילום למדפסת A4", pack: "קרטון 5 חבילות (2500 דף)", price: 110, category: "office", portals: ["office", "institution"], icon: "paper-stack" , keywords: ["נייר", "צילום", "מדפסת", "a4", "משרד"] },
+            { id: "o2", image: "assets/o2.webp", name: "טונר שחור למדפסת HP", pack: "יחידה אחת", price: 180, category: "office", portals: ["office"], icon: "toner" , keywords: ["טונר", "דיו", "מדפסת", "hp", "שחור"] },
+            { id: "o3", image: "assets/o3.webp", name: "עטי פיילוט Pilot 0.7 כחול/שחור", pack: "מארז 12 עטים", price: 65, category: "office", portals: ["office", "institution"], icon: "pen" , keywords: ["עט", "עטים", "פיילוט", "pilot", "משרד"] },
+            { id: "o4", image: "assets/o4.webp", name: "קלסר משרדי עבה גב 8 ס\"מ", pack: "מארז 10 קלסרים קשיחים", price: 80, category: "office", portals: ["office", "institution"], icon: "binders" , keywords: ["קלסר", "משרד", "תיוק", "עבה", "קרטון"] },
+            { id: "s1", image: "assets/lilya_scent_tab.webp", name: "מפיץ ריח Lilya Tab (עד 25 מטר)", pack: "ערכה מלאה + 2 תמציות ריח 100 מ\"ל", price: 399, originalPrice: 519, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח חשמלי קומפקטי ואיכותי מסדרת Lilya Tab, מתאים לשטחים של עד 25 מ\"ר (חדרי שירותים, משרדים קטנים ולובאים). מגיע כערכה מלאה בתוספת 2 תמציות ריח יוקרתיות 100 מ\"ל.", specs: "כיסוי: עד 25 מ\"ר | מתאים ל: חדרי שירותים, לובאים קטנים", keywords: ["מפיץ", "ריח", "לליה", "lilya", "tab", "בישום", "אוויר", "שירותים"] },
+            { id: "s2", image: "assets/lilya_grand_salon.webp", name: "מפיץ ריח Lilya Grand Salon (עד 200 מטר)", pack: "ערכה מלאה + 2 תמציות ריח", price: 529, originalPrice: 779, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח עוצמתי בעיצוב מקומר מודרני מסדרת Lilya Grand Salon, מתאים לדירות בכל הגדלים ולסלונים גדולים של עד 200 מ\"ר. מגיע כערכה מלאה בתוספת 2 תמציות ריח.", specs: "כיסוי: עד 200 מ\"ר | מתאים ל: דירות בכל הגדלים, סלונים", keywords: ["מפיץ", "ריח", "לליה", "lilya", "grand", "salon", "גרנד", "סלון", "דירות"] },
+            { id: "s3", image: "assets/lilya_lounge_app.webp", name: "מפיץ ריח Lilya Lounge App (עד 250 מטר)", pack: "ערכה מלאה + 2 תמציות + אפליקציה", price: 629, originalPrice: 879, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח חכם ויוקרתי עם שליטה מלאה באפליקציה מסדרת Lilya Lounge App, מתאים לשטחים של עד 250 מ\"ר (דירות, משרדים, חנויות בוטיק). ערכה מלאה כוללת 2 תמציות ריח.", specs: "כיסוי: עד 250 מ\"ר | מתאים ל: דירות, משרדים, חנויות קטנות", keywords: ["מפיץ", "ריח", "לליה", "lilya", "lounge", "app", "אפליקציה", "לאונג'"] },
+            { id: "s4", image: "assets/lilya_pro_app.webp", name: "מפיץ ריח Lilya Pro App (עד 400 מטר)", pack: "ערכה מסחרית + 2 תמציות 250 מ\"ל", price: 1099, originalPrice: 1560, category: "scents", portals: ["home", "office", "hospitality", "institution"], desc: "מפיץ ריח מסחרי עוצמתי במיוחד מסדרת Lilya Pro App עם חיבור לאפליקציה, מתאים לבתים מרווחים, משרדים גדולים ואולמות תצוגה עד 400 מ\"ר. ערכה כוללת 2 בקבוקי תמצית מוגדלים 250 מ\"ל.", specs: "כיסוי: עד 400 מ\"ר | מתאים ל: בתים גדולים, משרדים גדולים, אולמות תצוגה", keywords: ["מפיץ", "ריח", "לליה", "lilya", "pro", "app", "פרו", "אולמות", "אפליקציה"] }
         ];
 
         const CATEGORIES = {
@@ -5726,7 +5738,7 @@
                     const activeImg = (activeColor === 'white' && prod.image_white) ? prod.image_white : prod.image;
                     
                     const visualHtml = prod.image 
-                        ? `<img src="${activeImg}" alt="${prod.name}" class="product-img" id="prod-img-${prod.id}" loading="lazy">`
+                        ? `<img src="${activeImg}" alt="${prod.name}" class="product-img" id="prod-img-${prod.id}" loading="lazy" decoding="async">`
                         : iconSvg;
 
                     const colorSwatchesHtml = prod.hasColors ? `
@@ -8218,7 +8230,7 @@
             .empty-state-banner {
                 width: 100%;
                 height: 400px;
-                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.jpg') no-repeat center center;
+                background: linear-gradient(rgba(10, 25, 49, 0.25), rgba(10, 25, 49, 0.25)), url('assets/fresh_studio_bg.webp') no-repeat center center;
                 background-size: cover;
                 border-radius: var(--border-radius-lg);
                 display: flex;
@@ -8955,7 +8967,7 @@
             content.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 1.2rem; text-align: right; direction: rtl;">
                     <div style="width: 100%; height: 220px; background: #ffffff; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #f1f5f9; position: relative;">
-                        <img src="${prod.image || 'assets/placeholder_bg.webp'}" style="max-width: 100%; max-height: 100%; object-fit: contain;" loading="lazy">
+                        <img src="${prod.image || 'assets/placeholder_bg.webp'}" style="max-width: 100%; max-height: 100%; object-fit: contain;" loading="lazy" decoding="async">
                         ${getProductBadge(prod)}
                     </div>
                     <div>
@@ -9215,7 +9227,7 @@
             
             let html = '';
             fullList.forEach(p => {
-                const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
+                const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
                 const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                 html += `
                     <div class="portal-card" data-portal="${p.id}" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
@@ -9574,16 +9586,16 @@
             const hasCategoryAttribute = portalsGrid.querySelector('[data-desktop-category]');
             
             const CATEGORY_IMAGES = {
-                all: 'assets/fresh_studio_bg.jpg',
-                tork: 'assets/tork_hadar_dispenser.jpg',
-                paper: 'assets/p2.jpg',
-                cleaning: 'assets/c7.jpg',
-                scents: 'assets/lilya_grand_salon.jpg',
-                tools: 'assets/window_cleaner_spray.jpg',
-                bags: 'assets/black_trash_bags.jpg',
-                disposables: 'assets/d4.jpg',
-                hospitality: 'assets/e10.jpg',
-                office: 'assets/o3.jpg'
+                all: 'assets/fresh_studio_bg.webp',
+                tork: 'assets/tork_hadar_dispenser.webp',
+                paper: 'assets/p2.webp',
+                cleaning: 'assets/c7.webp',
+                scents: 'assets/lilya_grand_salon.webp',
+                tools: 'assets/window_cleaner_spray.webp',
+                bags: 'assets/black_trash_bags.webp',
+                disposables: 'assets/d4.webp',
+                hospitality: 'assets/e10.webp',
+                office: 'assets/o3.webp'
             };
             
             const catDescs = {
@@ -9610,7 +9622,7 @@
                 // Render Mobile Portals — then init infinite swiper
                 let html = '';
                 portalsList.forEach(p => {
-                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
+                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
                     const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                     html += `
                         <div class="portal-card" data-portal="${p.id}" onclick="filterPortal('${p.id}', this)" style="background-image: url('${imgUrl}')">
@@ -9630,7 +9642,7 @@
                 // Render Desktop Categories as Large Cards with Images (Infinite Loop support)
                 let html = '';
                 portalsList.forEach(p => {
-                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.jpg';
+                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
                     const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
                     html += `
                         <div class="portal-card" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
