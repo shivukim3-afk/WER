@@ -4452,7 +4452,7 @@
                 image: "assets/t1.jpg",
                 image_white: "assets/t1_white.jpg",
                 hasColors: true,
-                keywords: ["מתקן", "טורק", "tork", "נייר", "מגבת", "גליל", "touch free", "קיר", "דיספנסר", "לבן", "שחור"] },
+                keywords: ["מתקן", "טורק", "tork", "נייר", "מגבת", "גליל", "touch free", "touchfree", "טאצ פרי", "טאץ פרי", "טאצ' פרי", "טאץ' פרי", "קיר", "דיספנסר", "לבן", "שחור"] },
             { 
                 id: "t2", 
                 name: "מתקן MINI INTERFOLD צץ רץ Tork", 
@@ -4636,7 +4636,7 @@
                 icon: "jug",
                 desc: "חומר איכותי רב תכליתי 7C. מנקה כל דבר בקלות ובמהירות, בעל ביצועים מעולים.",
                 image: "assets/c7_cleaner_jug.jpg",
-             keywords: ["חומר", "נוזל", "ניקוי", "רב תכליתי", "c7", "7c", "מנקה"] },
+             keywords: ["חומר", "נוזל", "ניקוי", "רב תכליתי", "c7", "7c", "מנקה", "מסיר שומנים", "מסיר שומן", "שומנים"] },
             { 
                 id: "c7", image: "assets/c7.jpg", 
                 name: "מסיר אבנית וחלודה עוצמתי 100PLUS", 
@@ -5542,6 +5542,22 @@
             return shortNames[prod.id] || prod.name;
         }
 
+        // Smart Hebrew & English search text normalizer (handles final letters, apostrophes, hyphens, and common transliterations)
+        function normalizeHebrewSearch(str) {
+            if (!str) return '';
+            return str
+                .toLowerCase()
+                .replace(/['"״׳`\-–—_.,\\/()]/g, ' ')
+                .replace(/ם/g, 'מ')
+                .replace(/ן/g, 'נ')
+                .replace(/ץ/g, 'צ')
+                .replace(/ף/g, 'פ')
+                .replace(/ך/g, 'כ')
+                .replace(/אקנומיקה/g, 'אקונומיקה')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         // Render the Grid-based Catalog
         function renderCatalog() {
             const container = document.getElementById('catalog-container');
@@ -5590,7 +5606,7 @@
             // Group products by category
             let totalFoundInSearch = 0;
             const isSearching = !!searchQuery.trim();
-            const cleanQuery = searchQuery.trim().toLowerCase();
+            const cleanQuery = normalizeHebrewSearch(searchQuery);
             const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
 
             Object.keys(CATEGORIES).forEach(catId => {
@@ -5607,18 +5623,14 @@
                         return effPortal === 'all' || (p.portals && p.portals.includes(effPortal));
                     }
                     
-                    // Strict Title / Known Names / Keywords matching
-                    const prodName = (p.name || '').toLowerCase();
-                    const catName = (catInfo.name || '').toLowerCase();
-                    const keywords = Array.isArray(p.keywords) ? p.keywords.map(k => k.toLowerCase()) : [];
-                    const packInfo = (p.pack || '').toLowerCase();
+                    // Smart normalized Title / Category / Pack / Keywords matching
+                    const prodName = normalizeHebrewSearch(p.name);
+                    const catName = normalizeHebrewSearch(catInfo.name);
+                    const packInfo = normalizeHebrewSearch(p.pack);
+                    const keywords = Array.isArray(p.keywords) ? p.keywords.map(k => normalizeHebrewSearch(k)).join(' ') : '';
+                    const searchPool = `${prodName} ${catName} ${packInfo} ${keywords}`;
 
-                    return searchTerms.every(term => {
-                        return prodName.includes(term) ||
-                               catName.includes(term) ||
-                               packInfo.includes(term) ||
-                               keywords.some(k => k.includes(term) || term.includes(k));
-                    });
+                    return searchTerms.every(term => searchPool.includes(term));
                 });
 
                 if (catProducts.length === 0) return; // Skip categories with no matching items
@@ -5856,24 +5868,20 @@
             const tbody = document.getElementById('quick-order-tbody');
             tbody.innerHTML = '';
             
-            const cleanQuery = searchQuery ? searchQuery.trim().toLowerCase() : '';
+            const cleanQuery = normalizeHebrewSearch(searchQuery);
             const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
             
             let filtered = PRODUCTS;
             if (searchTerms.length > 0) {
                 filtered = PRODUCTS.filter(prod => {
                     const catInfo = CATEGORIES[prod.category] || { name: '' };
-                    const prodName = (prod.name || '').toLowerCase();
-                    const catName = (catInfo.name || '').toLowerCase();
-                    const keywords = Array.isArray(prod.keywords) ? prod.keywords.map(k => k.toLowerCase()) : [];
-                    const packInfo = (prod.pack || '').toLowerCase();
+                    const prodName = normalizeHebrewSearch(prod.name);
+                    const catName = normalizeHebrewSearch(catInfo.name);
+                    const packInfo = normalizeHebrewSearch(prod.pack);
+                    const keywords = Array.isArray(prod.keywords) ? prod.keywords.map(k => normalizeHebrewSearch(k)).join(' ') : '';
+                    const searchPool = `${prodName} ${catName} ${packInfo} ${keywords}`;
 
-                    return searchTerms.every(term =>
-                        prodName.includes(term) || 
-                        catName.includes(term) ||
-                        packInfo.includes(term) ||
-                        keywords.some(k => k.includes(term) || term.includes(k))
-                    );
+                    return searchTerms.every(term => searchPool.includes(term));
                 });
             }
             
