@@ -5588,32 +5588,41 @@
             }
 
             // Group products by category
+            let totalFoundInSearch = 0;
+            const isSearching = !!searchQuery.trim();
+            const cleanQuery = searchQuery.trim().toLowerCase();
+            const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
+
             Object.keys(CATEGORIES).forEach(catId => {
                 const catInfo = CATEGORIES[catId];
                 
-                // Filter out categories not matching active sub-category filter
-                if (effSubCat !== 'all' && catId !== effSubCat) return;
+                // If not searching, filter out categories not matching active sub-category filter
+                if (!isSearching && effSubCat !== 'all' && catId !== effSubCat) return;
                 
-                // Filter products belonging to this category, matching search and active portal
+                // Filter products belonging to this category, matching search titles/known names and active portal
                 const catProducts = PRODUCTS.filter(p => {
                     if (p.category !== catId) return false;
                     
-                    const matchPortal = effPortal === 'all' || (p.portals && p.portals.includes(effPortal));
+                    if (!isSearching) {
+                        return effPortal === 'all' || (p.portals && p.portals.includes(effPortal));
+                    }
                     
-                    const query = searchQuery.trim().toLowerCase();
-                    if (!query) return matchPortal;
-                    
-                    const terms = query.split(/\s+/).filter(t => t.length > 0);
-                    const matchTitle = terms.every(term => 
-                        p.name.toLowerCase().includes(term) ||
-                        catInfo.name.toLowerCase().includes(term) ||
-                        (p.keywords && p.keywords.some(k => k.toLowerCase().includes(term)))
-                    );
-                    
-                    return matchPortal && matchTitle;
+                    // Strict Title / Known Names / Keywords matching
+                    const prodName = (p.name || '').toLowerCase();
+                    const catName = (catInfo.name || '').toLowerCase();
+                    const keywords = Array.isArray(p.keywords) ? p.keywords.map(k => k.toLowerCase()) : [];
+                    const packInfo = (p.pack || '').toLowerCase();
+
+                    return searchTerms.every(term => {
+                        return prodName.includes(term) ||
+                               catName.includes(term) ||
+                               packInfo.includes(term) ||
+                               keywords.some(k => k.includes(term) || term.includes(k));
+                    });
                 });
 
                 if (catProducts.length === 0) return; // Skip categories with no matching items
+                totalFoundInSearch += catProducts.length;
 
                 let catHtml = `
                     <div class="category-block" id="cat-section-${catId}">
@@ -5713,6 +5722,18 @@
                 `;
                 container.innerHTML += catHtml;
             });
+
+            // If user searched and nothing matched across all categories
+            if (isSearching && totalFoundInSearch === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3.5rem 1.5rem; background: #ffffff; border-radius: var(--border-radius-lg); border: 1px solid var(--color-border); margin: 1.5rem 0; box-shadow: var(--shadow-soft); direction: rtl;">
+                        <i class="fa-solid fa-magnifying-glass" style="font-size: 2.8rem; color: var(--color-blue); margin-bottom: 1rem; opacity: 0.6; display: block;"></i>
+                        <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--color-navy); margin-bottom: 0.5rem;">לא נמצאו מוצרים התואמים לחיפוש "${searchQuery}"</h4>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem;">נסו לחפש לפי כותרת המוצר (למשל: סבון, מגבת, שקיות, Tork, כוסות) או לפי קטגוריה</p>
+                        <button onclick="clearSearch()" style="background: var(--color-navy); color: #ffffff; border: none; padding: 0.65rem 1.6rem; border-radius: var(--border-radius-sm); font-weight: 700; font-family: var(--font-main); cursor: pointer; transition: var(--transition-smooth);">נקה חיפוש והצג הכל</button>
+                    </div>
+                `;
+            }
         }
 
         // Live input glow tracking (Handcrafted custom UI detail)
@@ -5835,17 +5856,23 @@
             const tbody = document.getElementById('quick-order-tbody');
             tbody.innerHTML = '';
             
-            const query = searchQuery ? searchQuery.trim().toLowerCase() : '';
+            const cleanQuery = searchQuery ? searchQuery.trim().toLowerCase() : '';
+            const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
             
             let filtered = PRODUCTS;
-            if (query) {
-                const terms = query.split(/\s+/).filter(t => t.length > 0);
+            if (searchTerms.length > 0) {
                 filtered = PRODUCTS.filter(prod => {
                     const catInfo = CATEGORIES[prod.category] || { name: '' };
-                    return terms.every(term =>
-                        prod.name.toLowerCase().includes(term) || 
-                        catInfo.name.toLowerCase().includes(term) ||
-                        (prod.keywords && prod.keywords.some(k => k.toLowerCase().includes(term)))
+                    const prodName = (prod.name || '').toLowerCase();
+                    const catName = (catInfo.name || '').toLowerCase();
+                    const keywords = Array.isArray(prod.keywords) ? prod.keywords.map(k => k.toLowerCase()) : [];
+                    const packInfo = (prod.pack || '').toLowerCase();
+
+                    return searchTerms.every(term =>
+                        prodName.includes(term) || 
+                        catName.includes(term) ||
+                        packInfo.includes(term) ||
+                        keywords.some(k => k.includes(term) || term.includes(k))
                     );
                 });
             }
@@ -8623,6 +8650,18 @@
             if (heroInput && heroInput !== e.target) heroInput.value = e.target.value;
             
             // Render filtered views
+            renderCatalog();
+            renderQuickOrderTable();
+        }
+
+        function clearSearch() {
+            searchQuery = '';
+            const deskInput = document.getElementById('catalog-search');
+            const mobInput = document.getElementById('mobile-catalog-search');
+            const heroInput = document.getElementById('hero-catalog-search');
+            if (deskInput) deskInput.value = '';
+            if (mobInput) mobInput.value = '';
+            if (heroInput) heroInput.value = '';
             renderCatalog();
             renderQuickOrderTable();
         }
