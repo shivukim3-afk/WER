@@ -35,7 +35,6 @@
     
     <!-- Firebase SDKs & DB Engine (Deferred for non-blocking First Paint) -->
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script defer src="db.js"></script>
 
@@ -109,6 +108,18 @@
             font-family: var(--font-main);
             overflow-x: hidden;
             line-height: 1.5;
+        }
+
+                .fixed-bg-img {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center right !important;
+            pointer-events: none !important;
+            z-index: -99999 !important;
         }
 
         .fixed-bg-layer {
@@ -1990,7 +2001,19 @@
             body {
                 background: transparent !important;
             }
-            .fixed-bg-layer {
+                    .fixed-bg-img {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center right !important;
+            pointer-events: none !important;
+            z-index: -99999 !important;
+        }
+
+        .fixed-bg-layer {
                 background: #ffffff url('assets/mobile_studio_bg.webp') no-repeat center top !important;
                 background-size: cover !important;
                 background-attachment: fixed !important;
@@ -4076,7 +4099,13 @@
 <body class="mobile-home-active">
 
     <!-- HARDWARE ACCELERATED FIXED BACKGROUND LAYER (Zero movement on scroll) -->
-    <div class="fixed-bg-layer" id="fixed-bg-layer"></div>
+        <!-- LCP HERO BACKGROUND LAYER WITH HIGH PRIORITY EAGER IMAGE -->
+    <div class="fixed-bg-layer" id="fixed-bg-layer">
+        <picture>
+            <source media="(max-width: 600px)" srcset="assets/mobile_studio_bg.webp" type="image/webp">
+            <img src="assets/fresh_studio_bg.webp" alt="שיווקים אספקה מקצועית" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
+        </picture>
+    </div>
 
     <!-- CUSTOM MOUSE CURSOR -->
     <div class="custom-cursor" id="custom-cursor"></div>
@@ -6463,7 +6492,10 @@
             renderQuickOrderTable();
         }
 
-        document.getElementById('catalog-search').addEventListener('input', handleSearch);
+        const catalogSearchEl = document.getElementById('catalog-search');
+        if (catalogSearchEl) {
+            catalogSearchEl.addEventListener('input', handleSearch);
+        }
         const mobileSearchEl = document.getElementById('mobile-catalog-search');
         if (mobileSearchEl) {
             mobileSearchEl.addEventListener('input', handleSearch);
@@ -6524,12 +6556,15 @@
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            cursor.style.left = `${mouseX}px`;
-            cursor.style.top = `${mouseY}px`;
-        });
+            if (cursor) {
+                cursor.style.left = `${mouseX}px`;
+                cursor.style.top = `${mouseY}px`;
+            }
+        }, { passive: true });
 
-        // Loop for smoothed mouse following
+        // Loop for smoothed mouse following with null guards
         function updateFollower() {
+            if (!follower) return;
             const dx = mouseX - followX;
             const dy = mouseY - followY;
             
@@ -6541,7 +6576,9 @@
             
             requestAnimationFrame(updateFollower);
         }
-        requestAnimationFrame(updateFollower);
+        if (follower) {
+            requestAnimationFrame(updateFollower);
+        }
 
         // Bind cursor hover triggers
         function bindCursorHover() {

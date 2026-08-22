@@ -27,7 +27,10 @@ try {
             fbApp = firebase.app();
         }
         firestoreDb = firebase.firestore();
-        fbAuth = firebase.auth();
+        // Initialize Auth only when needed (e.g. in Admin session) to avoid third-party storage warnings
+        if (typeof window !== 'undefined' && window.location.pathname.includes('admin') && typeof firebase.auth === 'function') {
+            fbAuth = firebase.auth();
+        }
         // Firestore connected
     }
 } catch (e) {
