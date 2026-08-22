@@ -44,14 +44,14 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: optional;
+            font-display: swap;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: optional;
+            font-display: swap;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
 
@@ -4492,6 +4492,171 @@
     <!-- -------------------------------------------------------------
        13. DATA & JAVASCRIPT LOGIC
     ------------------------------------------------------------- -->
+    <!-- CHECKOUT DETAILS MODAL -->
+    <div class="payment-modal" id="checkout-details-modal" style="display: none;" onclick="closeCheckoutDetailsModal()">
+        <div class="payment-card" onclick="event.stopPropagation()">
+            <button class="payment-close-btn" onclick="closeCheckoutDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="payment-header">
+                <i class="fa-solid fa-receipt" style="color: var(--color-blue); font-size: 2.2rem; margin-bottom: 0.8rem; display: block;"></i>
+                <h3 class="payment-title">פרטי משלוח וסיום הזמנה</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">אנא מלא את פרטי המשלוח ובחר דרך תשלום</p>
+            </div>
+            
+            <div class="payment-summary-box">
+                <div class="payment-summary-row" style="color: var(--text-dark); font-weight: 700;">
+                    <span style="flex: 1; text-align: right;">סה"כ לפני מע"מ:</span>
+                    <span id="checkout-subtotal-val" style="font-weight: 800; color: var(--color-navy); font-size: 1.05rem; text-align: left; min-width: 80px;">₪0</span>
+                </div>
+                <div class="payment-summary-row" id="checkout-discount-row" style="display: none; color: #059669; font-weight: 700;">
+                    <span style="flex: 1; text-align: right;">הנחת קופון:</span>
+                    <span id="checkout-discount-val" style="font-weight: 800; font-size: 1.05rem; text-align: left; min-width: 80px;">-₪0</span>
+                </div>
+                <div class="payment-summary-row" style="color: var(--text-muted); font-weight: 600;">
+                    <span style="flex: 1; text-align: right;">תוספת מע"מ 18%:</span>
+                    <span id="checkout-vat-val" style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem; text-align: left; min-width: 80px;">₪0</span>
+                </div>
+                <div class="payment-summary-row" style="font-size: 1.15rem; font-weight: 800; color: var(--color-navy); margin-top: 0.3rem; border-top: 1.5px dashed #cbd5e1; padding-top: 0.6rem;">
+                    <span style="flex: 1; text-align: right;">סה"כ לתשלום (כולל מע"מ):</span>
+                    <span class="payment-amount-val" id="checkout-summary-amount" style="font-weight: 800; color: var(--color-blue); font-size: 1.35rem; text-align: left; min-width: 80px;">₪0</span>
+                </div>
+            </div>
+            
+            <form id="checkout-details-form" onsubmit="event.preventDefault();">
+                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם המוסד / הגן / העסק *</label>
+                    <input type="text" id="checkout-client-name" required placeholder="לדוגמה: גן אורנים / מועצה אזורית" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם איש הקשר במקום *</label>
+                    <input type="text" id="checkout-contact-name" required placeholder="לדוגמה: שמואל המנהל" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">טלפון נייד ליצירת קשר *</label>
+                    <input type="tel" id="checkout-client-phone" required placeholder="לדוגמה: 050-5178445" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem; text-align: right;">
+                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">כתובת למשלוח</label>
+                    <input type="text" id="checkout-client-address" placeholder="רחוב, עיר, קומה" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #3b82f6; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('whatsapp')">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>הזמנה בוואטסאפ</span>
+                    </button>
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: var(--color-navy); color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('credit')">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span>תשלום באשראי באתר</span>
+                    </button>
+                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #64748b; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('pdf')">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>הדפס / שמור כ-PDF</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- PRODUCT DETAILS MODAL (QUICK VIEW) -->
+    <div id="product-details-modal" class="payment-modal" style="display: none;" onclick="if(event.target === this) closeProductModal()">
+        <div class="payment-card" style="width: 500px; max-width: 92%; padding: 2rem; border-radius: var(--border-radius-lg); position: relative;">
+            <button class="payment-close-btn" onclick="closeProductModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-product-content">
+                <!-- Content injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- QUICK ORDER TRIGGER BUTTON -->
+    <button class="quick-order-trigger" id="quick-order-trigger" onclick="toggleQuickOrderMode()" aria-label="טופס הזמנה מהיר">
+        <i class="fa-solid fa-bolt"></i>
+        <span>הזמנה מהירה</span>
+    </button>
+
+    <!-- ACCESSIBILITY TRIGGER BUTTON & PANEL -->
+    <button class="accessibility-trigger" id="acc-trigger" onclick="toggleAccessibilityPanel()" aria-label="תפריט נגישות">
+        <i class="fa-solid fa-universal-access"></i>
+    </button>
+    
+    <div class="accessibility-panel" id="acc-panel">
+        <div class="accessibility-panel-header">
+            <div class="accessibility-panel-title">
+                <i class="fa-solid fa-universal-access"></i>
+                <span>תפריט נגישות</span>
+            </div>
+            <button class="accessibility-panel-close" onclick="toggleAccessibilityPanel(false)"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="accessibility-grid">
+            <button class="accessibility-btn" id="acc-contrast-btn" onclick="toggleAccessibilityOption('contrast')">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+                <span>ניגודיות גבוהה</span>
+            </button>
+            <button class="accessibility-btn" id="acc-grayscale-btn" onclick="toggleAccessibilityOption('grayscale')">
+                <i class="fa-solid fa-droplet-slash"></i>
+                <span>גווני אפור</span>
+            </button>
+            <button class="accessibility-btn" id="acc-links-btn" onclick="toggleAccessibilityOption('links')">
+                <i class="fa-solid fa-link"></i>
+                <span>הדגשת קישורים</span>
+            </button>
+            <button class="accessibility-btn" id="acc-font-btn" onclick="toggleAccessibilityOption('font')">
+                <i class="fa-solid fa-font"></i>
+                <span>גופן קריא</span>
+            </button>
+            <button class="accessibility-btn" id="acc-zoom1-btn" onclick="toggleAccessibilityOption('zoom1')">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                <span>הגדלת טקסט</span>
+            </button>
+            <button class="accessibility-btn" id="acc-zoom2-btn" onclick="toggleAccessibilityOption('zoom2')">
+                <i class="fa-solid fa-magnifying-glass-plus" style="font-size: 1.2rem;"></i>
+                <span>הגדלה מרבית</span>
+            </button>
+        </div>
+        <div class="accessibility-panel-footer">
+            <button class="accessibility-reset-btn" onclick="resetAccessibility()">איפוס הגדרות</button>
+            <button class="accessibility-decl-btn" onclick="toggleAccessibilityPanel(false); openLegalDoc('accessibility');">הצהרת נגישות</button>
+        </div>
+    </div>
+
+    <!-- FLOATING LEGAL VIEW MODAL -->
+    <div class="legal-modal" id="legal-doc-modal" onclick="if(event.target === this) closeLegalDoc()">
+        <div class="legal-card" onclick="event.stopPropagation()">
+            <div class="legal-header">
+                <div class="legal-title" id="legal-modal-title">
+                    <i class="fa-solid fa-gavel"></i>
+                    <span>תקנון ותנאי שימוש</span>
+                </div>
+                <button class="legal-close-btn" onclick="closeLegalDoc()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="legal-content" id="legal-modal-content">
+                <!-- Legal content injected dynamically via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE STICKY BOTTOM BAR -->
+    <div class="mobile-sticky-bar">
+        <a href="tel:050-5178445" class="sticky-bar-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>חייג עכשיו</span>
+        </a>
+        <a href="https://wa.me/972505178445" target="_blank" class="sticky-bar-item whatsapp">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>הזמנה בוואטסאפ</span>
+        </a>
+        <div class="sticky-bar-item fast-order" onclick="switchMode('quick'); window.scrollTo({top: 0, behavior: 'smooth'});">
+            <i class="fa-solid fa-bolt"></i>
+            <span>הזמנה מהירה</span>
+        </div>
+    </div>
+
+
     <script>
         // 1. PRODUCTS DATA DICTIONARY
         const PRODUCTS = [
@@ -6230,10 +6395,13 @@
         }
 
         function closeCheckoutDetailsModal(shouldUpdateHash = true) {
-            document.getElementById('checkout-details-modal').style.display = 'none';
+            const modalEl = document.getElementById('checkout-details-modal');
+            if (modalEl) {
+                modalEl.style.display = 'none';
+            }
             if (shouldUpdateHash) {
                 const currentHash = window.location.hash;
-                if (currentHash.includes('/checkout')) {
+                if (currentHash && currentHash.includes('/checkout')) {
                     updateHash(currentHash.split('/checkout')[0]);
                 }
             }
@@ -6397,14 +6565,14 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: optional;
+            font-display: swap;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: optional;
+            font-display: swap;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
 
@@ -7208,9 +7376,12 @@
                     const dotsBar = document.getElementById('mobile-categories-dots');
                     if (dotsBar) dotsBar.style.display = '';
 
-                    document.getElementById('portals-grid').style.display = 'flex';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
+                    const pGridEl = document.getElementById('portals-grid');
+                    const subGridEl = document.getElementById('sub-portals-grid');
+                    const actHeadEl = document.getElementById('active-portal-header');
+                    if (pGridEl) pGridEl.style.display = 'flex';
+                    if (subGridEl) subGridEl.style.display = 'none';
+                    if (actHeadEl) actHeadEl.style.display = 'none';
                     
                     renderCatalog();
                 } else {
@@ -7221,9 +7392,12 @@
                     activePortal = '';
                     activeSubCategory = '';
                     
-                    document.getElementById('portals-grid').style.display = 'grid';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
+                    const pGridD = document.getElementById('portals-grid');
+                    const subGridD = document.getElementById('sub-portals-grid');
+                    const actHeadD = document.getElementById('active-portal-header');
+                    if (pGridD) pGridD.style.display = 'grid';
+                    if (subGridD) subGridD.style.display = 'none';
+                    if (actHeadD) actHeadD.style.display = 'none';
                     
                     // Clear active styling from all cards in portals-grid
                     document.querySelectorAll('#portals-grid .portal-card').forEach(c => c.classList.remove('active'));
@@ -7259,20 +7433,26 @@
                     const dotsBar = document.getElementById('mobile-categories-dots');
                     if (dotsBar) dotsBar.style.display = '';
 
-                    document.getElementById('portals-grid').style.display = 'flex';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'none';
+                    const pGridEl = document.getElementById('portals-grid');
+                    const subGridEl = document.getElementById('sub-portals-grid');
+                    const actHeadEl = document.getElementById('active-portal-header');
+                    if (pGridEl) pGridEl.style.display = 'flex';
+                    if (subGridEl) subGridEl.style.display = 'none';
+                    if (actHeadEl) actHeadEl.style.display = 'none';
                     
                     renderCatalog();
                 } else {
                     activePortal = 'all';
                     activeSubCategory = 'all';
                     
-                    document.getElementById('portals-grid').style.display = 'none';
-                    document.getElementById('sub-portals-grid').style.display = 'none';
-                    document.getElementById('active-portal-header').style.display = 'flex';
-                    
-                    document.getElementById('active-portal-title-text').textContent = 'כל המוצרים';
+                    const pGridA = document.getElementById('portals-grid');
+                    const subGridA = document.getElementById('sub-portals-grid');
+                    const actHeadA = document.getElementById('active-portal-header');
+                    const titleTextA = document.getElementById('active-portal-title-text');
+                    if (pGridA) pGridA.style.display = 'none';
+                    if (subGridA) subGridA.style.display = 'none';
+                    if (actHeadA) actHeadA.style.display = 'flex';
+                    if (titleTextA) titleTextA.textContent = 'כל המוצרים';
                     
                     renderCatalog();
                 }
@@ -7297,15 +7477,19 @@
                     activeSubCategory = 'all';
                 }
                 
-                document.getElementById('portals-grid').style.display = 'none';
-                document.getElementById('sub-portals-grid').style.display = 'none';
-                document.getElementById('active-portal-header').style.display = 'flex';
+                const pGridC = document.getElementById('portals-grid');
+                const subGridC = document.getElementById('sub-portals-grid');
+                const actHeadC = document.getElementById('active-portal-header');
+                const titleTextC = document.getElementById('active-portal-title-text');
+                if (pGridC) pGridC.style.display = 'none';
+                if (subGridC) subGridC.style.display = 'none';
+                if (actHeadC) actHeadC.style.display = 'flex';
                 
                 let titleText = 'כל המוצרים';
                 if (portalOrCat !== 'all' && CATEGORIES[portalOrCat]) {
                     titleText = CATEGORIES[portalOrCat].name;
                 }
-                document.getElementById('active-portal-title-text').textContent = titleText;
+                if (titleTextC) titleTextC.textContent = titleText;
                 
                 renderCatalog();
             }
@@ -7622,169 +7806,5 @@
         }
     </script>
 
-    <!-- CHECKOUT DETAILS MODAL -->
-    <div class="payment-modal" id="checkout-details-modal" style="display: none;" onclick="closeCheckoutDetailsModal()">
-        <div class="payment-card" onclick="event.stopPropagation()">
-            <button class="payment-close-btn" onclick="closeCheckoutDetailsModal()"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="payment-header">
-                <i class="fa-solid fa-receipt" style="color: var(--color-blue); font-size: 2.2rem; margin-bottom: 0.8rem; display: block;"></i>
-                <h3 class="payment-title">פרטי משלוח וסיום הזמנה</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">אנא מלא את פרטי המשלוח ובחר דרך תשלום</p>
-            </div>
-            
-            <div class="payment-summary-box">
-                <div class="payment-summary-row" style="color: var(--text-dark); font-weight: 700;">
-                    <span style="flex: 1; text-align: right;">סה"כ לפני מע"מ:</span>
-                    <span id="checkout-subtotal-val" style="font-weight: 800; color: var(--color-navy); font-size: 1.05rem; text-align: left; min-width: 80px;">₪0</span>
-                </div>
-                <div class="payment-summary-row" id="checkout-discount-row" style="display: none; color: #059669; font-weight: 700;">
-                    <span style="flex: 1; text-align: right;">הנחת קופון:</span>
-                    <span id="checkout-discount-val" style="font-weight: 800; font-size: 1.05rem; text-align: left; min-width: 80px;">-₪0</span>
-                </div>
-                <div class="payment-summary-row" style="color: var(--text-muted); font-weight: 600;">
-                    <span style="flex: 1; text-align: right;">תוספת מע"מ 18%:</span>
-                    <span id="checkout-vat-val" style="font-weight: 700; color: var(--text-dark); font-size: 1.05rem; text-align: left; min-width: 80px;">₪0</span>
-                </div>
-                <div class="payment-summary-row" style="font-size: 1.15rem; font-weight: 800; color: var(--color-navy); margin-top: 0.3rem; border-top: 1.5px dashed #cbd5e1; padding-top: 0.6rem;">
-                    <span style="flex: 1; text-align: right;">סה"כ לתשלום (כולל מע"מ):</span>
-                    <span class="payment-amount-val" id="checkout-summary-amount" style="font-weight: 800; color: var(--color-blue); font-size: 1.35rem; text-align: left; min-width: 80px;">₪0</span>
-                </div>
-            </div>
-            
-            <form id="checkout-details-form" onsubmit="event.preventDefault();">
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם המוסד / הגן / העסק *</label>
-                    <input type="text" id="checkout-client-name" required placeholder="לדוגמה: גן אורנים / מועצה אזורית" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
-                </div>
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם איש הקשר במקום *</label>
-                    <input type="text" id="checkout-contact-name" required placeholder="לדוגמה: שמואל המנהל" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
-                </div>
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">טלפון נייד ליצירת קשר *</label>
-                    <input type="tel" id="checkout-client-phone" required placeholder="לדוגמה: 050-5178445" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
-                </div>
-                <div class="form-group" style="margin-bottom: 1.5rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">כתובת למשלוח</label>
-                    <input type="text" id="checkout-client-address" placeholder="רחוב, עיר, קומה" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
-                </div>
-                
-                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #3b82f6; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('whatsapp')">
-                        <i class="fa-brands fa-whatsapp"></i>
-                        <span>הזמנה בוואטסאפ</span>
-                    </button>
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: var(--color-navy); color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('credit')">
-                        <i class="fa-solid fa-credit-card"></i>
-                        <span>תשלום באשראי באתר</span>
-                    </button>
-                    <button class="pay-submit-btn" style="width: 100%; padding: 0.9rem; border-radius: var(--border-radius-md); background: #64748b; color: #ffffff; border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; transition: var(--transition-smooth); display: flex; align-items: center; justify-content: center; gap: 0.6rem;" onclick="submitCheckoutFlow('pdf')">
-                        <i class="fa-solid fa-file-pdf"></i>
-                        <span>הדפס / שמור כ-PDF</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-
-    <!-- PRODUCT DETAILS MODAL (QUICK VIEW) -->
-    <div id="product-details-modal" class="payment-modal" style="display: none;" onclick="if(event.target === this) closeProductModal()">
-        <div class="payment-card" style="width: 500px; max-width: 92%; padding: 2rem; border-radius: var(--border-radius-lg); position: relative;">
-            <button class="payment-close-btn" onclick="closeProductModal()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="modal-product-content">
-                <!-- Content injected dynamically -->
-            </div>
-        </div>
-    </div>
-
-
-    <!-- QUICK ORDER TRIGGER BUTTON -->
-    <button class="quick-order-trigger" id="quick-order-trigger" onclick="toggleQuickOrderMode()" aria-label="טופס הזמנה מהיר">
-        <i class="fa-solid fa-bolt"></i>
-        <span>הזמנה מהירה</span>
-    </button>
-
-    <!-- ACCESSIBILITY TRIGGER BUTTON & PANEL -->
-    <button class="accessibility-trigger" id="acc-trigger" onclick="toggleAccessibilityPanel()" aria-label="תפריט נגישות">
-        <i class="fa-solid fa-universal-access"></i>
-    </button>
-    
-    <div class="accessibility-panel" id="acc-panel">
-        <div class="accessibility-panel-header">
-            <div class="accessibility-panel-title">
-                <i class="fa-solid fa-universal-access"></i>
-                <span>תפריט נגישות</span>
-            </div>
-            <button class="accessibility-panel-close" onclick="toggleAccessibilityPanel(false)"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="accessibility-grid">
-            <button class="accessibility-btn" id="acc-contrast-btn" onclick="toggleAccessibilityOption('contrast')">
-                <i class="fa-solid fa-circle-half-stroke"></i>
-                <span>ניגודיות גבוהה</span>
-            </button>
-            <button class="accessibility-btn" id="acc-grayscale-btn" onclick="toggleAccessibilityOption('grayscale')">
-                <i class="fa-solid fa-droplet-slash"></i>
-                <span>גווני אפור</span>
-            </button>
-            <button class="accessibility-btn" id="acc-links-btn" onclick="toggleAccessibilityOption('links')">
-                <i class="fa-solid fa-link"></i>
-                <span>הדגשת קישורים</span>
-            </button>
-            <button class="accessibility-btn" id="acc-font-btn" onclick="toggleAccessibilityOption('font')">
-                <i class="fa-solid fa-font"></i>
-                <span>גופן קריא</span>
-            </button>
-            <button class="accessibility-btn" id="acc-zoom1-btn" onclick="toggleAccessibilityOption('zoom1')">
-                <i class="fa-solid fa-magnifying-glass-plus"></i>
-                <span>הגדלת טקסט</span>
-            </button>
-            <button class="accessibility-btn" id="acc-zoom2-btn" onclick="toggleAccessibilityOption('zoom2')">
-                <i class="fa-solid fa-magnifying-glass-plus" style="font-size: 1.2rem;"></i>
-                <span>הגדלה מרבית</span>
-            </button>
-        </div>
-        <div class="accessibility-panel-footer">
-            <button class="accessibility-reset-btn" onclick="resetAccessibility()">איפוס הגדרות</button>
-            <button class="accessibility-decl-btn" onclick="toggleAccessibilityPanel(false); openLegalDoc('accessibility');">הצהרת נגישות</button>
-        </div>
-    </div>
-
-    <!-- FLOATING LEGAL VIEW MODAL -->
-    <div class="legal-modal" id="legal-doc-modal" onclick="if(event.target === this) closeLegalDoc()">
-        <div class="legal-card" onclick="event.stopPropagation()">
-            <div class="legal-header">
-                <div class="legal-title" id="legal-modal-title">
-                    <i class="fa-solid fa-gavel"></i>
-                    <span>תקנון ותנאי שימוש</span>
-                </div>
-                <button class="legal-close-btn" onclick="closeLegalDoc()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="legal-content" id="legal-modal-content">
-                <!-- Legal content injected dynamically via JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MOBILE STICKY BOTTOM BAR -->
-    <div class="mobile-sticky-bar">
-        <a href="tel:050-5178445" class="sticky-bar-item">
-            <i class="fa-solid fa-phone"></i>
-            <span>חייג עכשיו</span>
-        </a>
-        <a href="https://wa.me/972505178445" target="_blank" class="sticky-bar-item whatsapp">
-            <i class="fa-brands fa-whatsapp"></i>
-            <span>הזמנה בוואטסאפ</span>
-        </a>
-        <div class="sticky-bar-item fast-order" onclick="switchMode('quick'); window.scrollTo({top: 0, behavior: 'smooth'});">
-            <i class="fa-solid fa-bolt"></i>
-            <span>הזמנה מהירה</span>
-        </div>
-    </div>
-
-</body>
+    </body>
 </html>

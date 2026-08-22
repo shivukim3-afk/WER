@@ -117,9 +117,16 @@ class ShokimCloudDB {
             this.cacheIcountConfig = DEFAULT_ICOUNT_CONFIG;
         }
 
-        // Setup real-time Cloud Firestore listeners if available
+        // Setup real-time Cloud Firestore listeners asynchronously to achieve instant Network Idle
         if (firestoreDb) {
-            this.setupCloudListeners();
+            const startListeners = () => this.setupCloudListeners();
+            if (typeof window !== 'undefined' && window.requestIdleCallback) {
+                window.requestIdleCallback(startListeners, { timeout: 3000 });
+            } else if (typeof window !== 'undefined') {
+                window.addEventListener('load', () => setTimeout(startListeners, 1000));
+            } else {
+                this.setupCloudListeners();
+            }
         }
     }
 
