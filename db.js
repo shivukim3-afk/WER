@@ -81,7 +81,7 @@ const DEFAULT_COUPONS = {
 const DEFAULT_ICOUNT_CONFIG = {
     companyId: "sl8407440",
     apiKey: "API3E8-C0A83414-6A8613B1-0380E320669F4668",
-    paymentLink: "https://app.icount.co.il/m/7125d",
+    paymentLink: "https://app.icount.co.il/m/e88b5",
     enabled: true
 };
 
@@ -102,7 +102,12 @@ class ShokimCloudDB {
             const localOrd = localStorage.getItem('shokim_db_orders_v2');
             this.cacheOrders = localOrd ? JSON.parse(localOrd) : [];
             const localConf = localStorage.getItem('shokim_db_icount_config');
-            this.cacheIcountConfig = localConf ? JSON.parse(localConf) : DEFAULT_ICOUNT_CONFIG;
+            let parsed = localConf ? JSON.parse(localConf) : DEFAULT_ICOUNT_CONFIG;
+            if (parsed && (!parsed.paymentLink || parsed.paymentLink.includes('7125d') || parsed.paymentLink.includes('sumit'))) {
+                parsed.paymentLink = DEFAULT_ICOUNT_CONFIG.paymentLink;
+                localStorage.setItem('shokim_db_icount_config', JSON.stringify(parsed));
+            }
+            this.cacheIcountConfig = parsed;
         } catch (e) {
             this.cacheCoupons = DEFAULT_COUPONS;
             this.cacheOrders = [];
@@ -152,9 +157,16 @@ class ShokimCloudDB {
         // Real-time Cloud iCount Settings Listener
         firestoreDb.collection("settings").doc("icount_config").onSnapshot((doc) => {
             if (doc.exists) {
-                this.cacheIcountConfig = doc.data();
+                let cloudData = doc.data();
+                if (cloudData && (!cloudData.paymentLink || cloudData.paymentLink.includes('7125d') || cloudData.paymentLink.includes('sumit'))) {
+                    cloudData.paymentLink = DEFAULT_ICOUNT_CONFIG.paymentLink;
+                    firestoreDb.collection("settings").doc("icount_config").set(cloudData, { merge: true }).catch(console.error);
+                }
+                this.cacheIcountConfig = cloudData;
                 localStorage.setItem('shokim_db_icount_config', JSON.stringify(this.cacheIcountConfig));
                 this.notifyChange('settings');
+            } else {
+                firestoreDb.collection("settings").doc("icount_config").set(DEFAULT_ICOUNT_CONFIG, { merge: true }).catch(console.error);
             }
         }, (err) => {
             console.warn("Firestore iCount settings listener note:", err.message);
@@ -366,10 +378,19 @@ class ShokimCloudDB {
 
     // --- ICOUNT & SETTINGS ENGINE ---
     getIcountConfig() {
-        if (this.cacheIcountConfig) return this.cacheIcountConfig;
+        if (this.cacheIcountConfig) {
+            if (this.cacheIcountConfig.paymentLink && (this.cacheIcountConfig.paymentLink.includes('7125d') || this.cacheIcountConfig.paymentLink.includes('sumit'))) {
+                this.cacheIcountConfig.paymentLink = DEFAULT_ICOUNT_CONFIG.paymentLink;
+            }
+            return this.cacheIcountConfig;
+        }
         try {
             const local = localStorage.getItem('shokim_db_icount_config');
-            return local ? JSON.parse(local) : DEFAULT_ICOUNT_CONFIG;
+            let parsed = local ? JSON.parse(local) : DEFAULT_ICOUNT_CONFIG;
+            if (parsed && (!parsed.paymentLink || parsed.paymentLink.includes('7125d') || parsed.paymentLink.includes('sumit'))) {
+                parsed.paymentLink = DEFAULT_ICOUNT_CONFIG.paymentLink;
+            }
+            return parsed;
         } catch(e) {
             return DEFAULT_ICOUNT_CONFIG;
         }
