@@ -22,10 +22,12 @@
     <link rel="preload" as="image" href="assets/fresh_studio_bg.webp" type="image/webp" fetchpriority="high">
     <link rel="preload" as="image" href="assets/mobile_studio_bg.webp" media="(max-width: 600px)" type="image/webp" fetchpriority="high">
 
-    <!-- Google Fonts: Heebo & Outfit with display=swap -->
+    <!-- Google Fonts: Heebo & Outfit with display=swap (Non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=swap"></noscript>
     
     <!-- FontAwesome: Asynchronous non-render-blocking preload -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -38,6 +40,24 @@
     <script defer src="db.js"></script>
 
     <style>
+        /* -------------------------------------------------------------
+           FONT-DISPLAY SWAP OPTIMIZATION (Zero Layout Shift & Instant Render)
+        ------------------------------------------------------------- */
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 900;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Font Awesome 6 Brands';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
+        }
+
 
         /* -------------------------------------------------------------
            1. CSS RESET & DESIGN TOKENS
@@ -5286,7 +5306,7 @@
 
                 let _jumping = false;
                 pGrid.addEventListener('scroll', () => {
-                    if (_jumping) return;
+                    if (_jumping || !pGrid || !pGrid._mobileInfinite) return;
                     const sl = pGrid.scrollLeft;
                     const tw = pGrid._mobileInfinite.trackWidth;
 
@@ -6340,6 +6360,24 @@
                 <meta charset="UTF-8">
                 <title>הצעת מחיר / הזמנה מרוכזת - שיווקים</title>
                 <style>
+        /* -------------------------------------------------------------
+           FONT-DISPLAY SWAP OPTIMIZATION (Zero Layout Shift & Instant Render)
+        ------------------------------------------------------------- */
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-style: normal;
+            font-weight: 900;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Font Awesome 6 Brands';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
+        }
+
                     body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; color: #0a1931; }
                     .header-wrap { display: flex; justify-content: space-between; border-bottom: 2px solid #0085ff; padding-bottom: 10px; margin-bottom: 20px; }
                     .logo-title { font-size: 1.5rem; font-weight: bold; }
@@ -6669,7 +6707,8 @@
         }
         
         function closeProductModal(shouldUpdateHash = true) {
-            document.getElementById('product-details-modal').style.display = 'none';
+            const modalEl = document.getElementById('product-details-modal');
+            if (modalEl) modalEl.style.display = 'none';
             if (shouldUpdateHash) {
                 const currentHash = window.location.hash;
                 if (currentHash.includes('/product/')) {

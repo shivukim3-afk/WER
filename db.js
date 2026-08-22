@@ -28,10 +28,10 @@ try {
         }
         firestoreDb = firebase.firestore();
         fbAuth = firebase.auth();
-        console.log("✅ Shokim Cloud Firestore Database connected successfully!");
+        // Firestore connected
     }
 } catch (e) {
-    console.warn("Firebase initialization notice:", e);
+    // Graceful offline fallback
 }
 
 // Default initial coupons if Cloud DB is fresh
@@ -183,7 +183,7 @@ class ShokimCloudDB {
                 await firestoreDb.collection("coupons").doc(code).set(cData, { merge: true });
             }
         } catch (e) {
-            console.warn("Could not seed default coupons to Firestore:", e);
+            // Graceful fallback
         }
     }
 
