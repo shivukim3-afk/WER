@@ -25,11 +25,17 @@
     <!-- Google Fonts: Heebo & Outfit with display=optional (Zero CLS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Outfit:wght@600;800&display=optional">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Outfit:wght@600;800&display=optional" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Outfit:wght@600;800&display=optional"></noscript>
     
     <!-- FontAwesome: Asynchronous non-render-blocking preload -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <!-- Preload the two heaviest FA woff2 font files so they are fetched early -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
     
 
 
@@ -41,17 +47,16 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
-
 
         /* -------------------------------------------------------------
            1. CSS RESET & DESIGN TOKENS
@@ -63,24 +68,24 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --text-light: #f8fafc;
-            
+
             /* Logo colors */
             --color-navy: #0a1931;
             --color-cyan: #00e5ff;
             --color-blue: #0085ff;
             --color-green: #10b981;
             --color-green-hover: #059669;
-            
+
             --font-main: 'Heebo', sans-serif;
             --font-nums: 'Outfit', sans-serif;
-            
+
             --border-radius-sm: 8px;
             --border-radius-md: 12px;
             --border-radius-lg: 20px;
-            
+
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             --transition-elastic: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            
+
             --shadow-soft: 0 4px 20px rgba(10, 25, 49, 0.04);
             --shadow-hover: 0 20px 40px rgba(10, 25, 49, 0.08);
             --shadow-glow: 0 0 25px rgba(0, 229, 255, 0.15);
@@ -201,7 +206,7 @@
             transform: translate(-50%, -50%);
             transition: transform 0.08s ease-out, width 0.2s, height 0.2s, border-color 0.2s;
         }
-        
+
         /* Cursor hover states */
         body.hover-link .custom-cursor {
             width: 18px;
@@ -683,6 +688,7 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 1.5rem;
             margin-bottom: 4rem;
+            contain: layout style;
         }
 
         .portal-card {
@@ -1544,12 +1550,12 @@
             .container {
                 padding: 0 1rem !important;
             }
-            
+
             /* Hide product badges on mobile to prevent clutter */
             .product-badge {
                 display: none !important;
             }
-            
+
             /* Header locked in place on mobile (100% fixed at top) - GPU accelerated to prevent iOS scroll jitter */
             header {
                 position: fixed !important;
@@ -1600,7 +1606,7 @@
                 width: 38px !important;
                 height: 38px !important;
             }
-            
+
             /* Hero section */
             .hero {
                 padding: 7rem 1rem 3rem 1rem !important;
@@ -1627,7 +1633,7 @@
             .hero-stat-label {
                 font-size: 0.8rem !important;
             }
-            
+
             /* Hide top mode-tabs on mobile per user request */
             .mode-tabs {
                 display: none !important;
@@ -1644,7 +1650,8 @@
                 margin: 0.5rem 0 1.5rem 0 !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
-            }
+                        min-height: 240px; /* Reserve space before JS renders (CLS fix) */
+        }
             .portals-grid {
                 display: flex !important;
                 flex-direction: row !important;
@@ -1683,7 +1690,7 @@
                 font-size: 0.75rem !important;
                 display: none !important;
             }
-            
+
             /* Sub-portals grid (subcategories) */
             .sub-portals-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -1735,7 +1742,7 @@
                 font-size: 0.95rem !important;
                 padding: 0.4rem 0.8rem !important;
             }
-            
+
             /* Products Grid */
             .products-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
@@ -1783,7 +1790,7 @@
                 font-size: 0.85rem !important;
                 border-radius: var(--border-radius-sm) !important;
             }
-            
+
             /* Cart Drawer */
             .cart-drawer {
                 width: 100% !important;
@@ -1794,19 +1801,19 @@
             .cart-item {
                 padding: 1rem !important;
             }
-            
+
             /* Quick Order Form */
             .quick-order-container {
                 padding: 0.8rem !important;
                 border-radius: var(--border-radius-md) !important;
             }
-            
+
             /* Responsive table layout on mobile */
-            .quick-table, 
-            .quick-table thead, 
-            .quick-table tbody, 
-            .quick-table th, 
-            .quick-table td, 
+            .quick-table,
+            .quick-table thead,
+            .quick-table tbody,
+            .quick-table th,
+            .quick-table td,
             .quick-table tr {
                 display: block !important;
             }
@@ -2079,9 +2086,9 @@
                 font-size: 16px !important;
             }
         }
-    
+
         /* Expandable product description drawer */
-        
+
         .bullet-info-icon {
             width: 14px;
             height: 14px;
@@ -2176,13 +2183,13 @@
             color: var(--color-blue);
         }
 
-    
+
         @keyframes bounce-arrow {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
 
-    
+
         /* Empty State Banner (Wide Image + Glassmorphism overlay) */
         .vat-notice-box {
             display: flex;
@@ -2262,7 +2269,7 @@
             font-weight: 500;
         }
 
-    
+
         /* Centered logo inside empty state banner */
         .banner-logo-container {
             text-align: center;
@@ -2304,7 +2311,7 @@
             color: rgba(255, 255, 255, 0.95);
         }
 
-    
+
         /* White Features Bar below the banner */
         .banner-features-bar {
             width: 100%;
@@ -2352,7 +2359,7 @@
             }
         }
 
-    
+
         .product-img {
             width: 100%;
             height: 100%;
@@ -2367,7 +2374,7 @@
             }
         }
 
-    
+
         /* Active Portal Header & Back Navigation */
         .active-portal-header {
             display: flex;
@@ -2491,7 +2498,7 @@
         }
         }
 
-    
+
         /* Unified Checkout Modals CSS */
         .payment-modal {
             position: fixed;
@@ -2596,7 +2603,7 @@
             transform: translateY(-2px);
         }
 
-    
+
         /* Dynamic Cart Add Animations */
         @keyframes cart-wiggle-pop {
             0% { transform: scale(1); }
@@ -2639,8 +2646,8 @@
             transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease;
         }
 
-    
-    
+
+
         /* ==========================================================================
            ACCESSIBILITY TOOLBAR WIDGET & GLOBAL FILTERS
            ========================================================================== */
@@ -2973,7 +2980,7 @@
             }
         }
 
-    
+
         /* ==========================================================================
            MOBILE-ONLY ELEMENTS HIDDEN BY DEFAULT ON DESKTOP
            ========================================================================== */
@@ -3033,7 +3040,7 @@
                 padding: 0 5.5rem !important;
                 margin-top: 0.4rem !important;
             }
-            
+
             /* Align Quick Order Banner Button to the Side (Desktop) */
             .quick-order-banner-container {
                 display: flex !important;
@@ -3069,7 +3076,7 @@
             .container:has(#portals-grid[style*="display: none"]) #quick-order-banner-container {
                 display: none !important;
             }
-            
+
             /* Clean & Spacious Hero Section (Desktop) */
             .hero {
                 height: auto !important;
@@ -3123,7 +3130,7 @@
                 max-width: 580px !important;
                 font-weight: 400 !important;
             }
-            
+
             /* Beautiful search input inside Hero */
             .hero-search-wrapper {
                 position: relative !important;
@@ -3159,7 +3166,7 @@
                 color: var(--color-blue) !important;
                 pointer-events: none !important;
             }
-            
+
             /* Hero Buttons Row */
             .hero-buttons-row {
                 display: flex !important;
@@ -3207,7 +3214,7 @@
                 transform: translateY(-2px) !important;
                 box-shadow: 0 6px 16px rgba(10, 25, 49, 0.25) !important;
             }
-            
+
             /* Portals Grid Wrapper and Slider Container (Edge-to-Edge) */
             .portals-grid-wrapper {
                 position: relative;
@@ -3216,6 +3223,7 @@
                 display: flex;
                 align-items: center;
                 padding: 0 !important;
+                min-height: 250px; /* Reserve portal card space before JS render (desktop CLS fix) */
             }
             .portals-grid.portals-slider {
                 display: flex !important;
@@ -3237,7 +3245,7 @@
             .portals-grid-wrapper:has(#portals-grid[style*="display: none"]) {
                 display: none !important;
             }
-            
+
             /* Slider Navigation Arrows */
             .slider-arrow {
                 position: absolute;
@@ -3280,7 +3288,7 @@
                 opacity: 1;
                 visibility: visible;
             }
-            
+
             /* Category Cards with Background Images (Reduced height to 290px and custom RTL margins for alignment) */
             .portals-grid .portal-card {
                 flex: 0 0 calc((min(100vw, 1400px) - 11rem - 3 * 1.5rem) / 4) !important;
@@ -3382,12 +3390,12 @@
                 color: var(--color-navy);
                 border-color: #ffffff;
             }
-            
+
             /* Quick Order Float (hidden on desktop) */
             .quick-order-trigger {
                 display: none !important;
             }
-            
+
             /* Header elements */
             .header-quick-order-btn {
                 display: flex !important;
@@ -3464,7 +3472,7 @@
             body.mobile-quick-active {
                 padding-top: 100px !important;
             }
-            
+
             body.mobile-catalog-active .hero {
                 display: none !important;
             }
@@ -3578,14 +3586,14 @@
             .mobile-home-extra .feature-divider {
                 display: none !important;
             }
-            
+
             /* Slogan Branding text responsive wrapping to fit on a single line */
             .banner-logo-sub {
                 font-size: clamp(0.68rem, 4vw, 1.1rem) !important;
                 letter-spacing: 0.3px !important;
                 white-space: nowrap !important;
             }
-            
+
             /* Ensure empty-state-banner is hidden on mobile */
             #view-catalog .empty-state-banner {
                 display: none !important;
@@ -3600,7 +3608,7 @@
             #view-catalog .feature-divider {
                 display: none !important;
             }
-            
+
             /* Mobile Square selection buttons styling */
             .mobile-mode-squares {
                 gap: 0.8rem !important;
@@ -3801,6 +3809,7 @@
                 grid-template-columns: none !important;
                 gap: 0.8rem !important;
                 overflow-x: scroll !important;
+                min-height: 148px !important; /* Reserve space (mobile CLS fix) */
                 width: auto !important;
                 scrollbar-width: none !important;
                 padding: 10px 1rem !important;
@@ -3822,6 +3831,7 @@
             .portal-card {
                 scroll-snap-align: center !important;
                 flex: 0 0 170px !important; /* Keep aspect ratio close to 4:3 desktop */
+                will-change: transform;
                 height: 128px !important;
                 padding: 1rem !important;
                 flex-direction: column !important;
@@ -4066,7 +4076,7 @@
                 padding: 0 4px !important;
                 border: 2px solid white !important;
             }
-            
+
             /* Style active portal back header on mobile */
             .active-portal-header {
                 display: none; /* Controlled dynamically by JS style.display */
@@ -4086,7 +4096,7 @@
             .category-title span {
                 display: none !important;
             }
-            
+
             /* Hide floating quick order trigger on mobile views to keep it clean */
             .quick-order-trigger {
                 display: none !important;
@@ -6562,14 +6572,14 @@
             font-family: 'Font Awesome 6 Free';
             font-style: normal;
             font-weight: 900;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2') format('woff2');
         }
         @font-face {
             font-family: 'Font Awesome 6 Brands';
             font-style: normal;
             font-weight: 400;
-            font-display: swap;
+            font-display: optional;
             src: url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2') format('woff2');
         }
 
@@ -6582,7 +6592,7 @@
                     th { background: #0a1931; color: white; }
                     .summary-row td { border: none; padding: 4px 12px; }
                     .total-row td { border-top: 2px solid #0a1931; font-weight: bold; font-size: 1.1rem; }
-                </style>
+</style>
             </head>
             <body onload="window.print(); window.close();">
                 <div class="header-wrap">
@@ -6946,7 +6956,8 @@
                 flyer.style.left = `${rect.left + rect.width/2}px`;
                 document.body.appendChild(flyer);
                 
-                const cartBtn = document.querySelector('.cart-btn');
+                const cartBtn = document.querySelector('.cart-btn') || document.querySelector('.floating-cart');
+                if (!cartBtn) return;
                 const targetRect = cartBtn.getBoundingClientRect();
                 
                 setTimeout(() => {
@@ -7774,7 +7785,12 @@
 
                 // Initialize app state
         window.addEventListener('load', () => {
-            initPortalsGrid();
+            // Defer portal grid JS re-render until after initial paint (LCP/CLS fix)
+            if (window.requestIdleCallback) {
+                requestIdleCallback(() => { initPortalsGrid(); }, { timeout: 300 });
+            } else {
+                setTimeout(() => { initPortalsGrid(); }, 100);
+            }
             const currentHash = window.location.hash;
             if (currentHash && currentHash !== '#home') {
                 handleHashChange();
