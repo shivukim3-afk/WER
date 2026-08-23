@@ -2601,6 +2601,43 @@
             transform: translateY(-2px);
         }
 
+        .payment-card .form-group {
+            margin-bottom: 1.1rem;
+            text-align: right;
+        }
+        .payment-card .form-group label {
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--color-navy);
+            margin-bottom: 0.45rem;
+            gap: 4px;
+        }
+        .payment-card .form-group label .req-star {
+            color: #ef4444;
+            font-weight: 900;
+        }
+        .payment-card .form-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 1.1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-size: 1rem;
+            font-family: var(--font-main);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .payment-card .form-input:focus {
+            border-color: var(--color-blue);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3.5px rgba(0, 133, 255, 0.15);
+        }
+
 
         /* Dynamic Cart Add Animations */
         @keyframes cart-wiggle-pop {
@@ -4528,21 +4565,21 @@
             </div>
             
             <form id="checkout-details-form" onsubmit="event.preventDefault();">
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם המוסד / הגן / העסק *</label>
-                    <input type="text" id="checkout-client-name" required placeholder="לדוגמה: גן אורנים / מועצה אזורית" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                <div class="form-group">
+                    <label for="checkout-client-name">שם המוסד / העסק / פרטי <span class="req-star">*</span></label>
+                    <input type="text" id="checkout-client-name" class="form-input" required autocomplete="organization">
                 </div>
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">שם איש הקשר במקום *</label>
-                    <input type="text" id="checkout-contact-name" required placeholder="לדוגמה: שמואל המנהל" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                <div class="form-group">
+                    <label for="checkout-contact-name">שם איש קשר <span class="req-star">*</span></label>
+                    <input type="text" id="checkout-contact-name" class="form-input" required autocomplete="name">
                 </div>
-                <div class="form-group" style="margin-bottom: 1rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">טלפון נייד ליצירת קשר *</label>
-                    <input type="tel" id="checkout-client-phone" required placeholder="לדוגמה: 050-5178445" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                <div class="form-group">
+                    <label for="checkout-client-phone">טלפון נייד ליצירת קשר <span class="req-star">*</span></label>
+                    <input type="tel" id="checkout-client-phone" class="form-input" required autocomplete="tel" inputmode="tel">
                 </div>
-                <div class="form-group" style="margin-bottom: 1.5rem; text-align: right;">
-                    <label style="display: block; font-weight: 700; color: var(--color-navy); margin-bottom: 0.4rem;">כתובת למשלוח</label>
-                    <input type="text" id="checkout-client-address" placeholder="רחוב, עיר, קומה" style="width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); font-family: var(--font-main);">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="checkout-client-address">כתובת למשלוח (עיר, רחוב, קומה)</label>
+                    <input type="text" id="checkout-client-address" class="form-input" autocomplete="street-address">
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.8rem;">

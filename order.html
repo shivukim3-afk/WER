@@ -201,19 +201,24 @@
         }
 
         input[type="text"], input[type="tel"] {
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-sm);
+            height: 48px;
+            padding: 0 1.1rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            color: #0f172a;
             font-family: var(--font-main);
             font-size: 1rem;
             transition: var(--transition-smooth);
             width: 100%;
+            box-sizing: border-box;
         }
 
         input[type="text"]:focus, input[type="tel"]:focus {
             outline: none;
             border-color: var(--color-blue);
-            box-shadow: 0 0 0 3px rgba(0, 133, 255, 0.1);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3.5px rgba(0, 133, 255, 0.15);
         }
 
         /* Category Tabs */
@@ -580,19 +585,19 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="client-name">שם המוסד / הגן / העסק *</label>
-                    <input type="text" id="client-name" placeholder="לדוגמה: גן אורנים / מועצה אזורית" required>
+                    <input type="text" id="client-name" required autocomplete="organization">
                 </div>
                 <div class="form-group">
                     <label for="contact-name">שם איש הקשר במקום *</label>
-                    <input type="text" id="contact-name" placeholder="לדוגמה: שמואל המנהל" required>
+                    <input type="text" id="contact-name" required autocomplete="name">
                 </div>
                 <div class="form-group">
                     <label for="client-phone">טלפון נייד ליצירת קשר *</label>
-                    <input type="tel" id="client-phone" placeholder="לדוגמה: 050-5178445" required>
+                    <input type="tel" id="client-phone" required autocomplete="tel" inputmode="tel">
                 </div>
                 <div class="form-group">
-                    <label for="client-address">כתובת למשלוח</label>
-                    <input type="text" id="client-address" placeholder="רחוב, עיר, קומה">
+                    <label for="client-address">כתובת למשלוח (עיר, רחוב, קומה)</label>
+                    <input type="text" id="client-address" autocomplete="street-address">
                 </div>
             </div>
         </div>
