@@ -7800,7 +7800,11 @@
             }
         });
         
-        window.addEventListener('resize', initPortalsGrid);
+        let _resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(initPortalsGrid, 150);
+        });
         
         // 8. INITIALIZE EVERYTHING
         loadAccessibilitySettings();
@@ -7820,11 +7824,34 @@
                 drawCanvas();
             });
         }
-    </script>
 
-        <!-- Firebase SDKs & DB Engine (Deferred for non-blocking First Paint) -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script defer src="db.js"></script>
+        // Dynamically load Firebase SDKs on idle to keep initial paint 100% non-blocking
+        function loadFirebaseDynamically() {
+            if (window._fbLoaded) return;
+            window._fbLoaded = true;
+            const s1 = document.createElement('script');
+            s1.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js";
+            s1.defer = true;
+            s1.onload = () => {
+                const s2 = document.createElement('script');
+                s2.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js";
+                s2.defer = true;
+                s2.onload = () => {
+                    const s3 = document.createElement('script');
+                    s3.src = "db.js";
+                    s3.defer = true;
+                    document.body.appendChild(s3);
+                };
+                document.body.appendChild(s2);
+            };
+            document.body.appendChild(s1);
+        }
+
+        if (window.requestIdleCallback) {
+            requestIdleCallback(loadFirebaseDynamically, { timeout: 1500 });
+        } else {
+            window.addEventListener('load', () => setTimeout(loadFirebaseDynamically, 500));
+        }
+    </script>
 </body>
 </html>
