@@ -25,16 +25,13 @@
     <!-- Google Fonts: Heebo & Outfit with display=optional (Zero CLS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Outfit:wght@400;600;800&display=optional">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&family=Outfit:wght@600;800&display=optional">
     
     <!-- FontAwesome: Asynchronous non-render-blocking preload -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     
-    <!-- Firebase SDKs & DB Engine (Deferred for non-blocking First Paint) -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script defer src="db.js"></script>
+
 
     <style>
         /* -------------------------------------------------------------
@@ -6625,7 +6622,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </body>
+</body>
             </html>
             `;
             printWindow.document.write(html);
@@ -7806,5 +7803,9 @@
         }
     </script>
 
-    </body>
+        <!-- Firebase SDKs & DB Engine (Deferred for non-blocking First Paint) -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script defer src="db.js"></script>
+</body>
 </html>
