@@ -5277,12 +5277,26 @@
             }
         }
 
-        function toggleCart(show) {
+        function toggleCart(show, shouldUpdateHash = true) {
             const overlay = document.getElementById('cart-overlay');
-            if (show) {
-                overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
+            if (overlay) {
+                if (show) {
+                    overlay.classList.add('active');
+                } else {
+                    overlay.classList.remove('active');
+                }
+            }
+            if (shouldUpdateHash) {
+                let currentHash = window.location.hash || '#home';
+                if (show) {
+                    if (!currentHash.includes('/cart')) {
+                        updateHash(currentHash + '/cart');
+                    }
+                } else {
+                    if (currentHash.includes('/cart')) {
+                        updateHash(currentHash.replace('/cart', ''));
+                    }
+                }
             }
         }
 
@@ -7343,14 +7357,26 @@
             isHandlingHashChange = false;
         });
 
+        window.addEventListener('popstate', () => {
+            if (isSyncingHash) return;
+            isHandlingHashChange = true;
+            handleHashChange();
+            isHandlingHashChange = false;
+        });
+
         function handleHashChange() {
             let hash = window.location.hash || '#home';
             const isMobile = window.innerWidth <= 600;
             
-            // Extract suffix state for modals
+            // Extract suffix state for modals & cart
             let openProduct = null;
             let openCheckout = false;
+            let openCart = false;
             
+            if (hash.includes('/cart')) {
+                hash = hash.split('/cart')[0];
+                openCart = true;
+            }
             if (hash.includes('/product/')) {
                 const parts = hash.split('/product/');
                 hash = parts[0];
@@ -7500,7 +7526,13 @@
                 renderCatalog();
             }
 
-            // Sync rendering states for modals
+            // Sync rendering states for modals & cart
+            if (openCart) {
+                toggleCart(true, false);
+            } else {
+                toggleCart(false, false);
+            }
+
             if (openProduct) {
                 showProductDetails(openProduct, false);
             } else {
