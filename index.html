@@ -3500,8 +3500,9 @@
 
             /* Minimalist half-screen Hero (Mobile) */
             .hero {
+                min-height: 280px !important;
                 height: auto !important;
-                min-height: 290px !important;
+                max-height: 320px !important;
                 padding: 4.5rem 1rem 1.5rem 1rem !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -7753,32 +7754,10 @@
         }
 
         function handleMobileBackClick() {
-            if (activePortal) {
-                // If we are inside a category or All Products, go back to main category grid (step 2)
-                goBackToPortals();
-                const backText = document.getElementById('back-btn-text');
-                if (backText) backText.textContent = 'חזרה למסך הבית';
-                return;
-            }
-            
-            // Otherwise, restore mobile home states cleanly on body tag
-            document.body.classList.remove('mobile-catalog-active', 'mobile-quick-active');
-            document.body.classList.add('mobile-home-active');
-            
-            // Hide content views
-            document.querySelectorAll('.content-view').forEach(v => {
-                v.classList.remove('revealed');
-            });
-            
-            // De-select square buttons
-            document.querySelectorAll('.mode-square-btn').forEach(b => {
-                b.classList.remove('active');
-            });
-            
-            // Update URL hash back to home
+            goBackToPortals();
+            const backText = document.getElementById('back-btn-text');
+            if (backText) backText.textContent = 'חזרה למסך הבית';
             updateHash('#home');
-            
-            // Scroll back to top
             window.scrollTo({ top: 0, behavior: 'auto' });
         }
 
