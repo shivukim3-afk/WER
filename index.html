@@ -6519,18 +6519,46 @@
                 renderCartList();
             }
 
+            // Calculate exact pricing totals
+            let subtotal = 0;
+            let discount = 0;
+            let vat = 0;
+            let totalWithVat = 0;
+
+            if (checkoutSource === 'cart') {
+                const cartTotals = calculateCartTotals();
+                subtotal = cartTotals.subtotalAfterDiscount;
+                discount = cartTotals.discount;
+                vat = cartTotals.vat;
+                totalWithVat = cartTotals.total;
+            } else {
+                const raw = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                if (appliedCoupon) {
+                    if (appliedCoupon.type === 'percent') {
+                        discount = raw * (appliedCoupon.value / 100);
+                    } else if (appliedCoupon.type === 'fixed') {
+                        discount = Math.min(raw, appliedCoupon.value);
+                    }
+                }
+                subtotal = Math.max(0, raw - discount);
+                vat = subtotal * 0.18;
+                totalWithVat = subtotal + vat;
+            }
+
+            const finalTotalFormatted = totalWithVat.toFixed(2);
+            const fullClientName = `${clientName} (${contactName})`;
+            const itemsSummary = items.map(i => `${i.name} (${i.pack || ''}) x${i.quantity} [₪${(i.price * i.quantity).toFixed(2)}]`).join(', ');
+            let orderRecord = null;
+
             // Record order in Database Engine
-            if (typeof db !== 'undefined') {
-                const subtotal = checkoutAmount;
-                const vat = subtotal * 0.18;
-                const totalWithVat = subtotal + vat;
-                db.addOrder({
-                    clientName: `${clientName} (${contactName})`,
+            if (typeof db !== 'undefined' && db.addOrder) {
+                orderRecord = db.addOrder({
+                    clientName: fullClientName,
                     clientPhone: clientPhone,
                     clientAddress: clientAddress,
                     items: items.map(i => ({ id: i.id, name: i.name, pack: i.pack, price: i.price, quantity: i.quantity })),
-                    rawSubtotal: subtotal,
-                    discount: (appliedCoupon && totals && totals.discount) ? totals.discount : 0,
+                    rawSubtotal: subtotal + discount,
+                    discount: discount,
                     couponCode: appliedCoupon ? appliedCoupon.code : null,
                     subtotalAfterDiscount: subtotal,
                     vat: vat,
@@ -6539,9 +6567,11 @@
                 });
             }
 
+            const orderId = (orderRecord && orderRecord.id) ? orderRecord.id : ('SHK-' + Math.floor(100000 + Math.random() * 900000));
+
             if (method === 'whatsapp') {
                 // Send directly to WhatsApp
-                let orderText = `*הזמנה חדשה - שיווקים*\n\n`;
+                let orderText = `*הזמנה חדשה #${orderId} - שיווקים*\n\n`;
                 orderText += `*פרטי המוסד:*\n`;
                 orderText += `🏢 מוסד: ${clientName}\n`;
                 orderText += `👤 איש קשר: ${contactName}\n`;
@@ -6549,17 +6579,16 @@
                 if (clientAddress) orderText += `📍 כתובת: ${clientAddress}\n`;
                 orderText += `\n*רשימת מוצרים להזמנה:*\n`;
 
-                const subtotal = checkoutAmount;
-                const vat = subtotal * 0.18;
-                const totalWithVat = subtotal + vat;
-
                 items.forEach(item => {
                     const itemSum = item.price * item.quantity;
-                    orderText += `• *${item.name}* (${item.pack}) - כמות: *${item.quantity}* | מחיר: ${item.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
+                    orderText += `• *${item.name}* (${item.pack || ''}) - כמות: *${item.quantity}* | מחיר: ${item.price} ₪ | סה"כ: *${itemSum}* ₪\n`;
                 });
+                if (discount > 0) {
+                    orderText += `\n🏷️ הנחת קופון: -${discount.toFixed(2)} ₪`;
+                }
                 orderText += `\n💵 סכום הזמנה (לפני מע"מ): ${subtotal.toFixed(2)} ₪`;
                 orderText += `\n➕ מע"מ (18%): ${vat.toFixed(2)} ₪`;
-                orderText += `\n💰 *סה"כ לתשלום (כולל מע"מ): ${totalWithVat.toFixed(2)} ₪*`;
+                orderText += `\n💰 *סה"כ לתשלום (כולל מע"מ): ${finalTotalFormatted} ₪*`;
                 orderText += `\n\n_המחירים אינם כוללים מע"מ וסופיים בכפוף לתנאי האספקה._`;
 
                 const waText = encodeURIComponent(orderText.replace(/\\n/g, '\n'));
@@ -6570,11 +6599,44 @@
 
             } else if (method === 'credit') {
                 const icountConf = (typeof db !== 'undefined' && db.getIcountConfig) ? db.getIcountConfig() : null;
-                const payLink = icountConf && icountConf.paymentLink ? icountConf.paymentLink.trim() : '';
+                let payLink = icountConf && icountConf.paymentLink ? icountConf.paymentLink.trim() : '';
                 
                 if (payLink) {
+                    try {
+                        const url = new URL(payLink.startsWith('http') ? payLink : `https://${payLink}`);
+                        
+                        // Pass exact total sum to iCount (sum, amount, total, price params)
+                        url.searchParams.set('sum', finalTotalFormatted);
+                        url.searchParams.set('amount', finalTotalFormatted);
+                        url.searchParams.set('total', finalTotalFormatted);
+                        url.searchParams.set('price', finalTotalFormatted);
+                        
+                        // Pass customer details
+                        url.searchParams.set('client_name', fullClientName);
+                        url.searchParams.set('name', fullClientName);
+                        url.searchParams.set('customer_name', fullClientName);
+                        url.searchParams.set('phone', clientPhone);
+                        url.searchParams.set('client_phone', clientPhone);
+                        if (clientAddress) {
+                            url.searchParams.set('address', clientAddress);
+                            url.searchParams.set('client_address', clientAddress);
+                        }
+                        
+                        // Pass order reference & item description
+                        url.searchParams.set('info', `הזמנת שיווקים #${orderId}: ${itemsSummary}`);
+                        url.searchParams.set('description', `הזמנת שיווקים #${orderId}: ${itemsSummary}`);
+                        url.searchParams.set('order_id', orderId);
+                        url.searchParams.set('custom', orderId);
+                        
+                        payLink = url.toString();
+                    } catch (err) {
+                        const sep = payLink.includes('?') ? '&' : '?';
+                        payLink += `${sep}sum=${encodeURIComponent(finalTotalFormatted)}&amount=${encodeURIComponent(finalTotalFormatted)}&total=${encodeURIComponent(finalTotalFormatted)}&client_name=${encodeURIComponent(fullClientName)}&phone=${encodeURIComponent(clientPhone)}&info=${encodeURIComponent('הזמנת שיווקים #' + orderId + ': ' + itemsSummary)}`;
+                    }
+
                     closeCheckoutDetailsModal();
-                    // Direct secure redirection to external payment gateway
+                    
+                    // Direct secure redirection to external payment gateway with all cart params
                     const win = window.open(payLink, '_blank');
                     if (!win || win.closed || typeof win.closed === 'undefined') {
                         window.location.href = payLink;
@@ -6585,7 +6647,7 @@
 
             } else if (method === 'pdf') {
                 // Dynamic invoice printing
-                printInvoice(clientName, contactName, clientPhone, clientAddress, items, checkoutAmount);
+                printInvoice(clientName, contactName, clientPhone, clientAddress, items, subtotal);
                 closeCheckoutDetailsModal();
             }
         }
