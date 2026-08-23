@@ -6605,13 +6605,21 @@
                     try {
                         const url = new URL(payLink.startsWith('http') ? payLink : `https://${payLink}`);
                         
-                        // Pass exact total sum to iCount (sum, amount, total, price params)
+                        // Official iCount hosted payment shortcodes:
+                        // 'cs' = Charge Sum, 'cd' = Charge Description, 'cn' = Client Name, 'cp' = Client Phone, 'ca' = Client Address
+                        url.searchParams.set('cs', finalTotalFormatted);
+                        url.searchParams.set('cd', `הזמנת שיווקים #${orderId}: ${itemsSummary}`);
+                        url.searchParams.set('cn', fullClientName);
+                        url.searchParams.set('cp', clientPhone);
+                        if (clientAddress) {
+                            url.searchParams.set('ca', clientAddress);
+                        }
+                        
+                        // Standard fallback parameter names
                         url.searchParams.set('sum', finalTotalFormatted);
                         url.searchParams.set('amount', finalTotalFormatted);
                         url.searchParams.set('total', finalTotalFormatted);
                         url.searchParams.set('price', finalTotalFormatted);
-                        
-                        // Pass customer details
                         url.searchParams.set('client_name', fullClientName);
                         url.searchParams.set('name', fullClientName);
                         url.searchParams.set('customer_name', fullClientName);
@@ -6621,8 +6629,6 @@
                             url.searchParams.set('address', clientAddress);
                             url.searchParams.set('client_address', clientAddress);
                         }
-                        
-                        // Pass order reference & item description
                         url.searchParams.set('info', `הזמנת שיווקים #${orderId}: ${itemsSummary}`);
                         url.searchParams.set('description', `הזמנת שיווקים #${orderId}: ${itemsSummary}`);
                         url.searchParams.set('order_id', orderId);
@@ -6631,7 +6637,7 @@
                         payLink = url.toString();
                     } catch (err) {
                         const sep = payLink.includes('?') ? '&' : '?';
-                        payLink += `${sep}sum=${encodeURIComponent(finalTotalFormatted)}&amount=${encodeURIComponent(finalTotalFormatted)}&total=${encodeURIComponent(finalTotalFormatted)}&client_name=${encodeURIComponent(fullClientName)}&phone=${encodeURIComponent(clientPhone)}&info=${encodeURIComponent('הזמנת שיווקים #' + orderId + ': ' + itemsSummary)}`;
+                        payLink += `${sep}cs=${encodeURIComponent(finalTotalFormatted)}&cd=${encodeURIComponent('הזמנת שיווקים #' + orderId + ': ' + itemsSummary)}&sum=${encodeURIComponent(finalTotalFormatted)}&amount=${encodeURIComponent(finalTotalFormatted)}&total=${encodeURIComponent(finalTotalFormatted)}&client_name=${encodeURIComponent(fullClientName)}&phone=${encodeURIComponent(clientPhone)}&info=${encodeURIComponent('הזמנת שיווקים #' + orderId + ': ' + itemsSummary)}`;
                     }
 
                     closeCheckoutDetailsModal();
