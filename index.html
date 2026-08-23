@@ -5281,6 +5281,7 @@
             const overlay = document.getElementById('cart-overlay');
             if (overlay) {
                 if (show) {
+                    renderCartList();
                     overlay.classList.add('active');
                 } else {
                     overlay.classList.remove('active');
@@ -7837,6 +7838,7 @@
         loadAccessibilitySettings();
         handleHashChange();
         updateCartCounter();
+        renderCartList();
         bindCursorHover();
         
         // Defer canvas animation to idle to protect First Contentful Paint / CPU
