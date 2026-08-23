@@ -18,8 +18,9 @@
     <meta property="og:site_name" content="שיווקים">
     <meta property="og:image" content="assets/fresh_studio_bg.webp">
     
-    <!-- Preload LCP Hero Background Image with High Priority -->
-    <link rel="preload" as="image" href="assets/fresh_studio_bg.webp" type="image/webp" fetchpriority="high">
+    <!-- Preload LCP Hero Background Image with High Priority (Desktop & Mobile) -->
+    <link rel="preload" as="image" href="assets/fresh_studio_bg.webp" media="(min-width: 601px)" type="image/webp" fetchpriority="high">
+    <link rel="preload" as="image" href="assets/mobile_studio_bg.webp" media="(max-width: 600px)" type="image/webp" fetchpriority="high">
 
     <!-- Google Fonts: Heebo & Outfit with display=optional (Zero CLS) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,9 +134,7 @@
             height: 100dvh !important;
             z-index: -99999 !important;
             pointer-events: none !important;
-            background: #ffffff url('assets/fresh_studio_bg.webp') no-repeat center right !important;
-            background-size: cover !important;
-            background-attachment: fixed !important;
+            background-color: #ffffff !important;
             transform: translateZ(0) !important;
             -webkit-transform: translateZ(0) !important;
         }
