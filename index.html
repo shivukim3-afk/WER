@@ -3250,114 +3250,87 @@
                 box-shadow: 0 6px 16px rgba(10, 25, 49, 0.25) !important;
             }
 
-            /* Portals Grid Wrapper and Slider Container (Edge-to-Edge) */
+            /* Portals Grid Wrapper (Desktop: Constrained to right column, 5x2 Grid Above-The-Fold) */
             .portals-grid-wrapper {
-                position: relative;
-                width: auto !important;
-                margin: 0.5rem -5.5rem 2.5rem -5.5rem !important;
-                display: flex;
-                align-items: center;
-                padding: 0 !important;
-                min-height: 250px; /* Reserve portal card space before JS render (desktop CLS fix) */
-            }
-            .portals-grid.portals-slider {
-                display: flex !important;
-                flex-direction: row !important;
-                grid-template-columns: none !important;
-                gap: 1.5rem !important;
-                overflow-x: auto !important;
+                position: relative !important;
                 width: 100% !important;
-                scrollbar-width: none !important; /* Firefox */
-                padding: 15px 0 !important;
+                max-width: 620px !important;
+                margin: 0.6rem 0 1.5rem 0 !important;
+                display: block !important;
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+
+            /* Disable slider arrows on desktop */
+            .slider-arrow,
+            .mobile-cat-arrow,
+            .mobile-swipe-hint {
+                display: none !important;
+            }
+
+            /* 5 Columns x 2 Rows Compact Grid on Desktop */
+            .portals-grid.portals-slider,
+            .portals-grid {
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                grid-template-rows: repeat(2, auto) !important;
+                gap: 0.5rem !important;
+                width: 100% !important;
+                max-width: 620px !important;
+                overflow: visible !important;
+                overflow-x: visible !important;
+                scrollbar-width: none !important;
+                padding: 0 !important;
                 margin: 0 !important;
             }
             .portals-grid.portals-slider[style*="display: none"] {
                 display: none !important;
             }
             .portals-grid.portals-slider::-webkit-scrollbar {
-                display: none !important; /* Chrome, Safari, Edge */
+                display: none !important;
             }
             .portals-grid-wrapper:has(#portals-grid[style*="display: none"]) {
                 display: none !important;
             }
 
-            /* Slider Navigation Arrows */
-            .slider-arrow {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                background: #ffffff;
-                border: 1px solid #e2e8f0;
-                color: var(--color-navy);
-                font-size: 1.1rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                box-shadow: var(--shadow-soft);
-                z-index: 10;
-                outline: none;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s ease, box-shadow 0.2s;
-            }
-            .slider-arrow:hover {
-                background: var(--color-navy);
-                color: #ffffff;
-                border-color: var(--color-navy);
-                transform: translateY(-50%) scale(1.08) !important;
-                box-shadow: var(--shadow-hover);
-            }
-            .slider-arrow.prev {
-                right: 1.5rem;
-                left: auto;
-            }
-            .slider-arrow.next {
-                left: 1.5rem;
-                right: auto;
-            }
-            .portals-grid-wrapper:hover .slider-arrow {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            /* Category Cards with Background Images (Reduced height to 290px and custom RTL margins for alignment) */
+            /* Compact 5x2 Category Cards (Above-the-fold, height ~88px) */
             .portals-grid .portal-card {
-                flex: 0 0 calc((min(100vw, 1400px) - 11rem - 3 * 1.5rem) / 4) !important;
-                width: calc((min(100vw, 1400px) - 11rem - 3 * 1.5rem) / 4) !important;
-                height: 220px !important;
-                border-radius: var(--border-radius-lg) !important;
+                flex: none !important;
+                width: 100% !important;
+                height: 88px !important;
+                min-height: 84px !important;
+                max-height: 94px !important;
+                border-radius: 10px !important;
                 overflow: hidden !important;
                 position: relative !important;
                 display: flex !important;
                 flex-direction: column !important;
+                align-items: center !important;
                 justify-content: flex-end !important;
-                padding: 1.5rem 1.2rem !important;
-                border: none !important;
-                box-shadow: var(--shadow-soft) !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                padding: 0.45rem 0.3rem !important;
+                border: 1px solid rgba(255, 255, 255, 0.45) !important;
+                box-shadow: 0 2px 8px rgba(10, 25, 49, 0.1) !important;
+                transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s !important;
                 background-size: cover !important;
                 background-position: center !important;
                 text-decoration: none !important;
                 z-index: 1 !important;
+                cursor: pointer !important;
             }
             .card-badge-tag {
                 position: absolute !important;
-                top: 12px !important;
-                right: 12px !important;
-                background: rgba(10, 25, 49, 0.78) !important;
-                backdrop-filter: blur(10px) !important;
+                top: 6px !important;
+                right: 6px !important;
+                background: rgba(10, 25, 49, 0.8) !important;
+                backdrop-filter: blur(8px) !important;
                 border: 1px solid rgba(255, 255, 255, 0.25) !important;
                 color: #ffffff !important;
-                font-size: 0.72rem !important;
+                font-size: 0.65rem !important;
                 font-weight: 700 !important;
-                padding: 0.25rem 0.75rem !important;
+                padding: 0.15rem 0.5rem !important;
                 border-radius: 50px !important;
                 z-index: 4 !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
                 pointer-events: none !important;
             }
 
@@ -3368,62 +3341,52 @@
                 left: 0 !important;
                 right: 0 !important;
                 bottom: 0 !important;
-                background: linear-gradient(to top, rgba(11, 25, 44, 0.9) 0%, rgba(11, 25, 44, 0.4) 60%, rgba(11, 25, 44, 0.1) 100%) !important;
+                background: linear-gradient(to top, rgba(10, 25, 49, 0.88) 0%, rgba(10, 25, 49, 0.45) 60%, rgba(10, 25, 49, 0.2) 100%) !important;
                 z-index: 2 !important;
-                transition: background 0.3s ease !important;
+                transition: background 0.2s ease !important;
             }
             .portals-grid .portal-card:hover::before {
-                background: linear-gradient(to top, rgba(11, 25, 44, 0.95) 0%, rgba(11, 25, 44, 0.5) 60%, rgba(11, 25, 44, 0.2) 100%) !important;
+                background: linear-gradient(to top, rgba(0, 102, 204, 0.92) 0%, rgba(10, 25, 49, 0.5) 60%, rgba(10, 25, 49, 0.2) 100%) !important;
             }
             .portals-grid .portal-card:hover {
-                transform: translateY(-8px) !important;
-                box-shadow: 0 12px 30px rgba(11, 25, 44, 0.35) !important;
+                transform: translateY(-2px) scale(1.02) !important;
+                box-shadow: 0 6px 14px rgba(10, 25, 49, 0.22) !important;
+                border-color: #0085ff !important;
             }
             .portals-grid .portal-card .portal-icon,
             .portals-grid .portal-card > div {
                 position: relative !important;
                 z-index: 3 !important;
+                text-align: center !important;
+                width: 100% !important;
             }
             .portals-grid .portal-card .portal-icon {
-                font-size: 2rem !important;
-                color: var(--color-cyan) !important;
-                margin-bottom: auto !important;
+                font-size: 1.15rem !important;
+                color: #00e5ff !important;
+                margin-bottom: 0.15rem !important;
                 background: none !important;
                 width: auto !important;
                 height: auto !important;
                 display: block !important;
+                text-align: center !important;
             }
             .portals-grid .portal-card .portal-title {
-                font-size: 1.15rem !important;
+                font-size: 0.74rem !important;
                 font-weight: 800 !important;
                 color: #ffffff !important;
-                margin-bottom: 0.4rem !important;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+                margin: 0 !important;
+                line-height: 1.15 !important;
+                text-align: center !important;
+                text-shadow: 0 1px 3px rgba(0,0,0,0.6) !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                max-width: 100% !important;
             }
-            .portals-grid .portal-card .portal-desc {
-                display: none !important;
-            }
+            .portals-grid .portal-card .portal-desc,
+            .portals-grid .portal-card .portal-arrow,
             .portals-grid .portal-card .portal-action-btn {
-                align-self: flex-start;
-                padding: 0.4rem 1rem;
-                border: 2px solid rgba(255, 255, 255, 0.8);
-                border-radius: var(--border-radius-sm);
-                color: #ffffff;
-                font-size: 0.78rem;
-                font-weight: 700;
-                background: transparent;
-                margin-top: 0.3rem;
-                display: inline-block;
-                opacity: 0;
-                transform: translateY(12px);
-                transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s, color 0.2s, border-color 0.2s;
-            }
-            .portals-grid .portal-card:hover .portal-action-btn {
-                opacity: 1;
-                transform: translateY(0);
-                background: #ffffff;
-                color: var(--color-navy);
-                border-color: #ffffff;
+                display: none !important;
             }
 
             /* Quick Order Float (hidden on desktop) */
@@ -4302,52 +4265,47 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
                 <div class="portals-grid portals-slider" id="portals-grid">
-                <div class="portal-card" data-portal="all" onclick="filterPortal('all', this)">
-                    
-                    <div class="portal-icon"><i class="fa-solid fa-border-all"></i></div>
-                    <div>
-                        <div class="portal-title">כל המוצרים</div>
-                        <div class="portal-desc">הקטלוג המלא של שיווקים</div>
+                    <div class="portal-card" data-desktop-category="all" data-portal="all" onclick="handlePortalCardClick('all', this)" style="background-image: url('assets/studio_3d_depth_bg.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-border-all"></i></div>
+                        <div><div class="portal-title">כל המוצרים</div></div>
                     </div>
-                    <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                </div>
-                <div class="portal-card" data-portal="institution" onclick="filterPortal('institution', this)">
-                    
-                    <div class="portal-icon"><i class="fa-solid fa-building-columns"></i></div>
-                    <div>
-                        <div class="portal-title">למוסד</div>
-                        <div class="portal-desc">מעונות, גנים, משרדים ומרפאות</div>
+                    <div class="portal-card" data-desktop-category="tork" data-portal="tork" onclick="handlePortalCardClick('tork', this)" style="background-image: url('assets/tork_hadar_dispenser.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-cube"></i></div>
+                        <div><div class="portal-title">מתקני Tork</div></div>
                     </div>
-                    <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                </div>
-                <div class="portal-card" data-portal="home" onclick="filterPortal('home', this)">
-                    
-                    <div class="portal-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                    <div>
-                        <div class="portal-title">לבית</div>
-                        <div class="portal-desc">צריכה ביתית וניקוי יומיומי</div>
+                    <div class="portal-card" data-desktop-category="paper" data-portal="paper" onclick="handlePortalCardClick('paper', this)" style="background-image: url('assets/p2.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-toilet-paper"></i></div>
+                        <div><div class="portal-title">מוצרי נייר</div></div>
                     </div>
-                    <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                </div>
-                <div class="portal-card" data-portal="bb" onclick="filterPortal('bb', this)">
-                    
-                    <div class="portal-icon"><i class="fa-solid fa-hotel"></i></div>
-                    <div>
-                        <div class="portal-title">לצימרים</div>
-                        <div class="portal-desc">מתחמי אירוח, טקסטיל וטואלטיקה</div>
+                    <div class="portal-card" data-desktop-category="cleaning" data-portal="cleaning" onclick="handlePortalCardClick('cleaning', this)" style="background-image: url('assets/c7.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-pump-soap"></i></div>
+                        <div><div class="portal-title">חומרי ניקוי</div></div>
                     </div>
-                    <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
-                </div>
-                <div class="portal-card" data-portal="office" onclick="filterPortal('office', this)">
-                    
-                    <div class="portal-icon"><i class="fa-solid fa-briefcase"></i></div>
-                    <div>
-                        <div class="portal-title">למשרד</div>
-                        <div class="portal-desc">נייר צילום, קלסרים וניקוי משרדי</div>
+                    <div class="portal-card" data-desktop-category="scents" data-portal="scents" onclick="handlePortalCardClick('scents', this)" style="background-image: url('assets/lilya_grand_salon.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-spray-can-sparkles"></i></div>
+                        <div><div class="portal-title">מפיצי ריח</div></div>
                     </div>
-                    <div class="portal-arrow"><i class="fa-solid fa-arrow-left"></i></div>
+                    <div class="portal-card" data-desktop-category="tools" data-portal="tools" onclick="handlePortalCardClick('tools', this)" style="background-image: url('assets/window_cleaner_spray.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-broom"></i></div>
+                        <div><div class="portal-title">ציוד ניקיון</div></div>
+                    </div>
+                    <div class="portal-card" data-desktop-category="bags" data-portal="bags" onclick="handlePortalCardClick('bags', this)" style="background-image: url('assets/black_trash_bags.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-trash-can"></i></div>
+                        <div><div class="portal-title">שקיות אשפה</div></div>
+                    </div>
+                    <div class="portal-card" data-desktop-category="disposables" data-portal="disposables" onclick="handlePortalCardClick('disposables', this)" style="background-image: url('assets/d4.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-utensils"></i></div>
+                        <div><div class="portal-title">חד-פעמי</div></div>
+                    </div>
+                    <div class="portal-card" data-desktop-category="hospitality" data-portal="hospitality" onclick="handlePortalCardClick('hospitality', this)" style="background-image: url('assets/e10.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-hotel"></i></div>
+                        <div><div class="portal-title">לצימרים</div></div>
+                    </div>
+                    <div class="portal-card" data-desktop-category="office" data-portal="office" onclick="handlePortalCardClick('office', this)" style="background-image: url('assets/o3.webp')">
+                        <div class="portal-icon"><i class="fa-solid fa-briefcase"></i></div>
+                        <div><div class="portal-title">למשרד</div></div>
+                    </div>
                 </div>
-            </div>
                 <!-- Mobile Categories Pagination Dots Bar -->
                 <div class="mobile-categories-dots" id="mobile-categories-dots">
                     <span class="cat-dot active" onclick="scrollToCatDot(0)"></span>
@@ -7714,7 +7672,7 @@
                 portalsGrid._mobileInfinite = null;
                 setTimeout(initMobileInfiniteSwiper, 50);
             } else if (!isMobile && (!hasCategoryAttribute || portalsGrid.children.length === 0 || portalsGrid.querySelector('[data-portal]'))) {
-                // Render Desktop Categories as Large Cards with Images (Infinite Loop support)
+                // Render Desktop Categories as Compact 5x2 Grid
                 let html = '';
                 portalsList.forEach(p => {
                     const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
@@ -7724,8 +7682,6 @@
                             <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
                             <div>
                                 <div class="portal-title">${p.name}</div>
-                                <div class="portal-desc">${p.desc}</div>
-                                <div class="portal-action-btn">לקטגוריה</div>
                             </div>
                         </div>
                     `;
@@ -7736,13 +7692,11 @@
                 portalsGrid.removeAttribute('data-infinite-cloned');
                 portalsGrid.removeAttribute('data-original-count');
                 portalsGrid._infiniteReady = false;
-                
-                // Setup the infinite scroll handler after DOM paint
-                setTimeout(setupInfiniteScroll, 100);
             }
         }
 
         function setupInfiniteScroll() {
+            if (window.innerWidth > 600) return; // Desktop is a 5x2 static grid
             const slider = document.getElementById('portals-grid');
             if (!slider) return;
             if (slider._infiniteReady) return; // already set up
