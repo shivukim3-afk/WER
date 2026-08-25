@@ -3733,6 +3733,66 @@
             #view-catalog .empty-state-banner {
                 display: none !important;
             }
+
+            /* Mobile Dedicated Branding Card */
+            .mobile-branding-card {
+                background: rgba(255, 255, 255, 0.94) !important;
+                backdrop-filter: blur(16px) !important;
+                -webkit-backdrop-filter: blur(16px) !important;
+                border: 1px solid rgba(10, 25, 49, 0.08) !important;
+                border-radius: 18px !important;
+                padding: 1.4rem 1.2rem !important;
+                margin-bottom: 1.2rem !important;
+                box-shadow: 0 8px 24px rgba(10, 25, 49, 0.06) !important;
+                display: flex !important;
+                flex-direction: column !important;
+                text-align: right !important;
+                gap: 0.55rem !important;
+                direction: rtl !important;
+            }
+            .mobile-branding-card .brand-hero-title {
+                font-size: 1.25rem !important;
+                line-height: 1.3 !important;
+            }
+            .mobile-branding-card .brand-hero-subtitle {
+                font-size: 0.92rem !important;
+                line-height: 1.35 !important;
+            }
+            .mobile-branding-card .brand-hero-desc {
+                font-size: 0.85rem !important;
+                line-height: 1.45 !important;
+                color: #475569 !important;
+                margin-bottom: 0.4rem !important;
+            }
+            .mobile-branding-card .brand-supply-section {
+                padding: 0.75rem 0.9rem !important;
+            }
+            .mobile-branding-card .supply-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.4rem 0.6rem !important;
+            }
+            .mobile-branding-card .supply-item {
+                font-size: 0.78rem !important;
+            }
+            .mobile-brand-footer {
+                margin-top: 0.6rem !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 0.45rem !important;
+                text-align: center !important;
+            }
+            .mobile-branding-card .banner-punchline-pill {
+                font-size: 0.82rem !important;
+                padding: 0.35rem 0.8rem !important;
+                width: 100% !important;
+                justify-content: center !important;
+            }
+            .mobile-branding-card .banner-trust-tags {
+                font-size: 0.74rem !important;
+                line-height: 1.35 !important;
+            }
+
             .mobile-home-extra .banner-features-bar {
                 display: flex !important;
                 flex-direction: column !important;
@@ -4347,6 +4407,46 @@
 
         <!-- MOBILE HOME ONLY BANNERS -->
         <div class="mobile-home-extra" id="mobile-home-extra">
+            <!-- Mobile Dedicated Branding Card (Displayed below upon scrolling) -->
+            <div class="mobile-branding-card">
+                <div class="brand-badge-pill">
+                    <i class="fa-solid fa-boxes-stacked"></i> מרכז אספקה מקצועי
+                </div>
+                <h3 class="brand-hero-title">פתרונות אספקה מתקדמים לעסקים ומוסדות</h3>
+                <div class="brand-hero-subtitle">כל מה שהעסק שלכם צריך לשוטף — במקום אחד.</div>
+                <p class="brand-hero-desc">
+                    אנחנו מספקים מגוון רחב של מוצרים וציוד תפעולי, בהתאמה לצרכים שלכם — עם שירות מהיר, אספקה יעילה וחיסכון אמיתי בעלויות.
+                </p>
+
+                <div class="brand-supply-section">
+                    <div class="supply-title">מה אנחנו מספקים?</div>
+                    <div class="supply-grid">
+                        <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרי נייר וניגוב</span></div>
+                        <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>חומרי ניקוי מקצועיים</span></div>
+                        <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרים חד־פעמיים</span></div>
+                        <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>ציוד משרדי</span></div>
+                        <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מתקנים וציוד תפעולי</span></div>
+                    </div>
+                </div>
+
+                <div class="mobile-brand-footer">
+                    <div class="banner-punchline-pill">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>פתרון אחד. ספק אחד. שקט תפעולי.</span>
+                    </div>
+                    <div class="banner-trust-tags">
+                        <span>התאמה אישית</span>
+                        <span class="trust-dot">•</span>
+                        <span>שירות מהיר</span>
+                        <span class="trust-dot">•</span>
+                        <span>מחירים תחרותיים</span>
+                        <span class="trust-dot">•</span>
+                        <span>אספקה אמינה</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Bar -->
             <div class="banner-features-bar">
                 <div class="feature-item">
                     <i class="fa-solid fa-truck-fast"></i>
