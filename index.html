@@ -5701,117 +5701,61 @@
         // Mobile uses this standalone engine below
         // ============================================================
         function scrollMobileCategories(dir) {
-            if (window.innerWidth > 600) { scrollPortals(dir === 'right' ? 'prev' : 'next'); return; }
             const pGrid = document.getElementById('portals-grid');
-            if (!pGrid || !pGrid._mobileInfinite) return;
-            const inf = pGrid._mobileInfinite;
-            const cardWidth = inf.cardWidth;
-            // In RTL: scrollLeft is negative. right arrow = positive direction = scrollLeft increases toward 0
-            // prev = move toward start (right in RTL) = scrollLeft += cardWidth
-            // next = move toward end (left in RTL)   = scrollLeft -= cardWidth
-            const delta = dir === 'right' ? cardWidth : -cardWidth;
-            const target = pGrid.scrollLeft + delta;
-            pGrid.style.scrollBehavior = 'smooth';
-            pGrid.scrollLeft = target;
-            setTimeout(() => { pGrid.style.scrollBehavior = 'auto'; }, 400);
+            if (!pGrid) return;
+            const cardWidth = 180;
+            const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
+            const delta = (dir === 'right') ? (isRTL ? cardWidth : -cardWidth) : (isRTL ? -cardWidth : cardWidth);
+            pGrid.scrollBy({ left: delta, behavior: 'smooth' });
         }
 
         function scrollToCatDot(idx) {
             if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
-            if (!pGrid || !pGrid._mobileInfinite) return;
-            const inf = pGrid._mobileInfinite;
-            const isRTL = pGrid._mobileInfinite.isRTL;
-            // Jump to card idx in the middle set
-            const targetCard = inf.originalCount + idx;
-            const targetScroll = isRTL
-                ? -((targetCard) * inf.cardWidth)
-                : ((targetCard) * inf.cardWidth);
-            pGrid.style.scrollBehavior = 'smooth';
-            pGrid.scrollLeft = targetScroll;
-            setTimeout(() => { pGrid.style.scrollBehavior = 'auto'; }, 400);
+            if (!pGrid) return;
+            const cards = pGrid.querySelectorAll('.portal-card');
+            if (!cards || cards.length === 0) return;
+            const targetIdx = Math.min(idx * 2, cards.length - 1);
+            if (cards[targetIdx]) {
+                cards[targetIdx].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+            }
+            updateActiveCatDot(idx);
         }
 
-        function initMobileInfiniteSwiper() {
+        function updateActiveCatDot(idx) {
+            const dots = document.querySelectorAll('.mobile-categories-dots .cat-dot');
+            dots.forEach((dot, i) => {
+                if (i === idx) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function initMobileCategoriesSlider() {
             if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            if (pGrid._mobileInfinite) return;
+            if (pGrid._sliderInitialized) return;
+            pGrid._sliderInitialized = true;
 
-            // Only take cards that are NOT already clones (data-clone or data-infinite-cloned guard)
-            const allCards = Array.from(pGrid.querySelectorAll('.portal-card'));
-            // If renderPortals added cards with data-portal attribute, those are original
-            // If not, take all cards that don't have data-clone="1"
-            let origCards = allCards.filter(c => !c.getAttribute('data-clone'));
-            if (origCards.length < 2) origCards = allCards; // fallback
-            const N = origCards.length;
-            if (N < 2) return;
+            // Remove any leftover clone elements
+            pGrid.querySelectorAll('[data-clone="1"]').forEach(el => el.remove());
 
-            // Clear and rebuild the track with original cards + clones
-            pGrid.innerHTML = '';
-            const before = origCards.map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone','1'); return cl; });
-            const after  = origCards.map(c => { const cl = c.cloneNode(true); cl.setAttribute('data-clone','1'); return cl; });
-
-            before.slice().reverse().forEach(c => pGrid.appendChild(c));
-            origCards.forEach(c => pGrid.appendChild(c));
-            after.forEach(c => pGrid.appendChild(c));
-
-            // Wait for paint to measure
-            requestAnimationFrame(() => {
-                const cards = pGrid.querySelectorAll('.portal-card');
-                let cardWidth = 190;
-                if (cards.length > 1) {
-                    const r0 = cards[0].getBoundingClientRect();
-                    const r1 = cards[1].getBoundingClientRect();
-                    const w = Math.round(Math.abs(r1.left - r0.left));
-                    if (w > 10) cardWidth = w;
+            // Scroll listener to update pagination dots naturally
+            pGrid.addEventListener('scroll', () => {
+                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+                if (maxScroll <= 0) return;
+                const scrollProgress = Math.abs(pGrid.scrollLeft) / maxScroll;
+                const dots = document.querySelectorAll('.mobile-categories-dots .cat-dot');
+                if (dots.length > 0) {
+                    const dotIndex = Math.min(Math.floor(scrollProgress * dots.length), dots.length - 1);
+                    updateActiveCatDot(dotIndex);
                 }
-
-                const isRTL = document.documentElement.dir === 'rtl';
-                const trackWidth = N * cardWidth; // one set width
-
-                // Start at middle set: RTL scrollLeft = -(N * cardWidth)
-                pGrid.scrollLeft = isRTL ? -trackWidth : trackWidth;
-
-                pGrid._mobileInfinite = { N, cardWidth, isRTL, trackWidth };
-
-                let _jumping = false;
-                pGrid.addEventListener('scroll', () => {
-                    if (_jumping || !pGrid || !pGrid._mobileInfinite) return;
-                    const sl = pGrid.scrollLeft;
-                    const tw = pGrid._mobileInfinite.trackWidth;
-
-                    if (isRTL) {
-                        // Too far right: approaching 0 (clone-before zone)
-                        if (sl > -(tw * 0.5)) {
-                            _jumping = true;
-                            pGrid.scrollLeft = sl - tw;
-                            requestAnimationFrame(() => { _jumping = false; });
-                        }
-                        // Too far left: past -(2*tw) (clone-after zone)
-                        else if (sl < -(tw * 2.5)) {
-                            _jumping = true;
-                            pGrid.scrollLeft = sl + tw;
-                            requestAnimationFrame(() => { _jumping = false; });
-                        }
-                    } else {
-                        if (sl < tw * 0.5) {
-                            _jumping = true;
-                            pGrid.scrollLeft = sl + tw;
-                            requestAnimationFrame(() => { _jumping = false; });
-                        } else if (sl > tw * 2.5) {
-                            _jumping = true;
-                            pGrid.scrollLeft = sl - tw;
-                            requestAnimationFrame(() => { _jumping = false; });
-                        }
-                    }
-                }, { passive: true });
-            });
+            }, { passive: true });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth <= 600) {
-                initMobileInfiniteSwiper();
+                initMobileCategoriesSlider();
             } else {
                 setupInfiniteScroll();
             }
@@ -7966,9 +7910,7 @@
                     `;
                 });
                 portalsGrid.innerHTML = html;
-                // Reset so initMobileInfiniteSwiper rebuilds fresh
-                portalsGrid._mobileInfinite = null;
-                setTimeout(initMobileInfiniteSwiper, 50);
+                initMobileCategoriesSlider();
             } else if (!isMobile && (!hasCategoryAttribute || portalsGrid.children.length === 0 || portalsGrid.querySelector('[data-portal]'))) {
                 // Render Desktop Categories as Compact 5x2 Grid
                 let html = '';
