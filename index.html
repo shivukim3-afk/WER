@@ -285,19 +285,22 @@
             transform: translateY(10px);
         }
 
-        /* Ripple effect on click */
+        /* Ripple effect on click (100% GPU composited transform and opacity) */
         .ripple {
             position: absolute;
+            width: 500px;
+            height: 500px;
             border: 2px solid var(--color-cyan);
             border-radius: 50%;
-            animation: rip 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            animation: rip 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
             pointer-events: none;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(0);
+            will-change: transform, opacity;
         }
 
         @keyframes rip {
-            0% { width: 0; height: 0; opacity: 1; }
-            100% { width: 2000px; height: 2000px; opacity: 0; border-width: 1px; }
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
 
         /* -------------------------------------------------------------
@@ -4036,11 +4039,10 @@
                 border: 1px solid rgba(0, 133, 255, 0.3) !important;
                 color: #0284c7 !important;
                 font-size: 0.95rem !important;
-                box-shadow: 0 4px 16px rgba(10, 25, 49, 0.18) !important;
+                box-shadow: 0 4px 16px rgba(0, 133, 255, 0.22) !important;
                 z-index: 15 !important;
                 cursor: pointer !important;
                 transition: transform 0.2s, background 0.2s !important;
-                animation: pulse-arrow-glow 2.2s infinite ease-in-out !important;
             }
             .mobile-cat-arrow.right {
                 right: -4px !important;
@@ -4051,10 +4053,6 @@
             .mobile-cat-arrow:active {
                 transform: translateY(-50%) scale(0.9) !important;
                 background: #ffffff !important;
-            }
-            @keyframes pulse-arrow-glow {
-                0%, 100% { box-shadow: 0 4px 14px rgba(0, 133, 255, 0.15); }
-                50% { box-shadow: 0 6px 22px rgba(0, 133, 255, 0.35); }
             }
 
             /* Mobile Categories Swipe/Pagination Indicator Bar with Exact Position Counter */
