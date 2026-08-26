@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Direct Hero Image Preload (High Priority LCP) -->
-    <link rel="preload" as="image" href="assets/studio_3d_depth_mobile.webp?v=17876778" media="(max-width: 600px)" fetchpriority="high">
-    <link rel="preload" as="image" href="assets/studio_3d_depth_bg.webp?v=17876778" media="(min-width: 601px)" fetchpriority="high">
+    <!-- Direct Hero Image Preload (High Priority LCP — discoverable by HTML preload scanner, not JS) -->
+    <link rel="preload" as="image" href="assets/studio_3d_depth_mobile.webp" imagesrcset="assets/studio_3d_depth_mobile.webp" imagesizes="100vw" media="(max-width: 600px)" fetchpriority="high" type="image/webp">
+    <link rel="preload" as="image" href="assets/studio_3d_depth_bg.webp" imagesrcset="assets/studio_3d_depth_bg.webp" imagesizes="100vw" media="(min-width: 601px)" fetchpriority="high" type="image/webp">
 
     <title>שיווקים — למוסד, לבית, למשרד ולצימרים</title>
     
@@ -2347,7 +2347,7 @@
         .brand-hero-subtitle {
             font-size: 1.05rem;
             font-weight: 800;
-            color: #0085ff;
+            color: #0057b8;
             line-height: 1.35;
             margin: 0;
         }
@@ -4097,6 +4097,15 @@
                 transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 cursor: pointer !important;
                 flex-shrink: 0 !important;
+                border: none !important;
+                padding: 0 !important;
+                -webkit-appearance: none !important;
+                appearance: none !important;
+                outline: none !important;
+            }
+            .cat-dot:focus-visible {
+                outline: 2px solid #0085ff !important;
+                outline-offset: 2px !important;
             }
             .cat-dot.active {
                 width: 18px !important;
@@ -4416,8 +4425,8 @@
         <!-- LCP HERO BACKGROUND LAYER WITH HIGH PRIORITY EAGER IMAGE -->
     <div class="fixed-bg-layer" id="fixed-bg-layer">
         <picture>
-            <source media="(max-width: 600px)" srcset="assets/studio_3d_depth_mobile.webp?v=17876778" type="image/webp" width="412" height="915">
-            <img src="assets/studio_3d_depth_bg.webp?v=17876778" alt="שיווקים אספקה מקצועית" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
+            <source media="(max-width: 600px)" srcset="assets/studio_3d_depth_mobile.webp" type="image/webp" width="412" height="915">
+            <img src="assets/studio_3d_depth_bg.webp" alt="שיווקים אספקה מקצועית" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
         </picture>
     </div>
 
@@ -4598,16 +4607,16 @@
                 <div class="mobile-categories-dots" id="mobile-categories-dots">
                     <span class="cat-counter-pill" id="cat-counter-badge">1 / 10</span>
                     <div class="cat-dots-container" id="cat-dots-container">
-                        <span class="cat-dot" onclick="scrollToCatDot(0)" title="כל המוצרים" aria-label="מעבר לקטגוריה 1"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(1)" title="מתקני Tork" aria-label="מעבר לקטגוריה 2"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(2)" title="מוצרי נייר" aria-label="מעבר לקטגוריה 3"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(3)" title="חומרי ניקוי" aria-label="מעבר לקטגוריה 4"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(4)" title="מפיצי ריח" aria-label="מעבר לקטגוריה 5"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(5)" title="ציוד ניקיון" aria-label="מעבר לקטגוריה 6"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(6)" title="שקיות אשפה" aria-label="מעבר לקטגוריה 7"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(7)" title="חד-פעמי" aria-label="מעבר לקטגוריה 8"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(8)" title="לצימרים" aria-label="מעבר לקטגוריה 9"></span>
-                        <span class="cat-dot" onclick="scrollToCatDot(9)" title="למשרד" aria-label="מעבר לקטגוריה 10"></span>
+                        <button class="cat-dot" onclick="scrollToCatDot(0)" aria-label="מעבר לקטגוריה: כל המוצרים" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(1)" aria-label="מעבר לקטגוריה: מתקני Tork" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(2)" aria-label="מעבר לקטגוריה: מוצרי נייר" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(3)" aria-label="מעבר לקטגוריה: חומרי ניקוי" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(4)" aria-label="מעבר לקטגוריה: מפיצי ריח" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(5)" aria-label="מעבר לקטגוריה: ציוד ניקיון" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(6)" aria-label="מעבר לקטגוריה: שקיות אשפה" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(7)" aria-label="מעבר לקטגוריה: חד-פעמי" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(8)" aria-label="מעבר לקטגוריה: לצימרים" type="button"></button>
+                        <button class="cat-dot" onclick="scrollToCatDot(9)" aria-label="מעבר לקטגוריה: למשרד" type="button"></button>
                     </div>
                 </div>
             <button class="slider-arrow next" onclick="scrollPortals('next')" aria-label="הבא">
