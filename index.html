@@ -5756,44 +5756,26 @@
         function getActiveCategoryIndex() {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return 0;
-            const cards = pGrid.querySelectorAll('.portal-card');
-            if (cards.length === 0) return 0;
-            
-            const gridRect = pGrid.getBoundingClientRect();
-            const gridCenter = gridRect.left + gridRect.width / 2;
-            
-            let closestIdx = 0;
-            let minDistance = Infinity;
-            
-            cards.forEach((card, idx) => {
-                const cardRect = card.getBoundingClientRect();
-                const cardCenter = cardRect.left + cardRect.width / 2;
-                const dist = Math.abs(cardCenter - gridCenter);
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    closestIdx = idx;
-                }
-            });
-            
-            return closestIdx;
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            if (maxScroll <= 0) return 0;
+            const scrollRatio = Math.min(Math.max(Math.abs(pGrid.scrollLeft) / maxScroll, 0), 1);
+            return Math.min(Math.round(scrollRatio * 9), 9);
         }
 
         function scrollToCatDot(idx) {
             if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const cards = pGrid.querySelectorAll('.portal-card');
-            if (!cards || idx >= cards.length) return;
-            
-            const targetCard = cards[idx];
-            if (targetCard) {
-                const targetLeft = targetCard.offsetLeft - (pGrid.clientWidth - targetCard.clientWidth) / 2;
-                pGrid.scrollTo({ left: targetLeft, behavior: 'smooth' });
-            }
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            if (maxScroll <= 0) return;
+            const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
+            const progress = idx / 9;
+            const targetLeft = isRTL ? -(progress * maxScroll) : (progress * maxScroll);
+            pGrid.scrollTo({ left: targetLeft, behavior: 'smooth' });
             updateActiveCatDot(idx);
             const badge = document.getElementById('cat-counter-badge');
             if (badge) {
-                badge.textContent = `${idx + 1} / ${cards.length}`;
+                badge.textContent = `${idx + 1} / 10`;
             }
         }
 
@@ -5808,13 +5790,11 @@
         function updateActiveCatDotFromScroll() {
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const cards = pGrid.querySelectorAll('.portal-card');
-            const total = cards.length || 10;
             const activeIdx = getActiveCategoryIndex();
             
             const badge = document.getElementById('cat-counter-badge');
             if (badge) {
-                badge.textContent = `${activeIdx + 1} / ${total}`;
+                badge.textContent = `${activeIdx + 1} / 10`;
             }
             
             updateActiveCatDot(activeIdx);
@@ -5825,28 +5805,22 @@
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
 
-            // Remove any leftover clone elements
-            pGrid.querySelectorAll('[data-clone="1"]').forEach(el => el.remove());
-
-            // Center slider on initial load around middle items so user can scroll in both directions
-            const centerCategories = () => {
-                const cards = pGrid.querySelectorAll('.portal-card');
-                if (cards.length >= 4) {
-                    const targetCard = cards[3]; // card #3 (e.g., חומרי ניקוי)
-                    if (targetCard) {
-                        const targetLeft = targetCard.offsetLeft - (pGrid.clientWidth - targetCard.clientWidth) / 2;
-                        pGrid.scrollTo({ left: targetLeft, behavior: 'auto' });
-                    }
-                }
-                updateActiveCatDotFromScroll();
-            };
-            centerCategories();
-
             if (pGrid._sliderInitialized) {
                 updateActiveCatDotFromScroll();
                 return;
             }
             pGrid._sliderInitialized = true;
+
+            // Center initial position smoothly via requestAnimationFrame with zero forced reflow
+            requestAnimationFrame(() => {
+                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+                if (maxScroll > 0) {
+                    const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
+                    const centerScroll = isRTL ? -(0.33 * maxScroll) : (0.33 * maxScroll);
+                    pGrid.scrollTo({ left: centerScroll, behavior: 'auto' });
+                }
+                updateActiveCatDotFromScroll();
+            });
 
             // Scroll listener to update pagination dots naturally in real time
             pGrid.addEventListener('scroll', () => {
@@ -8055,14 +8029,8 @@
         function scrollPortals(dir) {
             const slider = document.getElementById('portals-grid');
             if (!slider) return;
-            const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl' || window.getComputedStyle(slider).direction === 'rtl';
-            
-            const cards = slider.querySelectorAll('.portal-card');
-            let scrollAmount = 304;
-            if (cards.length > 1) {
-                scrollAmount = Math.abs(cards[1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left);
-            }
-            if (scrollAmount === 0) scrollAmount = 304;
+            const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
+            const scrollAmount = window.innerWidth <= 600 ? 180 : 304;
 
             if (dir === 'next') {
                 slider.scrollBy({ left: isRTL ? -scrollAmount : scrollAmount, behavior: 'smooth' });
