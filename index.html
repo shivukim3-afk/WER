@@ -5816,17 +5816,6 @@
             }
             pGrid._sliderInitialized = true;
 
-            // Defer initial slider position calculation to macro-task to eliminate Forced Reflow
-            setTimeout(() => {
-                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-                if (maxScroll > 0) {
-                    const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
-                    const centerScroll = isRTL ? -(0.33 * maxScroll) : (0.33 * maxScroll);
-                    pGrid.scrollTo({ left: centerScroll, behavior: 'auto' });
-                }
-                updateActiveCatDotFromScroll();
-            }, 150);
-
             // Throttled scroll listener to update pagination dots smoothly without layout thrashing
             let _scrollTick = false;
             pGrid.addEventListener('scroll', () => {
