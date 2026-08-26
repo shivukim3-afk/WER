@@ -6282,6 +6282,7 @@
 
             // Group products by category
             let totalFoundInSearch = 0;
+            let fullCatalogHtml = '';
             const isSearching = !!searchQuery.trim();
             const cleanQuery = normalizeHebrewSearch(searchQuery);
             const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
@@ -6409,8 +6410,10 @@
                         </div>
                     </div>
                 `;
-                container.innerHTML += catHtml;
+                fullCatalogHtml += catHtml;
             });
+
+            container.innerHTML = fullCatalogHtml;
 
             // If user searched and nothing matched across all categories
             if (isSearching && totalFoundInSearch === 0) {
