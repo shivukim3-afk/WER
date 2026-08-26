@@ -6146,6 +6146,110 @@
                 .trim();
         }
 
+        // Smart Hebrew word variants (prefixes, suffixes, plurals and roots)
+        function getSearchWordVariants(word) {
+            const variants = new Set([word]);
+            if (word.length >= 4) {
+                const firstChar = word[0];
+                if (['ה', 'ב', 'ל', 'מ', 'כ', 'ו', 'ש'].includes(firstChar)) {
+                    variants.add(word.substring(1));
+                }
+            }
+            if (word.length >= 5 && (word.startsWith('וה') || word.startsWith('ול') || word.startsWith('וב') || word.startsWith('שה') || word.startsWith('שב'))) {
+                variants.add(word.substring(2));
+            }
+            if (word.endsWith('ים') && word.length >= 4) {
+                variants.add(word.slice(0, -2));
+            } else if (word.endsWith('ות') && word.length >= 4) {
+                variants.add(word.slice(0, -2));
+                variants.add(word.slice(0, -2) + 'ת');
+            }
+            if (word === 'שקיות') variants.add('שקית');
+            if (word === 'שקית') variants.add('שקיות');
+            if (word === 'כוסות') variants.add('כוס');
+            if (word === 'כוס') variants.add('כוסות');
+            if (word === 'צלחות') variants.add('צלחת');
+            if (word === 'צלחת') variants.add('צלחות');
+            if (word === 'מגבות') variants.add('מגבת');
+            if (word === 'מגבת') variants.add('מגבות');
+            if (word === 'ניירות') variants.add('נייר');
+            if (word === 'נייר') variants.add('ניירות');
+            return Array.from(variants);
+        }
+
+        // Smart relevance scoring and intent-based product disambiguation
+        function calculateProductSearchScore(product, searchTerms) {
+            if (!searchTerms || searchTerms.length === 0) return 0;
+            const normName = normalizeHebrewSearch(product.name);
+            const normPack = normalizeHebrewSearch(product.pack);
+            const normKeywords = Array.isArray(product.keywords) 
+                ? product.keywords.map(k => normalizeHebrewSearch(k)).join(' ') 
+                : '';
+
+            const isDispenserQuery = searchTerms.some(term => {
+                const variants = getSearchWordVariants(term);
+                return variants.some(v => v.includes('מתקנ') || v.includes('דיספנסר'));
+            });
+
+            const isConsumableQuery = searchTerms.some(term => {
+                const variants = getSearchWordVariants(term);
+                return variants.some(v => ['נייר', 'סבון', 'שקית', 'שקיות', 'כוס', 'כוסות', 'צלחת', 'צלחות', 'מגבת', 'מגבות', 'סדין', 'ניגוב'].includes(v));
+            });
+
+            const isDispenserProduct = normName.includes('מתקנ') || normName.includes('דיספנסר') || (product.category === 'tork' && !normName.includes('מגבות') && !normName.includes('נייר טואלט'));
+
+            let totalScore = 0;
+            let allTermsMatched = true;
+
+            for (const term of searchTerms) {
+                const termVariants = getSearchWordVariants(term);
+                let termMatched = false;
+                let termScore = 0;
+
+                for (const variant of termVariants) {
+                    const nameWords = normName.split(' ');
+                    if (nameWords.includes(variant)) {
+                        termScore = Math.max(termScore, 100);
+                        termMatched = true;
+                    } else if (nameWords.some(w => w.startsWith(variant))) {
+                        termScore = Math.max(termScore, 75);
+                        termMatched = true;
+                    } else if (normName.includes(variant)) {
+                        termScore = Math.max(termScore, 50);
+                        termMatched = true;
+                    }
+
+                    if (normPack.includes(variant)) {
+                        termScore = Math.max(termScore, 30);
+                        termMatched = true;
+                    }
+
+                    if (normKeywords.includes(variant)) {
+                        termScore = Math.max(termScore, 40);
+                        termMatched = true;
+                    }
+                }
+
+                if (!termMatched) {
+                    allTermsMatched = false;
+                    break;
+                }
+
+                totalScore += termScore;
+            }
+
+            if (!allTermsMatched) return 0;
+
+            // Disambiguation: If user is searching for consumable (paper, soap, bags), prioritize consumables over dispenser machines
+            if (isConsumableQuery && !isDispenserQuery && isDispenserProduct) {
+                totalScore -= 60;
+            } else if (isDispenserQuery && isDispenserProduct) {
+                totalScore += 80;
+            }
+
+            return Math.max(totalScore, 1);
+        }
+
         // Render the Grid-based Catalog
         function renderCatalog() {
             const container = document.getElementById('catalog-container');
@@ -6287,29 +6391,43 @@
             const cleanQuery = normalizeHebrewSearch(searchQuery);
             const searchTerms = cleanQuery.split(/\s+/).filter(t => t.length > 0);
 
-            Object.keys(CATEGORIES).forEach(catId => {
+            let categoryKeys = Object.keys(CATEGORIES);
+            const searchCategoryMap = {};
+
+            if (isSearching) {
+                categoryKeys.forEach(catId => {
+                    const scoredProducts = PRODUCTS
+                        .filter(p => p.category === catId)
+                        .map(p => ({ product: p, score: calculateProductSearchScore(p, searchTerms) }))
+                        .filter(item => item.score > 0);
+
+                    if (scoredProducts.length > 0) {
+                        scoredProducts.sort((a, b) => b.score - a.score);
+                        const maxScore = Math.max(...scoredProducts.map(sp => sp.score));
+                        searchCategoryMap[catId] = {
+                            products: scoredProducts.map(sp => sp.product),
+                            maxScore: maxScore
+                        };
+                    }
+                });
+
+                categoryKeys = Object.keys(searchCategoryMap).sort((a, b) => {
+                    return searchCategoryMap[b].maxScore - searchCategoryMap[a].maxScore;
+                });
+            }
+
+            categoryKeys.forEach(catId => {
                 const catInfo = CATEGORIES[catId];
                 
                 // If not searching, filter out categories not matching active sub-category filter
                 if (!isSearching && effSubCat !== 'all' && catId !== effSubCat) return;
                 
-                // Filter products belonging to this category, matching search titles/known names and active portal
-                const catProducts = PRODUCTS.filter(p => {
-                    if (p.category !== catId) return false;
-                    
-                    if (!isSearching) {
+                const catProducts = isSearching 
+                    ? (searchCategoryMap[catId] ? searchCategoryMap[catId].products : [])
+                    : PRODUCTS.filter(p => {
+                        if (p.category !== catId) return false;
                         return effPortal === 'all' || (p.portals && p.portals.includes(effPortal));
-                    }
-                    
-                    // Smart normalized Title / Category / Pack / Keywords matching
-                    const prodName = normalizeHebrewSearch(p.name);
-                    const catName = normalizeHebrewSearch(catInfo.name);
-                    const packInfo = normalizeHebrewSearch(p.pack);
-                    const keywords = Array.isArray(p.keywords) ? p.keywords.map(k => normalizeHebrewSearch(k)).join(' ') : '';
-                    const searchPool = `${prodName} ${catName} ${packInfo} ${keywords}`;
-
-                    return searchTerms.every(term => searchPool.includes(term));
-                });
+                    });
 
                 if (catProducts.length === 0) return; // Skip categories with no matching items
                 totalFoundInSearch += catProducts.length;
@@ -6553,16 +6671,11 @@
             
             let filtered = PRODUCTS;
             if (searchTerms.length > 0) {
-                filtered = PRODUCTS.filter(prod => {
-                    const catInfo = CATEGORIES[prod.category] || { name: '' };
-                    const prodName = normalizeHebrewSearch(prod.name);
-                    const catName = normalizeHebrewSearch(catInfo.name);
-                    const packInfo = normalizeHebrewSearch(prod.pack);
-                    const keywords = Array.isArray(prod.keywords) ? prod.keywords.map(k => normalizeHebrewSearch(k)).join(' ') : '';
-                    const searchPool = `${prodName} ${catName} ${packInfo} ${keywords}`;
-
-                    return searchTerms.every(term => searchPool.includes(term));
-                });
+                const scoredList = PRODUCTS
+                    .map(prod => ({ prod, score: calculateProductSearchScore(prod, searchTerms) }))
+                    .filter(item => item.score > 0);
+                scoredList.sort((a, b) => b.score - a.score);
+                filtered = scoredList.map(item => item.prod);
             }
             
             if (filtered.length === 0) {
@@ -6571,11 +6684,12 @@
                 return;
             }
             
+            let rowsHtml = '';
             filtered.forEach((prod, index) => {
                 const cartItem = cart.find(item => item.id === prod.id);
                 const qty = cartItem ? cartItem.quantity : 0;
                 
-                tbody.innerHTML += `
+                rowsHtml += `
                     <tr>
                         <td class="col-icon">${index + 1}</td>
                         <td class="col-name">${prod.name}</td>
@@ -6591,6 +6705,7 @@
                     </tr>
                 `;
             });
+            tbody.innerHTML = rowsHtml;
             updateQuickTotal();
         }
 
