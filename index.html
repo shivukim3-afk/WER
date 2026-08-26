@@ -5548,6 +5548,9 @@
             saveCartToStorage();
             updateCartCounter();
             renderCartList();
+            if (typeof loadFirebaseDynamically === 'function') {
+                loadFirebaseDynamically();
+            }
             
             // Pop effect on cart button
             const btn = document.querySelector('.cart-btn');
@@ -5583,6 +5586,9 @@
                 if (show) {
                     renderCartList();
                     overlay.classList.add('active');
+                    if (typeof loadFirebaseDynamically === 'function') {
+                        loadFirebaseDynamically();
+                    }
                 } else {
                     overlay.classList.remove('active');
                 }
@@ -8136,10 +8142,18 @@
             });
         }
 
-        // Dynamically load Firebase SDKs on idle to keep initial paint 100% non-blocking
-        function loadFirebaseDynamically() {
-            if (window._fbLoaded) return;
-            window._fbLoaded = true;
+        // Dynamically load Firebase SDKs on-demand (only when user interacts with Cart or Checkout)
+        function loadFirebaseDynamically(callback) {
+            if (window._fbReady) {
+                if (callback) callback();
+                return;
+            }
+            if (callback) {
+                window._fbCallbacks = window._fbCallbacks || [];
+                window._fbCallbacks.push(callback);
+            }
+            if (window._fbLoading) return;
+            window._fbLoading = true;
             const s1 = document.createElement('script');
             s1.src = "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js";
             s1.defer = true;
@@ -8151,6 +8165,14 @@
                     const s3 = document.createElement('script');
                     s3.src = "db.js";
                     s3.defer = true;
+                    s3.onload = () => {
+                        window._fbReady = true;
+                        window._fbLoading = false;
+                        if (window._fbCallbacks) {
+                            window._fbCallbacks.forEach(cb => cb());
+                            window._fbCallbacks = [];
+                        }
+                    };
                     document.body.appendChild(s3);
                 };
                 document.body.appendChild(s2);
@@ -8158,11 +8180,12 @@
             document.body.appendChild(s1);
         }
 
-        if (window.requestIdleCallback) {
-            requestIdleCallback(loadFirebaseDynamically, { timeout: 1500 });
-        } else {
-            window.addEventListener('load', () => setTimeout(loadFirebaseDynamically, 500));
-        }
+        // Prefetch Firebase on user intent (Hover / Focus over Cart or Checkout buttons)
+        document.querySelectorAll('.cart-btn, #mobile-sticky-cart, .fast-order, .header-nav-link.cta, .add-to-cart-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => loadFirebaseDynamically(), { passive: true, once: true });
+            el.addEventListener('focus', () => loadFirebaseDynamically(), { passive: true, once: true });
+            el.addEventListener('touchstart', () => loadFirebaseDynamically(), { passive: true, once: true });
+        });
     </script>
 </body>
 </html>
