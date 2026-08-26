@@ -1437,7 +1437,7 @@
         ------------------------------------------------------------- */
         footer {
             background: var(--bg-dark);
-            color: rgba(248, 250, 252, 0.6);
+            color: rgba(248, 250, 252, 0.85);
             padding: 5rem 0 3rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -1475,7 +1475,7 @@
         }
 
         .footer-links a {
-            color: rgba(248, 250, 252, 0.6);
+            color: rgba(248, 250, 252, 0.85);
             text-decoration: none;
             transition: var(--transition-smooth);
             font-size: 0.95rem;
@@ -4351,10 +4351,10 @@
                 font-size: 1.25rem !important;
             }
             .sticky-bar-item.whatsapp {
-                color: #25D366 !important;
+                color: #128c7e !important;
             }
             .sticky-bar-item.fast-order {
-                color: #0284c7 !important;
+                color: #0369a1 !important;
             }
             body {
                 padding-bottom: 0 !important;
@@ -4418,7 +4418,7 @@
         <!-- LCP HERO BACKGROUND LAYER WITH HIGH PRIORITY EAGER IMAGE -->
     <div class="fixed-bg-layer" id="fixed-bg-layer">
         <picture>
-            <source media="(max-width: 600px)" srcset="assets/studio_3d_depth_mobile.webp?v=17876778" type="image/webp">
+            <source media="(max-width: 600px)" srcset="assets/studio_3d_depth_mobile.webp?v=17876778" type="image/webp" width="412" height="915">
             <img src="assets/studio_3d_depth_bg.webp?v=17876778" alt="שיווקים אספקה מקצועית" width="1920" height="1080" fetchpriority="high" loading="eager" decoding="sync" class="fixed-bg-img" aria-hidden="true">
         </picture>
     </div>
@@ -4430,7 +4430,7 @@
     <!-- INTRO LOADING SCREEN (SPLASH ANIMATION) -->
     <div id="splash-screen" style="display: none !important;">
         <div class="splash-logo-container">
-            <div class="splash-logo" role="banner">שיווקים<span>.</span></div>
+            <div class="splash-logo">שיווקים<span>.</span></div>
             <div class="splash-subtitle">למוסד • לבית • למשרד • לצימרים</div>
             <!-- Arrow svg pointer -->
             <div class="splash-arrow" id="splash-arrow">
@@ -4467,7 +4467,7 @@
     </header>
 
     <!-- MAIN LANDMARK (Accessibility & Semantic SEO) -->
-    <main id="main-content">
+    <main id="main-content" role="main">
 
     <!-- HERO SECTION WITH CANVAS PARTICLES -->
     <section class="hero">
@@ -4782,7 +4782,7 @@
             </div>
             <div class="footer-bottom" style="text-align: center;">
                 <p>© 2026 שיווקים - למוסד, לבית, למשרד ולצימרים. כל הזכויות שמורות לשמואל לוי. מעצב על ידי Antigravity Builder.</p>
-                <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.8rem; margin-top: 0.6rem; font-weight: 600;">* כל מחירי המוצרים באתר מוצגים לפני מע"מ (ללא מע"מ). חיוב מע"מ בשיעור 18% יתווסף לסכום ההזמנה בסיכום הרכישה בעגלת הקניות.</p>
+                <p style="color: #e2e8f0; font-size: 0.82rem; margin-top: 0.6rem; font-weight: 600;">* כל מחירי המוצרים באתר מוצגים לפני מע"מ (ללא מע"מ). חיוב מע"מ בשיעור 18% יתווסף לסכום ההזמנה בסיכום הרכישה בעגלת הקניות.</p>
             </div>
         </div>
     </footer>
@@ -7148,35 +7148,41 @@
         // 5. INTRO SPLASH LOAD INTERACTION LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             const splash = document.getElementById('splash-screen');
+            if (!splash || splash.style.display === 'none' || window.getComputedStyle(splash).display === 'none') {
+                return;
+            }
             const arrow = document.getElementById('splash-arrow');
             const subtitle = document.querySelector('.splash-subtitle');
             
             // Step 1: Slide subtitle up
             setTimeout(() => {
-                subtitle.style.opacity = '1';
-                subtitle.style.transform = 'translateY(0)';
-                subtitle.style.transition = 'all 0.3s ease';
+                if (subtitle) {
+                    subtitle.style.opacity = '1';
+                    subtitle.style.transform = 'translateY(0)';
+                    subtitle.style.transition = 'all 0.3s ease';
+                }
             }, 100);
 
             // Step 2: Show animated pointer arrow
             setTimeout(() => {
-                arrow.style.opacity = '1';
-                arrow.style.left = '45%';
-                arrow.style.top = '65%';
-                arrow.style.transition = 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)';
+                if (arrow) {
+                    arrow.style.opacity = '1';
+                    arrow.style.left = '45%';
+                    arrow.style.top = '65%';
+                    arrow.style.transition = 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)';
+                }
             }, 250);
 
             // Step 3: Trigger virtual "click" and Ripple, then hide splash
             setTimeout(() => {
-                // Add ripple dot at arrow location
                 const rip = document.createElement('div');
                 rip.classList.add('ripple');
                 rip.style.left = '50%';
                 rip.style.top = '60%';
-                document.getElementById('splash-screen').appendChild(rip);
+                splash.appendChild(rip);
                 
-                // Shake logo slightly
-                document.querySelector('.splash-logo').style.transform = 'scale(0.95)';
+                const logo = document.querySelector('.splash-logo');
+                if (logo) logo.style.transform = 'scale(0.95)';
                 
                 setTimeout(() => {
                     splash.style.opacity = '0';
@@ -7186,42 +7192,45 @@
             }, 500);
         });
 
-        // 6. CUSTOM MOUSE FOLLOW ANIMATION
+        // 6. CUSTOM MOUSE FOLLOW ANIMATION (Desktop Only with fine pointer)
+        const hasFinePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
         const cursor = document.getElementById('custom-cursor');
         const follower = document.getElementById('custom-cursor-follower');
         
         let mouseX = 0, mouseY = 0;
         let followX = 0, followY = 0;
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            if (cursor) {
-                cursor.style.left = `${mouseX}px`;
-                cursor.style.top = `${mouseY}px`;
-            }
-        }, { passive: true });
+        if (hasFinePointer) {
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (cursor) {
+                    cursor.style.left = `${mouseX}px`;
+                    cursor.style.top = `${mouseY}px`;
+                }
+            }, { passive: true });
 
-        // Loop for smoothed mouse following with null guards
-        function updateFollower() {
-            if (!follower) return;
-            const dx = mouseX - followX;
-            const dy = mouseY - followY;
-            
-            followX += dx * 0.15;
-            followY += dy * 0.15;
-            
-            follower.style.left = `${followX}px`;
-            follower.style.top = `${followY}px`;
-            
-            requestAnimationFrame(updateFollower);
-        }
-        if (follower) {
-            requestAnimationFrame(updateFollower);
+            function updateFollower() {
+                if (!follower) return;
+                const dx = mouseX - followX;
+                const dy = mouseY - followY;
+                
+                followX += dx * 0.15;
+                followY += dy * 0.15;
+                
+                follower.style.left = `${followX}px`;
+                follower.style.top = `${followY}px`;
+                
+                requestAnimationFrame(updateFollower);
+            }
+            if (follower) {
+                requestAnimationFrame(updateFollower);
+            }
         }
 
         // Delegated cursor hover handler for zero main-thread overhead
         function bindCursorHover() {
+            if (!hasFinePointer) return;
             document.addEventListener('mouseover', (e) => {
                 if (e.target && e.target.closest && e.target.closest('a, button, .portal-card, .product-card, .qty-btn, .mode-square-btn')) {
                     document.body.classList.add('hover-link');
