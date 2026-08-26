@@ -240,6 +240,12 @@
             position: relative;
             text-align: center;
             transform: scale(0.9);
+            animation: pulse-logo 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-logo {
+            0%, 100% { transform: scale(0.95); opacity: 0.95; }
+            50% { transform: scale(1); opacity: 1; }
         }
 
         /* Logo Drawing inside Splash */
@@ -2180,7 +2186,10 @@
         }
 
 
-
+        @keyframes bounce-arrow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
 
 
         /* Empty State Banner (Wide Image + Glassmorphism overlay) */
@@ -2403,6 +2412,7 @@
             color: var(--color-blue);
             display: block;
             margin-bottom: 1rem;
+            animation: bounce-arrow 1.8s infinite ease-in-out;
         }
         .empty-state-title {
             font-size: 1.45rem;
@@ -4005,9 +4015,11 @@
                 font-size: 0.78rem !important;
                 font-weight: 700 !important;
                 box-shadow: 0 4px 14px rgba(0, 133, 255, 0.1) !important;
+                animation: pulse-swipe-hint 2s infinite ease-in-out !important;
                 transition: opacity 0.5s ease, transform 0.5s ease !important;
             }
             .swipe-hand-icon {
+                animation: hand-swipe-motion 1.8s infinite ease-in-out !important;
                 font-size: 0.85rem !important;
             }
             /* Mobile Category Touch Arrows (< & >) */
@@ -4625,105 +4637,9 @@
             <!-- SUB-CATEGORY PORTAL GATEWAYS -->
             <div id="sub-portals-grid" class="sub-portals-grid" style="display: none;"></div>
 
-            <!-- PRODUCT CATALOG CONTAINER (Pre-rendered for Instant LCP & FCP) -->
+            <!-- PRODUCT CATALOG CONTAINER -->
             <div class="catalog-container" id="catalog-container">
-                <!-- Desktop Welcome Banner (SSR / Raw HTML) -->
-                <div class="empty-state-banner">
-                    <!-- RIGHT SIDE: BRAND LOGO & CORE SLOGAN -->
-                    <div class="banner-brand-right">
-                        <div class="banner-logo-main">
-                            <span class="banner-logo-text">שיווקים</span>
-                            <span class="banner-logo-arrow"></span>
-                        </div>
-                        <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
-                        <div class="banner-punchline-pill">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>פתרון אחד. ספק אחד. שקט תפעולי.</span>
-                        </div>
-                        <div class="banner-trust-tags">
-                            <span>התאמה אישית</span>
-                            <span class="trust-dot">•</span>
-                            <span>שירות מהיר</span>
-                            <span class="trust-dot">•</span>
-                            <span>מחירים תחרותיים</span>
-                            <span class="trust-dot">•</span>
-                            <span>אספקה אמינה</span>
-                        </div>
-                    </div>
-
-                    <!-- LEFT SIDE: STRONG B2B / INSTITUTIONAL BRANDING & SUPPLY SCOPE -->
-                    <div class="banner-brand-left">
-                        <div class="brand-badge-pill">
-                            <i class="fa-solid fa-boxes-stacked"></i> מרכז אספקה מקצועי
-                        </div>
-                        <h3 class="brand-hero-title">פתרונות אספקה מתקדמים לעסקים ומוסדות</h3>
-                        <div class="brand-hero-subtitle">כל מה שהעסק שלכם צריך לשוטף — במקום אחד.</div>
-                        <p class="brand-hero-desc">
-                            אנחנו מספקים מגוון רחב של מוצרים וציוד תפעולי, בהתאמה לצרכים שלכם — עם שירות מהיר, אספקה יעילה וחיסכון אמיתי בעלויות.
-                        </p>
-
-                        <div class="brand-supply-section">
-                            <div class="supply-title">מה אנחנו מספקים?</div>
-                            <div class="supply-grid">
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרי נייר וניגוב</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>חומרי ניקוי מקצועיים</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרים חד־פעמיים</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>ציוד משרדי</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מתקנים וציוד תפעולי</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mobile Welcome Branding Card (SSR / Raw HTML) -->
-                <div class="mobile-branding-card">
-                    <!-- Mobile Brand Header (Logo & Slogan) -->
-                    <div class="mobile-brand-top">
-                        <div class="banner-logo-main">
-                            <span class="banner-logo-text">שיווקים</span>
-                            <span class="banner-logo-arrow"></span>
-                        </div>
-                        <div class="banner-logo-sub">למוסד • לבית • למשרד • לצימרים</div>
-                        <div class="banner-punchline-pill">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <span>פתרון אחד. ספק אחד. שקט תפעולי.</span>
-                        </div>
-                        <div class="banner-trust-tags">
-                            <span>התאמה אישית</span>
-                            <span class="trust-dot">•</span>
-                            <span>שירות מהיר</span>
-                            <span class="trust-dot">•</span>
-                            <span>מחירים תחרותיים</span>
-                            <span class="trust-dot">•</span>
-                            <span>אספקה אמינה</span>
-                        </div>
-                    </div>
-
-                    <div class="mobile-brand-divider"></div>
-
-                    <!-- Mobile Business Solutions & Supply Scope -->
-                    <div class="mobile-brand-body">
-                        <div class="brand-badge-pill">
-                            <i class="fa-solid fa-boxes-stacked"></i> מרכז אספקה מקצועי
-                        </div>
-                        <h3 class="brand-hero-title">פתרונות אספקה מתקדמים לעסקים ומוסדות</h3>
-                        <div class="brand-hero-subtitle">כל מה שהעסק שלכם צריך לשוטף — במקום אחד.</div>
-                        <p class="brand-hero-desc">
-                            אנחנו מספקים מגוון רחב של מוצרים וציוד תפעולי, בהתאמה לצרכים שלכם — עם שירות מהיר, אספקה יעילה וחיסכון אמיתי בעלויות.
-                        </p>
-
-                        <div class="brand-supply-section">
-                            <div class="supply-title">מה אנחנו מספקים?</div>
-                            <div class="supply-grid">
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרי נייר וניגוב</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>חומרי ניקוי מקצועיים</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מוצרים חד־פעמיים</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>ציוד משרדי</span></div>
-                                <div class="supply-item"><i class="fa-solid fa-circle-check"></i> <span>מתקנים וציוד תפעולי</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Javascript will render categories and products here -->
             </div>
         </div>
 
@@ -6238,17 +6154,13 @@
         function renderCatalog() {
             const container = document.getElementById('catalog-container');
             if (!container) return;
+            container.innerHTML = '';
 
             const effPortal = activePortal || 'all';
             const effSubCat = (activeSubCategory && activeSubCategory !== '') ? activeSubCategory : 'all';
 
             // Show a friendly visual guide if no portal (category) is active and no sub-category or search is entered
             if (!activePortal && (!activeSubCategory || activeSubCategory === 'all' || activeSubCategory === '') && !searchQuery) {
-                // If initial pre-rendered SSR branding is already in container, do NOT re-insert or thrash DOM
-                if (container.querySelector('.empty-state-banner') && container.querySelector('.mobile-branding-card')) {
-                    return;
-                }
-                container.innerHTML = '';
                 const isMobile = window.innerWidth <= 600;
                 const desktopBannerHtml = `
                     <div class="empty-state-banner">
@@ -8067,14 +7979,6 @@
                 portalsList.push({ id: catId, name: CATEGORIES[catId].name, desc: catDescs[catId] || '' });
             });
             
-            // If portal cards are already present in static HTML, do not destroy and re-render DOM
-            if (portalsGrid.children.length >= 10) {
-                if (isMobile) {
-                    initMobileCategoriesSlider();
-                }
-                return;
-            }
-
             if (isMobile && (hasCategoryAttribute || portalsGrid.children.length === 0 || !portalsGrid.querySelector('[data-desktop-category="tork"]'))) {
                 // Render Mobile Portals — then init infinite swiper
                 let html = '';
