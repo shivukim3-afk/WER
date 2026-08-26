@@ -4562,7 +4562,7 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
                 <div class="portals-grid portals-slider" id="portals-grid">
-                    <div class="portal-card" data-desktop-category="all" data-portal="all" onclick="handlePortalCardClick('all', this)" style="background-image: url('assets/studio_3d_depth_bg.webp')">
+                    <div class="portal-card" data-desktop-category="all" data-portal="all" onclick="handlePortalCardClick('all', this)" style="background-image: url('assets/studio_3d_depth_mobile.webp')">
                         <div class="portal-icon"><i class="fa-solid fa-border-all"></i></div>
                         <div><div class="portal-title">כל המוצרים</div></div>
                     </div>
@@ -7979,45 +7979,24 @@
                 portalsList.push({ id: catId, name: CATEGORIES[catId].name, desc: catDescs[catId] || '' });
             });
             
-            if (isMobile && (hasCategoryAttribute || portalsGrid.children.length === 0 || !portalsGrid.querySelector('[data-desktop-category="tork"]'))) {
-                // Render Mobile Portals — then init infinite swiper
-                let html = '';
-                portalsList.forEach(p => {
-                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
-                    const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
-                    html += `
-                        <div class="portal-card" data-portal="${p.id}" onclick="filterPortal('${p.id}', this)" style="background-image: url('${imgUrl}')">
-                            <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
-                            <div>
-                                <div class="portal-title">${p.name}</div>
-                                <div class="portal-desc">${p.desc}</div>
+            if (isMobile) {
+                if (portalsGrid.children.length === 0) {
+                    let html = '';
+                    portalsList.forEach(p => {
+                        const imgUrl = (p.id === 'all') ? 'assets/studio_3d_depth_mobile.webp' : (CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp');
+                        const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
+                        html += `
+                            <div class="portal-card" data-desktop-category="${p.id}" data-portal="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
+                                <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
+                                <div>
+                                    <div class="portal-title">${p.name}</div>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-                portalsGrid.innerHTML = html;
+                        `;
+                    });
+                    portalsGrid.innerHTML = html;
+                }
                 initMobileCategoriesSlider();
-            } else if (!isMobile && (!hasCategoryAttribute || portalsGrid.children.length === 0 || portalsGrid.querySelector('[data-portal]'))) {
-                // Render Desktop Categories as Compact 5x2 Grid
-                let html = '';
-                portalsList.forEach(p => {
-                    const imgUrl = CATEGORY_IMAGES[p.id] || 'assets/placeholder_bg.webp';
-                    const faIcon = p.id === 'all' ? 'fa-border-all' : CATEGORIES[p.id].fa;
-                    html += `
-                        <div class="portal-card" data-desktop-category="${p.id}" onclick="handlePortalCardClick('${p.id}', this)" style="background-image: url('${imgUrl}')">
-                            <div class="portal-icon"><i class="fa-solid ${faIcon}"></i></div>
-                            <div>
-                                <div class="portal-title">${p.name}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                portalsGrid.innerHTML = html;
-                
-                // Clear any infinite scroll state attributes
-                portalsGrid.removeAttribute('data-infinite-cloned');
-                portalsGrid.removeAttribute('data-original-count');
-                portalsGrid._infiniteReady = false;
             }
         }
 
