@@ -5812,7 +5812,6 @@
             if (!pGrid) return;
 
             if (pGrid._sliderInitialized) {
-                updateActiveCatDotFromScroll();
                 return;
             }
             pGrid._sliderInitialized = true;
@@ -5842,9 +5841,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth <= 600) {
-                initMobileCategoriesSlider();
-            } else {
+            if (window.innerWidth > 600) {
                 setupInfiniteScroll();
             }
         });
