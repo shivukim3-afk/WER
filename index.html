@@ -4057,23 +4057,37 @@
                 50% { box-shadow: 0 6px 22px rgba(0, 133, 255, 0.35); }
             }
 
-            /* Mobile Categories Dots Bar */
+            /* Mobile Categories Swipe/Pagination Indicator Bar */
             .mobile-categories-dots {
-                display: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
+                margin: 0.5rem auto 0.4rem auto !important;
+                padding: 4px 10px !important;
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+                border-radius: 20px !important;
+                border: 1px solid rgba(0, 133, 255, 0.18) !important;
+                box-shadow: 0 2px 8px rgba(10, 25, 49, 0.05) !important;
+                width: fit-content !important;
+                z-index: 10 !important;
             }
             .cat-dot {
-                width: 8px !important;
-                height: 8px !important;
-                border-radius: 50% !important;
-                background: rgba(148, 163, 184, 0.45) !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                width: 6px !important;
+                height: 6px !important;
+                border-radius: 4px !important;
+                background: rgba(10, 25, 49, 0.22) !important;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 cursor: pointer !important;
             }
             .cat-dot.active {
-                width: 24px !important;
-                border-radius: 10px !important;
-                background: #0284c7 !important;
-                box-shadow: 0 2px 8px rgba(0, 133, 255, 0.4) !important;
+                width: 22px !important;
+                height: 6px !important;
+                border-radius: 4px !important;
+                background: linear-gradient(90deg, #0085ff, #00c6ff) !important;
+                box-shadow: 0 2px 6px rgba(0, 133, 255, 0.35) !important;
             }
 
             /* Portals Grid Swiper - Smooth natural touch swiping with boundaries */
@@ -5710,13 +5724,17 @@
             if (window.innerWidth > 600) return;
             const pGrid = document.getElementById('portals-grid');
             if (!pGrid) return;
-            const cards = pGrid.querySelectorAll('.portal-card');
-            if (!cards || cards.length === 0) return;
-            const targetIdx = Math.min(idx * 2, cards.length - 1);
-            if (cards[targetIdx]) {
-                const targetLeft = cards[targetIdx].offsetLeft;
-                pGrid.scrollTo({ left: targetLeft, behavior: 'smooth' });
-            }
+            const dots = document.querySelectorAll('.mobile-categories-dots .cat-dot');
+            if (dots.length === 0) return;
+            
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            if (maxScroll <= 0) return;
+            
+            const progress = idx / (dots.length - 1);
+            const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
+            const targetScroll = isRTL ? -(progress * maxScroll) : (progress * maxScroll);
+            
+            pGrid.scrollTo({ left: targetScroll, behavior: 'smooth' });
             updateActiveCatDot(idx);
         }
 
@@ -5726,6 +5744,22 @@
                 if (i === idx) dot.classList.add('active');
                 else dot.classList.remove('active');
             });
+        }
+
+        function updateActiveCatDotFromScroll() {
+            const pGrid = document.getElementById('portals-grid');
+            if (!pGrid) return;
+            const dots = document.querySelectorAll('.mobile-categories-dots .cat-dot');
+            if (dots.length === 0) return;
+            
+            const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
+            if (maxScroll <= 0) {
+                updateActiveCatDot(0);
+                return;
+            }
+            const scrollProgress = Math.min(Math.max(Math.abs(pGrid.scrollLeft) / maxScroll, 0), 1);
+            const dotIndex = Math.min(Math.floor(scrollProgress * dots.length), dots.length - 1);
+            updateActiveCatDot(dotIndex);
         }
 
         function initMobileCategoriesSlider() {
@@ -5746,22 +5780,19 @@
                         pGrid.scrollTo({ left: targetLeft, behavior: 'auto' });
                     }
                 }
+                updateActiveCatDotFromScroll();
             };
             centerCategories();
 
-            if (pGrid._sliderInitialized) return;
+            if (pGrid._sliderInitialized) {
+                updateActiveCatDotFromScroll();
+                return;
+            }
             pGrid._sliderInitialized = true;
 
-            // Scroll listener to update pagination dots naturally
+            // Scroll listener to update pagination dots naturally in real time
             pGrid.addEventListener('scroll', () => {
-                const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
-                if (maxScroll <= 0) return;
-                const scrollProgress = Math.abs(pGrid.scrollLeft) / maxScroll;
-                const dots = document.querySelectorAll('.mobile-categories-dots .cat-dot');
-                if (dots.length > 0) {
-                    const dotIndex = Math.min(Math.floor(scrollProgress * dots.length), dots.length - 1);
-                    updateActiveCatDot(dotIndex);
-                }
+                updateActiveCatDotFromScroll();
             }, { passive: true });
         }
 
