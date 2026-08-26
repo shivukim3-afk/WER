@@ -1575,7 +1575,7 @@
                 -webkit-backface-visibility: hidden !important;
             }
             header.scrolled {
-                height: 60px !important;
+                height: 70px !important;
             }
             .logo-text {
                 font-size: 1.4rem !important;
@@ -2019,7 +2019,7 @@
             .fixed-bg-layer {
                 background: #dce7ed url('assets/studio_3d_depth_mobile.webp?v=17876778') no-repeat center top !important;
                 background-size: cover !important;
-                background-attachment: fixed !important;
+                background-attachment: scroll !important;
                 will-change: transform !important;
                 -webkit-transform: translate3d(0, 0, 0) !important;
                 transform: translate3d(0, 0, 0) !important;
@@ -3737,9 +3737,9 @@
 
             /* Mobile Dedicated Complete Branding Card (Similar to Desktop) */
             .mobile-branding-card {
-                background: rgba(255, 255, 255, 0.95) !important;
-                backdrop-filter: blur(20px) !important;
-                -webkit-backdrop-filter: blur(20px) !important;
+                background: rgba(255, 255, 255, 0.96) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
                 border: 1px solid rgba(10, 25, 49, 0.08) !important;
                 border-radius: 20px !important;
                 padding: 1.6rem 1.3rem !important;
@@ -3750,6 +3750,17 @@
                 flex-direction: column !important;
                 gap: 1.2rem !important;
                 direction: rtl !important;
+                will-change: transform !important;
+                -webkit-transform: translate3d(0, 0, 0) !important;
+                transform: translate3d(0, 0, 0) !important;
+                backface-visibility: hidden !important;
+                -webkit-backface-visibility: hidden !important;
+            }
+            .mobile-branding-card,
+            .mobile-branding-card *,
+            .banner-features-bar,
+            .banner-features-bar * {
+                animation: none !important;
             }
             .mobile-brand-top {
                 display: flex !important;
@@ -5703,7 +5714,8 @@
             if (!cards || cards.length === 0) return;
             const targetIdx = Math.min(idx * 2, cards.length - 1);
             if (cards[targetIdx]) {
-                cards[targetIdx].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                const targetLeft = cards[targetIdx].offsetLeft;
+                pGrid.scrollTo({ left: targetLeft, behavior: 'smooth' });
             }
             updateActiveCatDot(idx);
         }
@@ -5730,11 +5742,12 @@
                 if (cards.length >= 4) {
                     const targetCard = cards[3]; // card #3 (e.g., חומרי ניקוי)
                     if (targetCard) {
-                        targetCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        const targetLeft = targetCard.offsetLeft - (pGrid.clientWidth - targetCard.clientWidth) / 2;
+                        pGrid.scrollTo({ left: targetLeft, behavior: 'auto' });
                     }
                 }
             };
-            setTimeout(centerCategories, 120);
+            centerCategories();
 
             if (pGrid._sliderInitialized) return;
             pGrid._sliderInitialized = true;
