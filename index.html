@@ -5817,8 +5817,8 @@
             }
             pGrid._sliderInitialized = true;
 
-            // Center initial position smoothly via requestAnimationFrame with zero forced reflow
-            requestAnimationFrame(() => {
+            // Defer initial slider position calculation to macro-task to eliminate Forced Reflow
+            setTimeout(() => {
                 const maxScroll = pGrid.scrollWidth - pGrid.clientWidth;
                 if (maxScroll > 0) {
                     const isRTL = document.documentElement.dir === 'rtl' || document.body.dir === 'rtl';
@@ -5826,11 +5826,18 @@
                     pGrid.scrollTo({ left: centerScroll, behavior: 'auto' });
                 }
                 updateActiveCatDotFromScroll();
-            });
+            }, 150);
 
-            // Scroll listener to update pagination dots naturally in real time
+            // Throttled scroll listener to update pagination dots smoothly without layout thrashing
+            let _scrollTick = false;
             pGrid.addEventListener('scroll', () => {
-                updateActiveCatDotFromScroll();
+                if (!_scrollTick) {
+                    _scrollTick = true;
+                    requestAnimationFrame(() => {
+                        updateActiveCatDotFromScroll();
+                        _scrollTick = false;
+                    });
+                }
             }, { passive: true });
         }
 
@@ -7135,48 +7142,7 @@
         // 5. INTRO SPLASH LOAD INTERACTION LOGIC
         window.addEventListener('DOMContentLoaded', () => {
             const splash = document.getElementById('splash-screen');
-            if (!splash || splash.style.display === 'none' || window.getComputedStyle(splash).display === 'none') {
-                return;
-            }
-            const arrow = document.getElementById('splash-arrow');
-            const subtitle = document.querySelector('.splash-subtitle');
-            
-            // Step 1: Slide subtitle up
-            setTimeout(() => {
-                if (subtitle) {
-                    subtitle.style.opacity = '1';
-                    subtitle.style.transform = 'translateY(0)';
-                    subtitle.style.transition = 'all 0.3s ease';
-                }
-            }, 100);
-
-            // Step 2: Show animated pointer arrow
-            setTimeout(() => {
-                if (arrow) {
-                    arrow.style.opacity = '1';
-                    arrow.style.left = '45%';
-                    arrow.style.top = '65%';
-                    arrow.style.transition = 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)';
-                }
-            }, 250);
-
-            // Step 3: Trigger virtual "click" and Ripple, then hide splash
-            setTimeout(() => {
-                const rip = document.createElement('div');
-                rip.classList.add('ripple');
-                rip.style.left = '50%';
-                rip.style.top = '60%';
-                splash.appendChild(rip);
-                
-                const logo = document.querySelector('.splash-logo');
-                if (logo) logo.style.transform = 'scale(0.95)';
-                
-                setTimeout(() => {
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                }, 400);
-
-            }, 500);
+            if (splash) splash.style.display = 'none';
         });
 
         // 6. CUSTOM MOUSE FOLLOW ANIMATION (Desktop Only with fine pointer)
